@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.cninfo.com.cn)",
+      "WebSearch",
+      "Bash(python main.py --mode single --test-stock 000001)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"http://www.cninfo.com.cn/\")",
+      "Bash(curl -s -X POST \"http://www.cninfo.com.cn/new/fulltextSearch/full\" -H \"Content-Type: application/x-www-form-urlencoded\" -d \"searchkey=%E4%B8%8A%E5%B8%82&sdate=&edate=&isfulltext=false&sortName=nothing&sortType=desc&pageNum=1&pageSize=10\")",
+      "Bash(curl -s \"http://www.cninfo.com.cn/new/disclosure/stock?orgId=gssz0000001&announcementCategory=category_ndbg_szsh&page=1&pageSize=10\")",
+      "Bash(curl -s \"http://www.cninfo.com.cn/new/hisAnnouncement?orgId=gssz0000001&stockCode=000001&category=category_ndbg_szsh&pageNum=1&pageSize=10\")",
+      "Bash(curl -s -X POST \"http://www.cninfo.com.cn/new/disclosure/stock\" -H \"Content-Type: application/x-www-form-urlencoded\" -d \"orgId=gssz0000001&announcementCategory=category_ndbg_szsh&page=1&pageSize=10\")",
+      "Bash(curl -s \"http://www.cninfo.com.cn/new/disclosure/stock?orgId=gssz0000001&announcementCategory=category_ndbg_szsh\")",
+      "Bash(curl -s \"http://www.cninfo.com.cn/new/fulltextSearch/full?searchkey=%E5%B9%B4%E6%8A%A5&sdate=&edate=&isfulltext=false&sortName=nothing&sortType=desc&pageNum=1&pageSize=5\")",
+      "Bash(curl -s -X POST \"http://www.cninfo.com.cn/new/fulltextSearch/full\" -H \"Content-Type: application/x-www-form-urlencoded\" -d \"searchkey=%E5%B9%B4%E6%8A%A5&sdate=&edate=&isfulltext=false&sortName=nothing&sortType=desc&pageNum=1&pageSize=5\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(''''Total:'''', d.get\\(''''totalRecordNum''''\\)\\); anns=d.get\\(''''announcements'''',[]\\); print\\(''''First 3:''''\\); [print\\(a.get\\(''''secCode''''\\), a.get\\(''''announcementTitle''''\\)[:30]\\) for a in anns[:3]]\")",
+      "Bash(curl -s -I \"http://www.cninfo.com.cn/finalpage/2026-03-21/1225022886.PDF\")",
+      "Bash(curl -s -I \"http://www.cninfo.com.cn/new/finalpage/2026-03-21/1225022886.PDF\")",
+      "Bash(python -c \":*)",
+      "Bash(curl:*)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); anns=d.get\\(''''announcements'''',[]\\); [print\\(a.get\\(''''adjunctUrl''''\\)\\) for a in anns]\")",
+      "Bash(grep -oE \"api[^''''\"\"]{0,100}\")",
+      "Bash(grep -oE \"finalpage[^''''\"\"]{0,50}\")",
+      "Bash(grep -oE \"webapi[^''''\"\"]{0,100}\")",
+      "Bash(grep -oE \"adjunctUrl[^,;]{0,50}\")",
+      "Bash(grep -oE \"https?://[^''''\"\"]{0,100}\")",
+      "Bash(grep -oE \"finalpage|announcementId|pdfUrl[^''''\"\"]{0,50}\")",
+      "Bash(timeout 120 python main.py --mode single --test-stock 600188)",
+      "Bash(rm:*)",
+      "Skill(update-config)",
+      "Bash(python extraction/cli.py --help)",
+      "Bash(python extraction/cli.py export-table --help)",
+      "Bash(python extraction/cli.py export-table -s 000001 -y 2024,2023 -t balance_sheet)"
+    ]
+  }
+}

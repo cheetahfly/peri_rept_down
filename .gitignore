@@ -1,0 +1,108 @@
+# ===========================================
+# A股财报提取系统 - Git Ignore
+# ===========================================
+
+# Annual Report PDFs - NEVER COMMIT
+*.pdf
+data/**/*.pdf
+
+# Data directory - all generated data
+data/by_code/
+data/exports/
+data/extracted/
+data/reports/
+data/logs/
+data/cache/
+!data/by_code/.gitkeep
+!data/exports/.gitkeep
+!data/extracted/.gitkeep
+
+# Database
+*.db
+extraction.db
+
+# Downloaded executables
+download
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Cache
+.ruff_cache/
+.mypy_cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.log
+nul
+nul_
+result.txt
+=0.10.0
+
+# Keys and credentials
+keys_check.txt
+*.pem
+*.key
+
+# Test results
+tests/results/*.json
+
+# Standalone executables
+*.exe
+tesseract_setup.exe
+
+# Debug files
+debug_*
+diagnose*
+*.json.bak
+
+# One-off test scripts
+test_download.py
+test_single.py
+test_cf_fix.py
+test_10_new.py
+find_stocks.py
+search_2025.py
+UNSUPPORTED_PDFS.py
+test_download.py
+test_single.py
+test_cf_fix.py
+test_10_new.py
+download*.py
+find_stocks.py
+search_2025.py
+UNSUPPORTED_PDFS.py
+expansion_test*.py
+!expansion_test.py
+!expansion_test_v2.py
+
+# Progress tracking (regenerate from code)
+PROGRESS_*.md
+PROGRESS_*.json
+PROJECT_ARCHIVE.*
+README_PROGRESS.md
