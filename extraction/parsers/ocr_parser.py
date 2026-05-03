@@ -18,6 +18,7 @@ import os
 import tempfile
 import time
 import base64
+import logging
 from typing import List, Dict, Optional, Tuple, Union
 from dataclasses import dataclass
 from enum import Enum
@@ -25,6 +26,8 @@ import pandas as pd
 import re
 
 import pypdfium2 as pdfium
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -593,7 +596,8 @@ class CloudOCRParser:
             count = len(pdf)
             pdf.close()
             return count
-        except:
+        except Exception as e:
+            logger.debug(f"获取PDF页数失败: {e}")
             return 0
 
     def render_page(self, page_num: int, scale: float = 2.0):
@@ -604,7 +608,8 @@ class CloudOCRParser:
             pil_image = page.render(scale=scale).to_pil()
             pdf.close()
             return pil_image
-        except:
+        except Exception as e:
+            logger.debug(f"渲染PDF页面{page_num}失败: {e}")
             return None
 
     def ocr_page(self, page_num: int, scale: float = 2.0) -> OCRResult:

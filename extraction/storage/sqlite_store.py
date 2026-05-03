@@ -6,12 +6,15 @@ SQLite存储模块
 import os
 import json
 import sqlite3
+import logging
 from typing import Dict, List, Optional, Tuple, Any
 from datetime import datetime
 
 import pandas as pd
 
 from extraction.config import EXTRACTION_DB_PATH, EXPORT_DIR
+
+logger = logging.getLogger(__name__)
 
 
 class SqliteStore:
@@ -89,7 +92,7 @@ class SqliteStore:
             return True
 
         except Exception as e:
-            print(f"保存失败: {e}")
+            logger.warning(f"保存数据失败 ({stock_code}/{year}/{statement_type}): {e}")
             return False
 
         finally:

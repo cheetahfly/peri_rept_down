@@ -77,8 +77,8 @@ class PyMuPDFParser:
         """
         提取页面表格
 
-        PyMuPDF的表格提取需要额外处理，这里主要返回空列表，
-        实际表格提取由table_engine处理。
+        PyMuPDF不提供直接的表格提取API，这里返回空列表。
+        表格提取实际由HybridParser委托给pdfplumber处理。
 
         Args:
             page_num: 页码（从0开始）
@@ -86,10 +86,10 @@ class PyMuPDFParser:
             min_cols: 最少列数
 
         Returns:
-            表格DataFrame列表
+            表格DataFrame列表（始终为空，表格提取由pdfplumber负责）
         """
-        # PyMuPDF不提供直接的表格提取API，返回空列表
-        # 实际使用table_parser处理
+        # PyMuPDF不提供直接的表格提取API
+        # 表格提取由HybridParser委托给pdfplumber处理
         return []
 
     def find_pages(
