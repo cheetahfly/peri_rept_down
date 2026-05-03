@@ -176,15 +176,16 @@ class PdfParser:
                     self._page_texts[page_num] = page.extract_text(layout=True) or ""
 
         # 从缓存快速查找
+        # 预先计算小写关键词（避免每页重复计算）
+        search_keywords_lower = [k.lower() for k in keywords] if not case_sensitive else keywords
+
         for page_num, text in self._page_texts.items():
             if not case_sensitive:
                 text_lower = text.lower()
-                search_keywords = [k.lower() for k in keywords]
             else:
                 text_lower = text
-                search_keywords = keywords
 
-            if any(kw in text_lower for kw in search_keywords):
+            if any(kw in text_lower for kw in search_keywords_lower):
                 matched_pages.append(page_num)
 
         return sorted(matched_pages)

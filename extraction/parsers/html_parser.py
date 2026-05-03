@@ -28,7 +28,7 @@ class HtmlParser:
 
         self.html_path = html_path
         self.soup = None
-        self._page_soups = []
+        self._cached_pages = None  # 缓存页面列表
         self._load_html()
 
     def _load_html(self):
@@ -36,11 +36,18 @@ class HtmlParser:
         with open(self.html_path, "r", encoding="utf-8") as f:
             content = f.read()
         self.soup = BeautifulSoup(content, "html.parser")
+        self._cached_pages = None  # 重置缓存
+
+    def _get_pages(self):
+        """获取页面列表（带缓存）"""
+        if self._cached_pages is None:
+            self._cached_pages = self._get_pages()
+        return self._cached_pages
 
     @property
     def page_count(self) -> int:
         """获取总页数（基于page元素）"""
-        pages = self.soup.find_all("div", class_="page")
+        pages = self._get_pages()
         if pages:
             return len(pages)
         return 1
@@ -55,7 +62,7 @@ class HtmlParser:
         Returns:
             页面文本内容
         """
-        pages = self.soup.find_all("div", class_="page")
+        pages = self._get_pages()
 
         if not pages:
             return self.soup.get_text()
@@ -80,7 +87,7 @@ class HtmlParser:
         Returns:
             表格DataFrame列表
         """
-        pages = self.soup.find_all("div", class_="page")
+        pages = self._get_pages()
 
         if not pages:
             return []
@@ -145,7 +152,7 @@ class HtmlParser:
         Returns:
             表格DataFrame列表
         """
-        pages = self.soup.find_all("div", class_="page")
+        pages = self._get_pages()
         if not pages:
             text = self.soup.get_text()
             return self._parse_text_to_tables(text)
@@ -206,7 +213,7 @@ class HtmlParser:
         Returns:
             匹配的页码列表
         """
-        pages = self.soup.find_all("div", class_="page")
+        pages = self._get_pages()
         if not pages:
             text = self.soup.get_text()
             if not case_sensitive:
@@ -238,7 +245,7 @@ class HtmlParser:
         Returns:
             合并后的所有文本
         """
-        pages = self.soup.find_all("div", class_="page")
+        pages = self._get_pages()
         if not pages:
             return self.soup.get_text(separator="\n", strip=True)
 
@@ -258,7 +265,7 @@ class HtmlParser:
         Returns:
             合并后的文本
         """
-        pages = self.soup.find_all("div", class_="page")
+        pages = self._get_pages()
         if not pages:
             return self.soup.get_text(separator="\n", strip=True)
 
@@ -278,6 +285,6 @@ class HtmlParser:
         Returns:
             页码列表
         """
-        pages = self.soup.find_all("div", class_="page")
+        pages = self._get_pages()
         total = len(pages) if pages else 1
         return list(range(start_page, min(end_page + 1, total)))
