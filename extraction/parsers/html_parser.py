@@ -41,7 +41,7 @@ class HtmlParser:
     def _get_pages(self):
         """获取页面列表（带缓存）"""
         if self._cached_pages is None:
-            self._cached_pages = self._get_pages()
+            self._cached_pages = self.soup.find_all("div", class_="page")
         return self._cached_pages
 
     @property

@@ -158,27 +158,29 @@ class SqliteStore:
             数据列表
         """
         conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
+        try:
+            cursor = conn.cursor()
 
-        query = "SELECT stock_code, report_year, statement_type, data, created_at FROM extractions"
-        params = []
+            query = "SELECT stock_code, report_year, statement_type, data, created_at FROM extractions"
+            params = []
 
-        conditions = []
-        if stock_code:
-            conditions.append("stock_code = ?")
-            params.append(stock_code)
-        if year:
-            conditions.append("report_year = ?")
-            params.append(year)
+            conditions = []
+            if stock_code:
+                conditions.append("stock_code = ?")
+                params.append(stock_code)
+            if year:
+                conditions.append("report_year = ?")
+                params.append(year)
 
-        if conditions:
-            query += " WHERE " + " AND ".join(conditions)
+            if conditions:
+                query += " WHERE " + " AND ".join(conditions)
 
-        query += " ORDER BY stock_code, report_year DESC"
+            query += " ORDER BY stock_code, report_year DESC"
 
-        cursor.execute(query, params)
-        rows = cursor.fetchall()
-        conn.close()
+            cursor.execute(query, params)
+            rows = cursor.fetchall()
+        finally:
+            conn.close()
 
         results = []
         for row in rows:
@@ -256,30 +258,32 @@ class SqliteStore:
     def get_stats(self) -> Dict:
         """获取统计信息"""
         conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
+        try:
+            cursor = conn.cursor()
 
-        stats = {}
+            stats = {}
 
-        # 总记录数
-        cursor.execute("SELECT COUNT(*) FROM extractions")
-        stats["total_records"] = cursor.fetchone()[0]
+            # 总记录数
+            cursor.execute("SELECT COUNT(*) FROM extractions")
+            stats["total_records"] = cursor.fetchone()[0]
 
-        # 股票数
-        cursor.execute("SELECT COUNT(DISTINCT stock_code) FROM extractions")
-        stats["total_stocks"] = cursor.fetchone()[0]
+            # 股票数
+            cursor.execute("SELECT COUNT(DISTINCT stock_code) FROM extractions")
+            stats["total_stocks"] = cursor.fetchone()[0]
 
-        # 年份范围
-        cursor.execute("SELECT MIN(report_year), MAX(report_year) FROM extractions")
-        row = cursor.fetchone()
-        stats["year_range"] = (row[0], row[1]) if row[0] else (None, None)
+            # 年份范围
+            cursor.execute("SELECT MIN(report_year), MAX(report_year) FROM extractions")
+            row = cursor.fetchone()
+            stats["year_range"] = (row[0], row[1]) if row[0] else (None, None)
 
-        # 各类型报表数
-        cursor.execute("""
-            SELECT statement_type, COUNT(*) FROM extractions GROUP BY statement_type
-        """)
-        stats["by_type"] = {row[0]: row[1] for row in cursor.fetchall()}
+            # 各类型报表数
+            cursor.execute("""
+                SELECT statement_type, COUNT(*) FROM extractions GROUP BY statement_type
+            """)
+            stats["by_type"] = {row[0]: row[1] for row in cursor.fetchall()}
+        finally:
+            conn.close()
 
-        conn.close()
         return stats
 
     def get_multi_year_data(
@@ -300,18 +304,20 @@ class SqliteStore:
             {年份: {科目名: 值}}
         """
         conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
+        try:
+            cursor = conn.cursor()
 
-        query = """
-            SELECT report_year, data
-            FROM extractions
-            WHERE stock_code = ? AND statement_type = ? AND report_year IN ({})
-            ORDER BY report_year
-        """.format(','.join('?' * len(years)))
+            query = """
+                SELECT report_year, data
+                FROM extractions
+                WHERE stock_code = ? AND statement_type = ? AND report_year IN ({})
+                ORDER BY report_year
+            """.format(','.join('?' * len(years)))
 
-        cursor.execute(query, [stock_code, statement_type] + years)
-        rows = cursor.fetchall()
-        conn.close()
+            cursor.execute(query, [stock_code, statement_type] + years)
+            rows = cursor.fetchall()
+        finally:
+            conn.close()
 
         result = {}
         for year, data_json in rows:
@@ -341,18 +347,20 @@ class SqliteStore:
             return {}
 
         conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
+        try:
+            cursor = conn.cursor()
 
-        placeholders = ','.join('?' * len(stock_codes))
-        query = f"""
-            SELECT stock_code, data
-            FROM extractions
-            WHERE stock_code IN ({placeholders}) AND report_year = ? AND statement_type = ?
-        """
+            placeholders = ','.join('?' * len(stock_codes))
+            query = f"""
+                SELECT stock_code, data
+                FROM extractions
+                WHERE stock_code IN ({placeholders}) AND report_year = ? AND statement_type = ?
+            """
 
-        cursor.execute(query, stock_codes + [year, statement_type])
-        rows = cursor.fetchall()
-        conn.close()
+            cursor.execute(query, stock_codes + [year, statement_type])
+            rows = cursor.fetchall()
+        finally:
+            conn.close()
 
         result = {}
         for stock_code, data_json in rows:

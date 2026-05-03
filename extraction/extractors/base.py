@@ -5,6 +5,7 @@
 
 import os
 import re
+import logging
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Tuple
 from datetime import datetime
@@ -14,6 +15,8 @@ import pandas as pd
 from extraction.parsers.pdf_parser import PdfParser
 from extraction.parsers.table_parser import TableParser
 from extraction.config import SECTION_KEYWORDS, UNIT_MULTIPLIERS
+
+logger = logging.getLogger(__name__)
 
 
 class BaseExtractor(ABC):
@@ -536,7 +539,8 @@ class BaseExtractor(ABC):
 
                     all_items[clean_key] = value
                     seen_keys.add(clean_key)
-            except Exception:
+            except Exception as e:
+                logger.debug(f"合并表格时跳过页{page_num}: {e}")
                 continue
 
         return all_items
