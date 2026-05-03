@@ -74,23 +74,22 @@ class PdfToHtmlConverter:
 
     def _try_libreoffice(self, pdf_path: str, output_dir: str, base_name: str) -> bool:
         """尝试使用LibreOffice转换"""
-        import ntpath
         import pathlib
-        
+
         def to_windows_abs_path(path: str) -> str:
             abs_path = os.path.abspath(path)
             return str(pathlib.Path(abs_path))
-        
+
         pdf_path_win = to_windows_abs_path(pdf_path)
         output_dir_win = to_windows_abs_path(output_dir)
-        
+
         libreoffice_cmds = [
             "soffice",
             "libreoffice",
             "C:\\Program Files\\LibreOffice\\program\\soffice.exe",
             "C:\\Program Files (x86)\\LibreOffice\\program\\soffice.exe",
         ]
-        
+
         for cmd in libreoffice_cmds:
             try:
                 result = subprocess.run(
@@ -103,7 +102,7 @@ class PdfToHtmlConverter:
                     return True
             except (subprocess.SubprocessError, FileNotFoundError):
                 continue
-        
+
         return False
 
     def _try_poppler(self, pdf_path: str, output_path: str) -> bool:
@@ -168,7 +167,7 @@ def is_garbled_text(text: str) -> bool:
     if not text:
         return True
 
-    chinese_chars = sum(1 for c in text if "\u4e00" <= c <= "\u9fff")
+    chinese_chars = sum(1 for c in text if "一" <= c <= "鿿")
     total_chars = len(text.replace(" ", "").replace("\n", "").replace("\t", ""))
 
     if total_chars == 0:
@@ -176,6 +175,16 @@ def is_garbled_text(text: str) -> bool:
 
     chinese_ratio = chinese_chars / total_chars
 
+    # 检测替换字符(U+FFFD)比例 - 当PDF字体缺失时显示为�
+    replacement_char = '�'
+    replacement_count = text.count(replacement_char)
+    replacement_ratio = replacement_count / total_chars if total_chars > 0 else 0
+
+    # 如果替换字符超过30%，认为是乱码
+    if replacement_ratio > 0.3:
+        return True
+
+    # 常规乱码检测：字符比异常或无效字符过多
     if chinese_ratio < 0.1 and total_chars > 50:
         weird_chars = sum(
             1
@@ -185,5 +194,21 @@ def is_garbled_text(text: str) -> bool:
         weird_ratio = weird_chars / total_chars
         if weird_ratio > 0.3:
             return True
+
+    # CID字体额外检测：文本包含大量中文字符但不包含常见财务关键词时，可能是CID乱码
+    # 这是因为CID字体的错误映射仍会产生有效的中文字符，但不是正确的词
+    if len(text) > 100:
+        chinese_chars_ratio = sum(1 for c in text if "一" <= c <= "鿿") / len(text)
+        if chinese_chars_ratio > 0.3:
+            financial_keywords = [
+                "资产负债表", "利润表", "现金流量表",
+                "资产总计", "负债合计", "所有者权益",
+                "营业收入", "营业成本", "净利润",
+                "经营活动", "投资活动", "筹资活动",
+                "公司名称", "股票代码", "报表日期",
+            ]
+            has_keyword = any(kw in text for kw in financial_keywords)
+            if not has_keyword:
+                return True
 
     return False

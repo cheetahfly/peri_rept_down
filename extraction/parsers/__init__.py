@@ -13,6 +13,13 @@ from extraction.parsers.html_converter import (
 from extraction.parsers.hybrid_parser import HybridParser
 
 try:
+    from extraction.parsers.pymupdf_parser import PyMuPDFParser
+    HAS_PYMUPDF = True
+except ImportError:
+    PyMuPDFParser = None
+    HAS_PYMUPDF = False
+
+try:
     from extraction.parsers.ocr_parser import (
         OCRTableParser,
         ImageOrcParser,
@@ -21,7 +28,7 @@ try:
         OCREngineType,
     )
     HAS_OCR = True
-except ImportError as e:
+except ImportError:
     HAS_OCR = False
     OCRTableParser = None
     ImageOrcParser = None
@@ -36,6 +43,8 @@ __all__ = [
     "convert_pdf_to_html",
     "is_garbled_text",
     "HybridParser",
+    "PyMuPDFParser",
+    "HAS_PYMUPDF",
     "OCRTableParser",
     "ImageOrcParser",
     "OCRSpaceParser",
