@@ -122,9 +122,17 @@ class JsonStore:
 
     def _generate_path(self, stock_code: str, year: int, statement_type: str) -> str:
         """生成文件路径"""
+        if ".." in stock_code or ".." in statement_type:
+            raise ValueError("Invalid stock_code or statement_type")
         stock_dir = os.path.join(self.base_dir, stock_code)
         file_name = f"{stock_code}_{year}_{statement_type}.json"
-        return os.path.join(stock_dir, file_name)
+        full_path = os.path.join(stock_dir, file_name)
+        # Ensure the resolved path stays within base_dir
+        real_base = os.path.realpath(self.base_dir)
+        real_path = os.path.realpath(full_path)
+        if not real_path.startswith(real_base + os.sep):
+            raise ValueError("Path traversal detected")
+        return full_path
 
     def list_files(self, stock_code: str = None) -> List[str]:
         """
@@ -145,7 +153,11 @@ class JsonStore:
             return []
 
         files = []
+        base_depth = search_dir.count(os.sep)
+        max_depth = base_depth + 3
         for root, _, filenames in os.walk(search_dir):
+            if root.count(os.sep) > max_depth:
+                continue
             for filename in filenames:
                 if filename.endswith(".json"):
                     files.append(os.path.join(root, filename))

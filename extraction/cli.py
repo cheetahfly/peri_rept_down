@@ -68,6 +68,16 @@ def _validate_path_arg(path: str, arg_name: str, is_file: bool = True) -> None:
             sys.exit(1)
 
 
+_STOCK_CODE_RE = re.compile(r"^\d{6}$")
+
+
+def _validate_stock_code(stock_code: str, arg_name: str = "stock_code") -> None:
+    """Validate stock code format (6 digits); exit with error if invalid."""
+    if not _STOCK_CODE_RE.match(stock_code):
+        print(f"错误: {arg_name} 格式无效（应为6位数字）: {stock_code}")
+        sys.exit(1)
+
+
 def parse_pdf_path(pdf_path: str) -> tuple:
     """
     从PDF路径解析股票代码和年份
@@ -440,6 +450,7 @@ def main():
 
     elif args.command == "export-table":
         stock_code = args.stock
+        _validate_stock_code(stock_code)
         years = [int(y.strip()) for y in args.years.split(',')]
         statement_type = args.type
 
@@ -501,6 +512,9 @@ def main():
 
         success_count = 0
         for stock_code in stock_codes:
+            if not _STOCK_CODE_RE.match(stock_code):
+                print(f"跳过无效股票代码: {stock_code}")
+                continue
             kv_data_by_year = json_store.load_for_table(stock_code, years, statement_type)
             if kv_data_by_year:
                 df = builder.build_single_stock(kv_data_by_year, statement_type, include_yoy=True)
@@ -512,6 +526,7 @@ def main():
         print(f"导出完成: {success_count}/{len(stock_codes)} 成功")
 
     elif args.command == "report":
+        _validate_stock_code(args.stock)
         report_command(args)
 
     else:
