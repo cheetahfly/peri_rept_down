@@ -5,7 +5,7 @@ PDF解析器 - 基于pdfplumber封装
 
 import os
 import re
-from typing import List, Dict, Optional, Tuple
+from typing import List, Optional, Tuple
 import pdfplumber
 import pandas as pd
 

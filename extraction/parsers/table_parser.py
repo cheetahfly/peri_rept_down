@@ -6,7 +6,6 @@
 import re
 from typing import List, Dict, Tuple, Optional
 import pandas as pd
-import numpy as np
 
 
 class TableParser:
@@ -280,7 +279,6 @@ class TableParser:
           "三、(亏损)/利润总额" -> "利润总额"
           "四、净(亏损)/利润"   -> "净利润"
         """
-        import re
         # 移除 "X、" 前缀（X可以是任何数字序号）
         name = re.sub(r'^[一二三四五六七八九十]+、', '', name)
         # 移除 (亏损)/ 或 (亏损)  之类的中间标记
@@ -297,7 +295,6 @@ class TableParser:
         Returns:
             (value, best_value) - value是满足阈值条件的值，best_value是绝对值最大的值
         """
-        import re
         value = None
         best_value = None
         best_abs = 0

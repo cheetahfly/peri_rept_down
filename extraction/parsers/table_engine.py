@@ -32,12 +32,10 @@
 """
 
 import re
-from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import List, Dict, Optional, Tuple, Any, Callable
+from typing import List, Dict, Optional, Tuple, Any
 from enum import Enum
 import pandas as pd
-import numpy as np
 
 
 class RowType(Enum):
@@ -379,7 +377,6 @@ class UnitNormalizer:
         "亿元": 100000000,
         "千元": 1000,
         "百万元": 1000000,
-        "万元": 10000,
     }
     
     @classmethod

@@ -3,18 +3,17 @@
 财务报表明取器基类
 """
 
-import os
 import re
 import logging
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 from datetime import datetime
 
 import pandas as pd
 
 from extraction.parsers.pdf_parser import PdfParser
 from extraction.parsers.table_parser import TableParser
-from extraction.config import SECTION_KEYWORDS, UNIT_MULTIPLIERS
+from extraction.config import SECTION_KEYWORDS
 
 logger = logging.getLogger(__name__)
 
@@ -236,7 +235,6 @@ class BaseExtractor(ABC):
 
         import re
 
-        # 针对不同报表类型使用严格的header模式匹配
         # 针对不同报表类型使用严格的header模式匹配
         if self.STATEMENT_TYPE == "income_statement":
             # 利润表必须是"合并利润表"或"银行利润表"作为独立标题行（后面跟年度/金额/附注等）
@@ -581,7 +579,6 @@ class BaseExtractor(ABC):
             return unit, multiplier
 
         for page_num in range(min(50, self.parser.page_count)):
-            text = self.parser.extract_text(page_num)
             tables = self.parser.extract_tables(page_num, min_rows=5)
 
             for table in tables:

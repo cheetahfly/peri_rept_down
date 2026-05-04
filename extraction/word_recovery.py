@@ -11,11 +11,10 @@ Strategy:
 4. For each row, assign values to their correct columns
 5. Return a structured matrix preserving the original table layout
 """
-import re
 import sys
 import os
 from collections import defaultdict
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 import pdfplumber
 
@@ -84,6 +83,8 @@ def extract_structured_numeric(
         }
     """
     with pdfplumber.open(pdf_path) as pdf:
+        if page_num >= len(pdf.pages):
+            return {"page": page_num, "method": "none", "columns": [], "rows": []}
         page = pdf.pages[page_num]
         words = page.extract_words()
 
@@ -166,6 +167,8 @@ def extract_table_numeric_direct(
     """
     results = []
     with pdfplumber.open(pdf_path) as pdf:
+        if page_num >= len(pdf.pages):
+            return results
         page = pdf.pages[page_num]
         tables = page.find_tables()
 
