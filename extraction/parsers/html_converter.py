@@ -96,7 +96,6 @@ class PdfToHtmlConverter:
                     [cmd, "--headless", "--convert-to", "html", "--outdir", output_dir_win, pdf_path_win],
                     capture_output=True,
                     timeout=180,
-                    shell=True,
                 )
                 if result.returncode == 0:
                     return True

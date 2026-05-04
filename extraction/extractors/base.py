@@ -172,7 +172,6 @@ class BaseExtractor(ABC):
         Returns:
             额外发现的页码列表
         """
-        import re
         extra = []
 
         # 扫描所有页面，查找CF章节header
@@ -199,7 +198,6 @@ class BaseExtractor(ABC):
         Returns:
             额外发现的页码列表
         """
-        import re
         extra = []
 
         # 扫描所有页面，查找BS汇总行（必须是"关键词 + 数字"的组合，排除干扰页）
@@ -232,8 +230,6 @@ class BaseExtractor(ABC):
         """
         if not text:
             return False
-
-        import re
 
         # 针对不同报表类型使用严格的header模式匹配
         if self.STATEMENT_TYPE == "income_statement":

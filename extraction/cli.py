@@ -36,6 +36,38 @@ def _extract_pdf_worker(args: tuple) -> Dict:
     return extract_single_pdf(pdf_path, output_dir)
 
 
+def _is_safe_path(path: str) -> bool:
+    """
+    Check if a path is safe from traversal attacks.
+
+    A path is unsafe if it contains .. traversal sequences that could escape
+    the intended directory, or if it resolves to an absolute path outside
+    the project directory.
+    """
+    if ".." in path:
+        return False
+    abs_path = os.path.abspath(path)
+    # Prevent absolute paths to system directories
+    if abs_path.startswith("/etc") or abs_path.startswith("/root") or abs_path.startswith("C:\\Windows"):
+        return False
+    return True
+
+
+def _validate_path_arg(path: str, arg_name: str, is_file: bool = True) -> None:
+    """Validate a path argument; exit with error if unsafe."""
+    if not _is_safe_path(path):
+        print(f"错误: {arg_name} 包含非法路径序列")
+        sys.exit(1)
+    if is_file:
+        if not os.path.isfile(path):
+            print(f"错误: {arg_name} 不是有效文件: {path}")
+            sys.exit(1)
+    else:
+        if not os.path.isdir(path):
+            print(f"错误: {arg_name} 不是有效目录: {path}")
+            sys.exit(1)
+
+
 def parse_pdf_path(pdf_path: str) -> tuple:
     """
     从PDF路径解析股票代码和年份
@@ -368,6 +400,7 @@ def main():
     args = parser.parse_args()
 
     if args.command == "extract":
+        _validate_path_arg(args.pdf_path, "pdf_path")
         result = extract_single_pdf(args.pdf_path, args.output)
         if result.get("success"):
             print(f"\n提取成功: {result['stock_code']} {result['year']}")
@@ -376,6 +409,7 @@ def main():
             sys.exit(1)
 
     elif args.command == "batch":
+        _validate_path_arg(args.input_dir, "input_dir", is_file=False)
         stats = batch_extract(args.input_dir, args.output, args.workers, args.pattern)
         print(f"\n批量处理完成:")
         print(f"  总数: {stats['total']}")
@@ -383,6 +417,7 @@ def main():
         print(f"  失败: {stats['failed']}")
 
     elif args.command == "validate":
+        _validate_path_arg(args.json_path, "json_path")
         result = validate_extraction(args.json_path)
         if result.get("valid"):
             print("\n验证通过")
@@ -445,9 +480,7 @@ def main():
         statement_type = args.type
 
         # 读取股票代码列表
-        if not os.path.exists(input_file):
-            print(f"文件不存在: {input_file}")
-            sys.exit(1)
+        _validate_path_arg(input_file, "input")
 
         with open(input_file, 'r', encoding='utf-8') as f:
             stock_codes = [line.strip() for line in f if line.strip()]
