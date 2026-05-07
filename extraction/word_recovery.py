@@ -18,6 +18,12 @@ from typing import Dict, List, Optional
 
 import pdfplumber
 
+# Constants for score_page_density
+NUMERIC_COUNT_CAP = 50.0
+CLUSTER_TOLERANCE = 25
+NUMERIC_WEIGHT = 0.6
+COLUMN_WEIGHT = 0.4
+
 
 def _parse_num(text: str) -> Optional[float]:
     """Parse a numeric value, handling parentheses for negatives and commas."""
@@ -75,11 +81,17 @@ def score_page_density(pdf_path: str, page_num: int) -> float:
     column_consistency: how many detected columns the page has, scaled 0-1
                          (pages with 3+ columns score highest)
     """
-    with pdfplumber.open(pdf_path) as pdf:
-        if page_num >= len(pdf.pages):
-            return 0.0
-        page = pdf.pages[page_num]
-        words = page.extract_words()
+    if page_num < 0:
+        return 0.0
+
+    try:
+        with pdfplumber.open(pdf_path) as pdf:
+            if page_num >= len(pdf.pages):
+                return 0.0
+            page = pdf.pages[page_num]
+            words = page.extract_words()
+    except Exception:
+        return 0.0
 
     if not words:
         return 0.0
@@ -91,13 +103,13 @@ def score_page_density(pdf_path: str, page_num: int) -> float:
     ]
     numeric_count = len(numeric_words)
 
-    # Normalize: cap at 50 numeric words = full score
-    numeric_score = min(numeric_count / 50.0, 1.0)
+    # Normalize: cap at NUMERIC_COUNT_CAP numeric words = full score
+    numeric_score = min(numeric_count / NUMERIC_COUNT_CAP, 1.0)
 
     # Column consistency: cluster x-positions to detect column count
     if numeric_words:
         x_midpoints = [(w["x0"] + w["x1"]) / 2 for w in numeric_words]
-        col_centers = _cluster_x_positions(x_midpoints, tolerance=25)
+        col_centers = _cluster_x_positions(x_midpoints, tolerance=CLUSTER_TOLERANCE)
         col_count = len(col_centers)
     else:
         col_count = 0
@@ -112,7 +124,7 @@ def score_page_density(pdf_path: str, page_num: int) -> float:
     else:
         col_score = 0.0
 
-    return numeric_score * 0.6 + col_score * 0.4
+    return numeric_score * NUMERIC_WEIGHT + col_score * COLUMN_WEIGHT
 
 
 def get_page_count(pdf_path: str) -> int:
