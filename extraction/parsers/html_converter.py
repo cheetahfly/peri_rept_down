@@ -155,13 +155,15 @@ def convert_pdf_to_html(
 
 def is_garbled_text(text: str) -> bool:
     """
-    检测文本是否为乱码
+    Detect garbled CID-font text in PDF extracts.
 
-    Args:
-        text: 待检测文本
-
-    Returns:
-        是否为乱码
+    Detection strategies (any one trigger is sufficient):
+    1. Replacement char (U+FFFD) ratio > 30%
+    2. Low Chinese ratio + high weird-char ratio (conventional garble)
+    3. High Chinese ratio (>30%) but NO financial keywords AND
+       high weird-char ratio > 20% (pure CID乱码 without any correct text)
+    4. Per-line check: if >50% of non-empty lines have >30% replacement chars,
+       the page is mostly garbled even if some headers rendered correctly
     """
     if not text:
         return True
@@ -174,16 +176,14 @@ def is_garbled_text(text: str) -> bool:
 
     chinese_ratio = chinese_chars / total_chars
 
-    # 检测替换字符(U+FFFD)比例 - 当PDF字体缺失时显示为�
+    # Strategy 1: Replacement character ratio
     replacement_char = '�'
     replacement_count = text.count(replacement_char)
     replacement_ratio = replacement_count / total_chars if total_chars > 0 else 0
-
-    # 如果替换字符超过30%，认为是乱码
     if replacement_ratio > 0.3:
         return True
 
-    # 常规乱码检测：字符比异常或无效字符过多
+    # Strategy 2: Low Chinese + weird chars (conventional garble)
     if chinese_ratio < 0.1 and total_chars > 50:
         weird_chars = sum(
             1
@@ -194,34 +194,33 @@ def is_garbled_text(text: str) -> bool:
         if weird_ratio > 0.3:
             return True
 
-    # CID字体额外检测：文本包含大量中文字符但不包含常见财务关键词时，可能是CID乱码
-    # 这是因为CID字体的错误映射仍会产生有效的中文字符，但不是正确的词
-    if len(text) > 100:
-        # 排除空白字符后计算中文比例
-        non_space = text.replace(" ", "").replace("\n", "").replace("\t", "").replace("\r", "")
-        chinese_non_space = sum(1 for c in non_space if "一" <= c <= "鿿")
-        chinese_ratio_non_space = chinese_non_space / len(non_space) if non_space else 0
+    # Strategy 3: High Chinese but no financial keywords + high weird ratio
+    non_space = text.replace(" ", "").replace("\n", "").replace("\t", "").replace("\r", "")
+    chinese_non_space = sum(1 for c in non_space if "一" <= c <= "鿿")
+    chinese_ratio_non_space = chinese_non_space / len(non_space) if non_space else 0
 
-        # 排除空白后中文比例 > 30% 且无财务关键词，判定为CID乱码
-        if chinese_ratio_non_space > 0.3:
-            financial_keywords = [
-                "资产负债表", "利润表", "现金流量表",
-                "资产总计", "负债合计", "所有者权益",
-                "营业收入", "营业成本", "净利润",
-                "经营活动", "投资活动", "筹资活动",
-                "公司名称", "股票代码", "报表日期",
-                "合计", "本期", "上期", "期末", "期初",
-            ]
-            has_keyword = any(kw in text for kw in financial_keywords)
-            if not has_keyword:
-                return True
-
-        # 额外检测：高空白比例 + 无财务关键词 → CID乱码
-        # 有些CID字体PDF 80%+是空白字符，中文集中在少量非空白中
-        whitespace_ratio = (len(text) - len(non_space)) / len(text) if len(text) > 0 else 0
-        if whitespace_ratio > 0.5 and chinese_non_space > 20:
-            has_any_keyword = any(kw in text for kw in financial_keywords)
-            if not has_any_keyword:
+    if chinese_ratio_non_space > 0.3:
+        financial_keywords = [
+            "资产负债表", "利润表", "现金流量表",
+            "资产总计", "负债合计", "所有者权益",
+            "营业收入", "营业成本", "净利润",
+            "经营活动", "投资活动", "筹资活动",
+            "公司名称", "股票代码", "报表日期",
+            "合计", "本期", "上期", "期末", "期初",
+            "流动资产", "流动负债", "非流动资产",
+            "基本每股收益", "稀释每股收益",
+        ]
+        has_keyword = any(kw in text for kw in financial_keywords)
+        if not has_keyword:
+            return True
+        # Strategy 4: Even if keywords exist, check line-level replacement density
+        lines = [l for l in text.split("\n") if l.strip()]
+        if lines:
+            garbled_lines = sum(
+                1 for l in lines
+                if l.count(replacement_char) / max(len(l), 1) > 0.3
+            )
+            if garbled_lines / len(lines) > 0.5:
                 return True
 
     return False
