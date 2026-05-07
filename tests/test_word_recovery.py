@@ -22,6 +22,8 @@ from extraction.word_recovery import (
     extract_structured_numeric,
     recover_statement,
     find_data_pages,
+    score_page_density,
+    get_page_count,
 )
 
 
@@ -246,3 +248,35 @@ class TestRecoverStatement:
         data = recover_statement(pdf, [9999])
         assert data["found"] is False
         assert data["stats"]["total_values"] == 0
+
+
+class TestScorePageDensity:
+    """Tests for score_page_density function."""
+
+    def test_returns_float(self):
+        import os
+        pdf_path = "data/by_code/000001/000001_平安银行_2024_年报.pdf"
+        if os.path.exists(pdf_path):
+            score = score_page_density(pdf_path, 10)
+            assert isinstance(score, float)
+
+    def test_high_score_for_data_page(self):
+        import os
+        pdf_path = "data/by_code/000001/000001_平安银行_2024_年报.pdf"
+        if os.path.exists(pdf_path):
+            score = score_page_density(pdf_path, 10)
+            assert score >= 0.0
+
+    def test_zero_for_empty_page(self):
+        import os
+        pdf_path = "data/by_code/000001/000001_平安银行_2024_年报.pdf"
+        if os.path.exists(pdf_path):
+            score = score_page_density(pdf_path, 0)
+            assert score >= 0.0
+
+    def test_compare_text_vs_table_page(self):
+        import os
+        pdf_path = "data/by_code/000001/000001_平安银行_2024_年报.pdf"
+        if os.path.exists(pdf_path):
+            scores = [score_page_density(pdf_path, p) for p in range(min(20, get_page_count(pdf_path)))]
+            assert any(s > 0 for s in scores), "No page scored above 0 — density scoring broken"

@@ -65,6 +65,62 @@ def _cluster_x_positions(
     return [sum(c) / len(c) for c in clusters]
 
 
+def score_page_density(pdf_path: str, page_num: int) -> float:
+    """
+    Score a page by numeric density and column structure consistency.
+
+    Score = numeric_count_normalized * 0.6 + column_consistency * 0.4
+
+    numeric_count_normalized: count of numeric words (excluding years/dates), scaled 0-1
+    column_consistency: how many detected columns the page has, scaled 0-1
+                         (pages with 3+ columns score highest)
+    """
+    with pdfplumber.open(pdf_path) as pdf:
+        if page_num >= len(pdf.pages):
+            return 0.0
+        page = pdf.pages[page_num]
+        words = page.extract_words()
+
+    if not words:
+        return 0.0
+
+    # Count numeric words (excluding years and date-like numbers)
+    numeric_words = [
+        w for w in words
+        if _parse_num(w["text"]) is not None and not _is_date_like(_parse_num(w["text"]))
+    ]
+    numeric_count = len(numeric_words)
+
+    # Normalize: cap at 50 numeric words = full score
+    numeric_score = min(numeric_count / 50.0, 1.0)
+
+    # Column consistency: cluster x-positions to detect column count
+    if numeric_words:
+        x_midpoints = [(w["x0"] + w["x1"]) / 2 for w in numeric_words]
+        col_centers = _cluster_x_positions(x_midpoints, tolerance=25)
+        col_count = len(col_centers)
+    else:
+        col_count = 0
+
+    # 3+ columns = full score, 1 column = low score, 0 = 0
+    if col_count >= 3:
+        col_score = 1.0
+    elif col_count == 2:
+        col_score = 0.6
+    elif col_count == 1:
+        col_score = 0.2
+    else:
+        col_score = 0.0
+
+    return numeric_score * 0.6 + col_score * 0.4
+
+
+def get_page_count(pdf_path: str) -> int:
+    """Return total page count of a PDF."""
+    with pdfplumber.open(pdf_path) as pdf:
+        return len(pdf.pages)
+
+
 def extract_structured_numeric(
     pdf_path: str, page_num: int, y_tolerance: float = 5.0
 ) -> Dict:
