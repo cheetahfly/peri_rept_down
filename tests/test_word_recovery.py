@@ -316,3 +316,24 @@ class TestFindDataPagesAuto:
         if os.path.exists(pdf_path):
             pages = find_data_pages(pdf_path, scan_range=list(range(50, 80)), top_n=5)
             assert all(50 <= p < 80 for p in pages)
+
+
+class TestRecoverAllFailing:
+    """Tests for recover_all_failing function."""
+
+    def test_recover_all_failing_uses_auto_scan(self):
+        """recover_all_failing() should delegate to auto-scan, not hardcoded pages."""
+        import inspect
+        from extraction.word_recovery import recover_all_failing
+        source = inspect.getsource(recover_all_failing)
+        # Check that hardcoded page list patterns from the old implementation are gone
+        assert "[165, 166, 167]" not in source
+        assert "[3]" not in source
+        assert "[4]" not in source
+        assert "[4, 5, 6, 7, 11]" not in source
+        assert "[6, 95, 97, 191, 192]" not in source
+        assert "[88, 99, 101]" not in source
+        assert "[106, 107, 108, 109]" not in source
+        # Verify it now uses auto-scan
+        assert "recover_statement_auto" in source
+        assert "pdfplumber.open" in source

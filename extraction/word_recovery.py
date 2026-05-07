@@ -430,39 +430,23 @@ def recover_all_failing(verbose: bool = True) -> Dict:
     """
     Recover data for all known failing CID-font garbled PDFs.
 
-    Uses known page numbers (based on prior extraction attempts and manual
-    inspection) rather than scanning blindly, to avoid pulling in data
-    from unrelated pages (notes, breakdowns, etc.).
+    Uses auto-density-scan discovery instead of hardcoded page numbers.
     """
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-    # Known page numbers (0-indexed) for each failing case
     cases = [
-        # 600016 民生银行 - CF on pages 165-167 (0-indexed)
-        ("data/by_code/600016/600016_民生银行_2024_年报.pdf", "600016", 2024,
-         "cash_flow", [165, 166, 167]),
-        # 600089 特变电工 - BS summary on page 3, IS+CF on page 4 (0-indexed)
-        ("data/by_code/600089/600089_特变电工_2025_年报.pdf", "600089", 2025,
-         "balance_sheet", [3]),
-        ("data/by_code/600089/600089_特变电工_2025_年报.pdf", "600089", 2025,
-         "income_statement", [4]),
-        ("data/by_code/600089/600089_特变电工_2025_年报.pdf", "600089", 2025,
-         "cash_flow", [4]),
-        # 601668 中国建筑 - IS on pages 4-7, 11 (0-indexed, from original find)
-        ("data/by_code/601668/601668_中国建筑_2024_年报.pdf", "601668", 2024,
-         "income_statement", [4, 5, 6, 7, 11]),
-        # 601628 中国人寿 - pages from original extraction (0-indexed)
-        ("data/by_code/601628/601628_中国人寿_2024_年报.pdf", "601628", 2024,
-         "balance_sheet", [6, 95, 97, 191, 192]),
-        ("data/by_code/601628/601628_中国人寿_2024_年报.pdf", "601628", 2024,
-         "income_statement", [88, 99, 101]),
-        ("data/by_code/601628/601628_中国人寿_2024_年报.pdf", "601628", 2024,
-         "cash_flow", [106, 107, 108, 109]),
+        ("data/by_code/600016/600016_民生银行_2024_年报.pdf", "600016", 2024, "cash_flow"),
+        ("data/by_code/600089/600089_特变电工_2025_年报.pdf", "600089", 2025, "balance_sheet"),
+        ("data/by_code/600089/600089_特变电工_2025_年报.pdf", "600089", 2025, "income_statement"),
+        ("data/by_code/600089/600089_特变电工_2025_年报.pdf", "600089", 2025, "cash_flow"),
+        ("data/by_code/601668/601668_中国建筑_2024_年报.pdf", "601668", 2024, "income_statement"),
+        ("data/by_code/601628/601628_中国人寿_2024_年报.pdf", "601628", 2024, "balance_sheet"),
+        ("data/by_code/601628/601628_中国人寿_2024_年报.pdf", "601628", 2024, "income_statement"),
+        ("data/by_code/601628/601628_中国人寿_2024_年报.pdf", "601628", 2024, "cash_flow"),
     ]
 
     results = {}
-
-    for pdf_rel, code, year, stmt, pages in cases:
+    for pdf_rel, code, year, stmt in cases:
         pdf_path = os.path.join(project_root, pdf_rel)
         if not os.path.exists(pdf_path):
             if verbose:
@@ -470,16 +454,24 @@ def recover_all_failing(verbose: bool = True) -> Dict:
             continue
 
         if verbose:
-            print(f"{code} {year} {stmt}: {len(pages)} 页 {pages}...")
+            print(f"{code} {year} {stmt}: 自动扫描...")
 
-        data = recover_statement(pdf_path, pages)
+        try:
+            with pdfplumber.open(pdf_path) as pdf:
+                scan_range = list(range(len(pdf.pages)))
+        except Exception as e:
+            if verbose:
+                print(f"  无法打开PDF: {e}")
+            continue
+
+        data = recover_statement_auto(pdf_path, stmt, scan_range, top_n=10)
         count = save_recovered_data(code, year, stmt, data)
         results[(code, year, stmt)] = count
 
         if verbose:
             stats = data.get("stats", {})
-            print(f"  -> 保存 {count} 数值 ({data['recovery_method']}, "
-                  f"{stats['total_rows']} 行)")
+            print(f"  -> 保存 {count} 数值 ({data.get('recovery_method', 'auto')}, "
+                  f"{stats.get('total_rows', 0)} 行)")
 
     return results
 
