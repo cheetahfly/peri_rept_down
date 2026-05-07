@@ -280,3 +280,39 @@ class TestScorePageDensity:
         if os.path.exists(pdf_path):
             scores = [score_page_density(pdf_path, p) for p in range(min(20, get_page_count(pdf_path)))]
             assert any(s > 0 for s in scores), "No page scored above 0 — density scoring broken"
+
+
+class TestFindDataPagesAuto:
+    """Tests for the rewritten find_data_pages() with density ranking."""
+
+    def test_returns_list_of_ints(self):
+        import os
+        pdf_path = "data/by_code/000001/000001_平安银行_2024_年报.pdf"
+        if os.path.exists(pdf_path):
+            pages = find_data_pages(pdf_path, scan_range=list(range(50)), top_n=5)
+            assert isinstance(pages, list)
+            assert all(isinstance(p, int) for p in pages)
+
+    def test_returns_top_n_pages(self):
+        import os
+        pdf_path = "data/by_code/000001/000001_平安银行_2024_年报.pdf"
+        if os.path.exists(pdf_path):
+            pages = find_data_pages(pdf_path, scan_range=list(range(100)), top_n=3)
+            assert len(pages) <= 3
+
+    def test_no_hardcoded_page_numbers(self):
+        import inspect
+        source = inspect.getsource(find_data_pages)
+        assert "165" not in source and "166" not in source and "167" not in source
+        assert "hardcoded" not in source.lower()
+
+    def test_empty_range_returns_empty(self):
+        pages = find_data_pages("nonexistent.pdf", scan_range=[], top_n=5)
+        assert pages == []
+
+    def test_scan_range_respected(self):
+        import os
+        pdf_path = "data/by_code/000001/000001_平安银行_2024_年报.pdf"
+        if os.path.exists(pdf_path):
+            pages = find_data_pages(pdf_path, scan_range=list(range(50, 80)), top_n=5)
+            assert all(50 <= p < 80 for p in pages)

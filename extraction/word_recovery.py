@@ -369,28 +369,21 @@ def save_recovered_data(
 
 
 def find_data_pages(
-    pdf_path: str, scan_range: List[int], min_numeric: int = 5
+    pdf_path: str,
+    scan_range: List[int],
+    top_n: int = 10,
 ) -> List[int]:
     """
-    Scan pages in the given range and return those with tabular numeric data.
+    Scan pages in the given range using density scoring and return top-N data pages.
     """
-    data_pages = []
-    with pdfplumber.open(pdf_path) as doc:
-        for p in scan_range:
-            if p >= len(doc.pages):
-                continue
-            page = doc.pages[p]
-            tables = page.find_tables()
-            if tables:
-                total_rows = sum(len(t.extract()) for t in tables if t.extract())
-                if total_rows >= 3:
-                    data_pages.append(p)
-                    continue
-            words = page.extract_words()
-            numeric = sum(1 for w in words if _parse_num(w["text"]) is not None and not _is_date_like(_parse_num(w["text"])))
-            if numeric >= min_numeric:
-                data_pages.append(p)
-    return data_pages
+    if not scan_range:
+        return []
+    scored = []
+    for p in scan_range:
+        score = score_page_density(pdf_path, p)
+        scored.append((score, p))
+    scored.sort(reverse=True, key=lambda x: x[0])
+    return [p for _, p in scored[:top_n]]
 
 
 def recover_all_failing(verbose: bool = True) -> Dict:
