@@ -215,14 +215,13 @@ def is_garbled_text(text: str) -> bool:
             return True
 
         # Strategy 4: Even if keywords exist, check line-level replacement density
-        if has_keyword:
-            lines = [l for l in text.split("\n") if l.strip()]
-            if lines:
-                garbled_lines = sum(
-                    1 for l in lines
-                    if l.count(replacement_char) / max(len(l), 1) > 0.3
-                )
-                if garbled_lines / len(lines) > 0.5:
-                    return True
+        lines = [l for l in text.split("\n") if l.strip()]
+        if lines:
+            garbled_lines = sum(
+                1 for l in lines
+                if l.count(replacement_char) / max(len(l), 1) > 0.3
+            )
+            if garbled_lines / len(lines) > 0.5:
+                return True
 
     return False
