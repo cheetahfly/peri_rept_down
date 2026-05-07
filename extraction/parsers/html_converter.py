@@ -213,14 +213,16 @@ def is_garbled_text(text: str) -> bool:
         has_keyword = any(kw in text for kw in financial_keywords)
         if not has_keyword:
             return True
+
         # Strategy 4: Even if keywords exist, check line-level replacement density
-        lines = [l for l in text.split("\n") if l.strip()]
-        if lines:
-            garbled_lines = sum(
-                1 for l in lines
-                if l.count(replacement_char) / max(len(l), 1) > 0.3
-            )
-            if garbled_lines / len(lines) > 0.5:
-                return True
+        if has_keyword:
+            lines = [l for l in text.split("\n") if l.strip()]
+            if lines:
+                garbled_lines = sum(
+                    1 for l in lines
+                    if l.count(replacement_char) / max(len(l), 1) > 0.3
+                )
+                if garbled_lines / len(lines) > 0.5:
+                    return True
 
     return False
