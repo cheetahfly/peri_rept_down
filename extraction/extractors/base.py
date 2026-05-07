@@ -87,13 +87,45 @@ class BaseExtractor(ABC):
         # 单位规范化
         normalized_data = self._normalize_units(merged_data)
 
-        return {
+        result = {
             "statement_type": self.STATEMENT_TYPE,
             "found": True,
             "pages": section_pages,
             "data": normalized_data,
             "extracted_at": datetime.now().isoformat(),
         }
+
+        # NEW: Quality gate — if found but very few items, try auto-recovery
+        found_items = len(normalized_data)
+        min_items_for_quality = {"balance_sheet": 10, "income_statement": 5, "cash_flow": 5}
+        min_items = min_items_for_quality.get(self.STATEMENT_TYPE, 5)
+
+        if found_items < min_items:
+            from extraction.word_recovery import recover_statement_auto
+            import os as _os
+
+            pdf_path = getattr(parser, "pdf_path", None) or getattr(parser, "_pdf_path", None)
+            if pdf_path and _os.path.exists(pdf_path):
+                import pdfplumber
+                total_pages = 0
+                try:
+                    with pdfplumber.open(pdf_path) as pdf:
+                        total_pages = len(pdf.pages)
+                except Exception:
+                    pass
+
+                if total_pages > 0:
+                    scan_range = list(range(total_pages))
+                    recovered = recover_statement_auto(
+                        pdf_path, self.STATEMENT_TYPE, scan_range, top_n=10
+                    )
+                    if recovered.get("found"):
+                        result["data"] = recovered.get("data", {})
+                        result["recovered"] = True
+                        result["recovery_method"] = recovered.get("recovery_method", "auto")
+                        result["pages"] = recovered.get("pages", section_pages)
+
+        return result
 
     def _find_section_pages(self, parser: PdfParser) -> List[int]:
         """

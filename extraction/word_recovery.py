@@ -386,6 +386,46 @@ def find_data_pages(
     return [p for _, p in scored[:top_n]]
 
 
+def recover_statement_auto(
+    pdf_path: str,
+    statement_type: str,
+    scan_range: List[int],
+    top_n: int = 10,
+) -> Dict:
+    """
+    Automatically discover data pages and recover statement data.
+
+    1. Scan scan_range pages with density scoring
+    2. Take top_n highest-scoring pages
+    3. Attempt recovery on those pages
+    4. Validate output has expected financial item structure
+    5. Return recovered data
+    """
+    candidate_pages = find_data_pages(pdf_path, scan_range, top_n)
+
+    if not candidate_pages:
+        return {
+            "recovery_method": "auto_scan",
+            "found": False,
+            "pages": [],
+            "data": {},
+            "error": "no candidate pages found",
+        }
+
+    # Attempt recovery on candidates
+    data = recover_statement(pdf_path, candidate_pages)
+
+    # Validate: check that recovered data has financial-scale values
+    if data.get("found"):
+        values = list(data.get("data", {}).values())
+        large_values = [v for v in values if abs(v) > 1000]
+        if len(large_values) < 3:
+            data["found"] = False
+            data["validation_failed"] = True
+
+    return data
+
+
 def recover_all_failing(verbose: bool = True) -> Dict:
     """
     Recover data for all known failing CID-font garbled PDFs.
