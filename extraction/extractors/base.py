@@ -115,7 +115,16 @@ class BaseExtractor(ABC):
                     pass
 
                 if total_pages > 0:
-                    scan_range = list(range(total_pages))
+                    # Build targeted scan range: neighborhood around discovered pages
+                    # This avoids being flooded by unrelated high-density pages (e.g. TOC)
+                    NEIGHBORHOOD = 15  # pages on each side of discovered page
+                    if section_pages:
+                        min_p = max(0, min(section_pages) - NEIGHBORHOOD)
+                        max_p = min(total_pages - 1, max(section_pages) + NEIGHBORHOOD)
+                        scan_range = list(range(min_p, max_p + 1))
+                    else:
+                        scan_range = list(range(total_pages))
+
                     recovered = recover_statement_auto(
                         pdf_path, self.STATEMENT_TYPE, scan_range, top_n=10
                     )

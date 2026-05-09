@@ -357,6 +357,7 @@ def save_recovered_data(
     record = {
         "statement_type": statement_type,
         "found": data.get("found", False),
+        "recovered": True,
         "pages": data.get("pages", []),
         "data": data.get("data", {}),
         "page_data": data.get("page_data", {}),
@@ -375,13 +376,63 @@ def find_data_pages(
 ) -> List[int]:
     """
     Scan pages in the given range using density scoring and return top-N data pages.
+    Opens PDF once and scores all pages in a single pass for efficiency.
     """
     if not scan_range:
         return []
-    scored = []
-    for p in scan_range:
-        score = score_page_density(pdf_path, p)
-        scored.append((score, p))
+
+    try:
+        with pdfplumber.open(pdf_path) as pdf:
+            if not pdf.pages:
+                return []
+
+            scored = []
+            for p in scan_range:
+                if p >= len(pdf.pages):
+                    scored.append((0.0, p))
+                    continue
+
+                page = pdf.pages[p]
+                words = page.extract_words()
+
+                if not words:
+                    scored.append((0.0, p))
+                    continue
+
+                # Count numeric words (excluding years and date-like numbers)
+                numeric_words = [
+                    w for w in words
+                    if _parse_num(w["text"]) is not None and not _is_date_like(_parse_num(w["text"]))
+                ]
+                numeric_count = len(numeric_words)
+
+                # Normalize: cap at NUMERIC_COUNT_CAP numeric words = full score
+                numeric_score = min(numeric_count / NUMERIC_COUNT_CAP, 1.0)
+
+                # Column consistency: cluster x-positions to detect column count
+                if numeric_words:
+                    x_midpoints = [(w["x0"] + w["x1"]) / 2 for w in numeric_words]
+                    col_centers = _cluster_x_positions(x_midpoints, tolerance=CLUSTER_TOLERANCE)
+                    col_count = len(col_centers)
+                else:
+                    col_count = 0
+
+                # 3+ columns = full score, 1 column = low score, 0 = 0
+                if col_count >= 3:
+                    col_score = 1.0
+                elif col_count == 2:
+                    col_score = 0.6
+                elif col_count == 1:
+                    col_score = 0.2
+                else:
+                    col_score = 0.0
+
+                score = numeric_score * NUMERIC_WEIGHT + col_score * COLUMN_WEIGHT
+                scored.append((score, p))
+
+    except Exception:
+        return []
+
     scored.sort(reverse=True, key=lambda x: x[0])
     return [p for _, p in scored[:top_n]]
 
