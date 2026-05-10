@@ -1,6 +1,6 @@
 # Auto Density-Scan Recovery Channel Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** When standard extraction produces low-quality output (too few items or missing key fields), the system automatically scans every page of the PDF using density scoring, discovers the correct data pages, recovers numeric values via word-level extraction, and replaces the failed output — all without any manual intervention.
 
@@ -31,7 +31,7 @@
 - Modify: `extraction/word_recovery.py` (add `score_page_density` function)
 - Test: `tests/test_word_recovery.py` (add `TestScorePageDensity` class)
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```python
 class TestScorePageDensity:
@@ -71,12 +71,12 @@ class TestScorePageDensity:
             assert any(s > 0 for s in scores), "No page scored above 0 — density scoring broken"
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pytest tests/test_word_recovery.py::TestScorePageDensity -v`
 Expected: FAIL with "score_page_density not defined"
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Add this function to `extraction/word_recovery.py` after the imports section:
 
@@ -140,12 +140,12 @@ def get_page_count(pdf_path: str) -> int:
         return len(pdf.pages)
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pytest tests/test_word_recovery.py::TestScorePageDensity -v`
 Expected: PASS (may skip if PDF not present — use `pytest -v --ignore-missing`)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add extraction/word_recovery.py tests/test_word_recovery.py
@@ -160,7 +160,7 @@ git commit -m "feat: add score_page_density() for auto page discovery"
 - Modify: `extraction/word_recovery.py` — rewrite `find_data_pages()`
 - Modify: `tests/test_word_recovery.py` — add `TestFindDataPagesAuto` class
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```python
 class TestFindDataPagesAuto:
@@ -201,12 +201,12 @@ class TestFindDataPagesAuto:
             assert all(50 <= p < 80 for p in pages)
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pytest tests/test_word_recovery.py::TestFindDataPagesAuto -v`
 Expected: FAIL — `find_data_pages` still uses old logic
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Replace the existing `find_data_pages()` function in `extraction/word_recovery.py` with this version:
 
@@ -244,12 +244,12 @@ def find_data_pages(
     return [p for _, p in scored[:top_n]]
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pytest tests/test_word_recovery.py::TestFindDataPagesAuto -v`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add extraction/word_recovery.py tests/test_word_recovery.py
@@ -265,7 +265,7 @@ git commit -m "feat: rewrite find_data_pages() with density scoring — removes 
 - Modify: `extraction/word_recovery.py` — add `recover_statement_auto()` function
 - Create: `tests/test_auto_recovery.py` — integration tests for the quality gate
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```python
 # tests/test_auto_recovery.py
@@ -302,12 +302,12 @@ class TestQualityGate:
         pytest.skip("Requires known failing PDF — run manually")
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pytest tests/test_auto_recovery.py -v`
 Expected: FILE NOT FOUND (test file doesn't exist yet)
 
-- [ ] **Step 3: Add `recover_statement_auto()` to word_recovery.py**
+- [x] **Step 3: Add `recover_statement_auto()` to word_recovery.py**
 
 Add this new function after `find_data_pages()`:
 
@@ -363,7 +363,7 @@ def recover_statement_auto(
     return data
 ```
 
-- [ ] **Step 4: Add quality gate to `BaseExtractor._do_extract()` in base.py**
+- [x] **Step 4: Add quality gate to `BaseExtractor._do_extract()` in base.py**
 
 Find the `_do_extract()` method in `extraction/extractors/base.py` (around line 55-96).
 After the existing return statement (after building the result dict), add a quality-check step.
@@ -418,12 +418,12 @@ def _do_extract(self, parser: PdfParser, discovered_pages: List[int] = None) -> 
 
 You will also need to add `import os` at the top of base.py if not already present.
 
-- [ ] **Step 5: Run tests**
+- [x] **Step 5: Run tests**
 
 Run: `pytest tests/test_auto_recovery.py tests/test_word_recovery.py -v`
 Expected: PASS
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add extraction/extractors/base.py extraction/word_recovery.py tests/test_auto_recovery.py
@@ -438,7 +438,7 @@ git commit -m "feat: add auto-recovery quality gate in BaseExtractor — transpa
 - Modify: `extraction/parsers/html_converter.py` — update `is_garbled_text()`
 - Test: `tests/test_garbled_detection.py` — new file
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```python
 # tests/test_garbled_detection.py
@@ -481,12 +481,12 @@ class TestIsGarbledText:
         # After fix: should return True (page is still mostly garbled)
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pytest tests/test_garbled_detection.py -v`
 Expected: At least one assertion fails on the mixed_garbled case
 
-- [ ] **Step 3: Write improved implementation**
+- [x] **Step 3: Write improved implementation**
 
 Replace the `is_garbled_text()` function in `extraction/parsers/html_converter.py` (starting at line 156):
 
@@ -563,12 +563,12 @@ def is_garbled_text(text: str) -> bool:
     return False
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pytest tests/test_garbled_detection.py -v`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add extraction/parsers/html_converter.py tests/test_garbled_detection.py
@@ -582,7 +582,7 @@ git commit -m "feat: improve is_garbled_text() with line-level replacement detec
 **Files:**
 - Create: `tests/test_full_recovery_pipeline.py`
 
-- [ ] **Step 1: Write integration test**
+- [x] **Step 1: Write integration test**
 
 ```python
 # tests/test_full_recovery_pipeline.py
@@ -633,12 +633,12 @@ class TestFullRecoveryPipeline:
             assert len(values) > 0, "Recovered data contains no financially-scaled values"
 ```
 
-- [ ] **Step 2: Run test**
+- [x] **Step 2: Run test**
 
 Run: `pytest tests/test_full_recovery_pipeline.py -v`
 Expected: PASS for standard PDFs; may skip for failing PDFs not present
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add tests/test_full_recovery_pipeline.py
@@ -652,7 +652,7 @@ git commit -m "test: add full recovery pipeline integration tests"
 **Files:**
 - Modify: `extraction/word_recovery.py` — refactor `recover_all_failing()` to use `recover_statement_auto()`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```python
 def test_recover_all_failing_uses_auto_scan():
@@ -666,12 +666,12 @@ def test_recover_all_failing_uses_auto_scan():
     assert "recover_statement_auto" in source
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pytest tests/test_word_recovery.py::TestRecoverAllFailing::test_recover_all_failing_uses_auto_scan -v`
 Expected: FAIL — still uses hardcoded pages
 
-- [ ] **Step 3: Rewrite `recover_all_failing()`**
+- [x] **Step 3: Rewrite `recover_all_failing()`**
 
 Replace the function body of `recover_all_failing()` (lines 328-383) with:
 
@@ -732,12 +732,12 @@ def recover_all_failing(verbose: bool = True) -> Dict:
     return results
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pytest tests/test_word_recovery.py::TestRecoverAllFailing::test_recover_all_failing_uses_auto_scan -v`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add extraction/word_recovery.py
