@@ -367,6 +367,9 @@ def save_recovered_data(
         "page_data": data.get("page_data", {}),
         "stats": data.get("stats", {}),
         "recovery_method": data.get("recovery_method", "word_extraction"),
+        "label_confidence": data.get("label_confidence"),
+        "label_match_method": data.get("label_match_method"),
+        "label_map": data.get("label_map", []),
         "extracted_at": "word_recovery",
     }
     store.save(stock_code, year, statement_type, record)

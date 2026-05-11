@@ -159,11 +159,12 @@ def recover_labels(
                     key = f"p{page_idx}_r{row_idx}_c{col_idx}"
                     if key in flat_data:
                         val = flat_data[key]
-                        labeled_flat[label] = val
+                        col_label = f"{label}_c{col_idx}" if col_idx > 0 else label
+                        labeled_flat[col_label] = val
                         is_primary = abs(val) >= MIN_PRIMARY_VALUE
                         label_map.append({
                             "original_key": key,
-                            "label": label,
+                            "label": col_label,
                             "value": val,
                             "is_primary": is_primary,
                             "confidence": conf,
@@ -182,16 +183,17 @@ def recover_labels(
                     if val is None:
                         continue
                     key = f"p{page_idx}_r{row_idx}_c{col_idx}"
-                    if key not in labeled_flat:
-                        labeled_flat[label] = val
-                        is_primary = abs(val) >= MIN_PRIMARY_VALUE
-                        label_map.append({
-                            "original_key": key,
-                            "label": label,
-                            "value": val,
-                            "is_primary": is_primary,
-                            "confidence": 0.7,
-                        })
+                    # Use col_idx in key to avoid overwriting multi-column values
+                    col_label = f"{label}_c{col_idx}" if col_idx > 0 else label
+                    labeled_flat[col_label] = val
+                    is_primary = abs(val) >= MIN_PRIMARY_VALUE
+                    label_map.append({
+                        "original_key": key,
+                        "label": col_label,
+                        "value": val,
+                        "is_primary": is_primary,
+                        "confidence": 0.7,
+                    })
         if labeled_flat and match_method == "none":
             match_method = "template"
 
