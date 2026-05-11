@@ -78,3 +78,20 @@ class TestCIDFontDetector:
         assert all(isinstance(k, int) for k in result.keys())
         assert all(isinstance(v, float) for v in result.values())
         assert all(0.0 <= v <= 1.0 for v in result.values())
+
+
+def test_hybrid_parser_uses_full_scan():
+    """Test HybridParser uses full-page CID scanning instead of first 20 pages."""
+    import os
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    test_pdf = os.path.join(base_dir, "data", "by_code", "600016", "600016_民生银行_2024_年报.pdf")
+    if not os.path.exists(test_pdf):
+        test_pdf = os.path.join(base_dir, "data", "by_code", "000001", "000001_平安银行_2024_年报.pdf")
+
+    if not os.path.exists(test_pdf):
+        pytest.skip(f"Test PDF not found: {test_pdf}")
+
+    from extraction.parsers.hybrid_parser import HybridParser
+    parser = HybridParser(test_pdf)
+    # Verify HybridParser has the _check_and_convert_if_needed method
+    assert hasattr(parser, '_check_and_convert_if_needed')

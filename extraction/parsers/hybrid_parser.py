@@ -101,13 +101,11 @@ class HybridParser:
             self._initialize_pymupdf()
             return
 
-        # 检查多个页面，如果任何一页检测到乱码就切换解析器
-        # CID字体的乱码可能在某些页面上特别明显
-        garbled_pages = []
-        for page_num in range(min(20, self._pdf_parser.page_count)):
-            page_text = self._pdf_parser.extract_text(page_num)
-            if len(page_text) > 50 and is_garbled_text(page_text):
-                garbled_pages.append(page_num)
+        # 使用全页CID扫描检测乱码页面
+        from extraction.cid_detector import CIDFontDetector
+        detector = CIDFontDetector()
+        cid_scores = detector.scan_all_pages(self.pdf_path)
+        garbled_pages = [p for p, score in cid_scores.items() if score > 0.15]
 
         if garbled_pages:
             print(f"pdfplumber检测到{len(garbled_pages)}页乱码(页{garbled_pages[:5]}...)，尝试PyMuPDF...")
