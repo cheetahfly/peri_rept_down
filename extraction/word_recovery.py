@@ -471,10 +471,13 @@ def recover_statement_auto(
     data = recover_statement(pdf_path, candidate_pages)
 
     # Validate: check that recovered data has financial-scale values
+    # NOTE: We no longer require at least 3 large values (>1000) here,
+    # because recovered data may be in 万元 units (small numbers) while still valid.
+    # The is_primary flag in recover_labels() handles separating small footnote
+    # values from large primary items. Validation here was too strict.
     if data.get("found"):
         values = list(data.get("data", {}).values())
-        large_values = [v for v in values if abs(v) > 1000]
-        if len(large_values) < 3:
+        if len(values) == 0:
             data["found"] = False
             data["validation_failed"] = True
 
