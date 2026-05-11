@@ -83,3 +83,168 @@ TEMPLATE_MAP = {
 def _load_template(statement_type: str) -> List[str]:
     """Return standard template item list for the statement type."""
     return TEMPLATE_MAP.get(statement_type, [])
+
+
+# =============================================================================
+# Constants
+# =============================================================================
+
+Y_TOLERANCE = 15.0          # max y-distance (points) for reference row matching
+MIN_PRIMARY_VALUE = 1000.0  # minimum |value| for primary item label
+
+
+# =============================================================================
+# Core Label Recovery
+# =============================================================================
+
+def recover_labels(
+    recovered_data: Dict,
+    reference_data: Optional[Dict] = None,
+    statement_type: Optional[str] = None,
+) -> Dict:
+    """
+    Recover financial item labels from position-based keys.
+
+    Args:
+        recovered_data: output from recover_statement() with position-keyed flat_data
+        reference_data: successfully extracted data of same company/year, or None
+        statement_type: "balance_sheet" | "income_statement" | "cash_flow"
+
+    Returns:
+        {
+            "flat_data": {"经营活动产生的现金流量净额": 285449.0, ...},
+            "label_map": [{"original_key": "p0_r0_c0", "label": "...", ...}],
+            "confidence": 0.85,
+            "match_method": "reference" | "template" | "none",
+        }
+    """
+    flat_data = recovered_data.get("data", {})
+    page_data = recovered_data.get("page_data", {})
+
+    # Collect all rows with y_positions from recovered data
+    recovered_rows = []
+    for page_str, page_info in page_data.items():
+        page_idx = int(page_str) if page_str.isdigit() else 0
+        for row_info in page_info.get("rows", []):
+            row_info_copy = dict(row_info)
+            row_info_copy["page"] = page_idx
+            recovered_rows.append(row_info_copy)
+
+    label_map: List[Dict] = []
+    labeled_flat: Dict = {}
+    total_confidence = 0.0
+    match_method = "none"
+
+    # Layer 1: Try reference PDF matching (highest priority)
+    if reference_data is not None:
+        ref_page_data = reference_data.get("page_data", {})
+        ref_rows = []
+        for page_str, page_info in ref_page_data.items():
+            for row_info in page_info.get("rows", []):
+                row_info_copy = dict(row_info)
+                row_info_copy["page"] = int(page_str) if page_str.isdigit() else 0
+                # Find label from reference flat_data
+                ref_flat = reference_data.get("data", {})
+                for lbl, val in ref_flat.items():
+                    if isinstance(val, (int, float)) and val in row_info.get("values", []):
+                        row_info_copy["label"] = lbl
+                        break
+                ref_rows.append(row_info_copy)
+
+        if ref_rows and recovered_rows:
+            ref_matches = _match_by_y_position(recovered_rows, ref_rows, y_tolerance=Y_TOLERANCE)
+            if ref_matches:
+                match_method = "reference"
+                for (page_idx, row_idx, col_idx), (label, conf) in ref_matches.items():
+                    key = f"p{page_idx}_r{row_idx}_c{col_idx}"
+                    if key in flat_data:
+                        val = flat_data[key]
+                        labeled_flat[label] = val
+                        is_primary = abs(val) >= MIN_PRIMARY_VALUE
+                        label_map.append({
+                            "original_key": key,
+                            "label": label,
+                            "value": val,
+                            "is_primary": is_primary,
+                            "confidence": conf,
+                        })
+
+    # Layer 2: Template matching (fill in remaining keys or fallback)
+    if statement_type and not labeled_flat:
+        template = _load_template(statement_type)
+        for page_str, page_info in page_data.items():
+            page_idx = int(page_str) if page_str.isdigit() else 0
+            for row_info in page_info.get("rows", []):
+                row_idx = row_info["row"]
+                values = row_info["values"]
+                label = template[row_idx] if row_idx < len(template) else f"行{row_idx}"
+                for col_idx, val in enumerate(values):
+                    if val is None:
+                        continue
+                    key = f"p{page_idx}_r{row_idx}_c{col_idx}"
+                    if key not in labeled_flat:
+                        labeled_flat[label] = val
+                        is_primary = abs(val) >= MIN_PRIMARY_VALUE
+                        label_map.append({
+                            "original_key": key,
+                            "label": label,
+                            "value": val,
+                            "is_primary": is_primary,
+                            "confidence": 0.7,
+                        })
+        if labeled_flat and match_method == "none":
+            match_method = "template"
+
+    # Graceful degradation: if nothing matched, keep original position keys
+    if not labeled_flat:
+        labeled_flat = flat_data
+        match_method = "none"
+        total_confidence = 0.0
+    else:
+        total_confidence = sum(e["confidence"] for e in label_map) / len(label_map) if label_map else 0.0
+
+    return {
+        "flat_data": labeled_flat,
+        "label_map": label_map,
+        "confidence": total_confidence,
+        "match_method": match_method,
+    }
+
+
+def _match_by_y_position(
+    recovered_rows: List[Dict],
+    reference_rows: List[Dict],
+    y_tolerance: float = 15.0,
+) -> Dict:
+    """
+    Match recovered rows to reference rows by y-position.
+
+    Args:
+        recovered_rows: list of {"row": int, "values": [float], "y_position": float, "page": int}
+        reference_rows: list of {"row": int, "values": [float], "y_position": float, "page": int, "label": str}
+        y_tolerance: max y-distance for a match (points)
+
+    Returns:
+        Dict mapping (page_idx, row_idx, col_idx) → (label, confidence=1.0)
+    """
+    matches: Dict = {}
+    for rec_row in recovered_rows:
+        rec_y = rec_row.get("y_position", 0.0)
+        rec_row_idx = rec_row["row"]
+        best_label = None
+        best_dist = float("inf")
+
+        for ref_row in reference_rows:
+            ref_y = ref_row.get("y_position", 0.0)
+            dist = abs(rec_y - ref_y)
+            if dist <= y_tolerance and dist < best_dist:
+                best_dist = dist
+                best_label = ref_row.get("label")
+
+        if best_label:
+            for col_idx, val in enumerate(rec_row.get("values", [])):
+                if val is not None:
+                    key = (rec_row.get("page", 0), rec_row_idx, col_idx)
+                    matches[key] = (best_label, 1.0)
+
+    return matches
