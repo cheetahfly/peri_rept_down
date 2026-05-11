@@ -180,7 +180,7 @@ def is_garbled_text(text: str) -> bool:
     replacement_char = '�'
     replacement_count = text.count(replacement_char)
     replacement_ratio = replacement_count / total_chars if total_chars > 0 else 0
-    if replacement_ratio > 0.3:
+    if replacement_ratio > 0.15:
         return True
 
     # Strategy 2: Low Chinese + weird chars (conventional garble)
@@ -191,7 +191,7 @@ def is_garbled_text(text: str) -> bool:
             if c not in " \n\t中文英文数字0123456789.,()+-/*=：:;{}[]%元万元亿元"
         )
         weird_ratio = weird_chars / total_chars
-        if weird_ratio > 0.3:
+        if weird_ratio > 0.15:
             return True
 
     # Strategy 3: High Chinese but no financial keywords + high weird ratio
