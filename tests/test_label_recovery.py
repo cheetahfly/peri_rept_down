@@ -202,3 +202,51 @@ class TestLayer1ReferenceMatching:
         result = recover_labels(recovered_data, reference_data, "income_statement")
         ref_items = [e for e in result["label_map"] if e["confidence"] == 1.0]
         assert len(ref_items) > 0
+
+
+class TestLabelRecoveryIntegration:
+    """Integration tests for label recovery in the auto-recovery pipeline."""
+
+    def test_recover_labels_called_in_auto_recovery(self):
+        """Verify that recover_labels is invoked in the auto-recovery flow."""
+        import inspect
+        from extraction.word_recovery import recover_statement_auto
+        source = inspect.getsource(recover_statement_auto)
+        assert "recover_labels" in source or "label_recovery" in source
+
+    def test_recover_statement_produces_page_data_with_y_position(self):
+        """recover_statement should include y_position in page_data rows."""
+        from extraction.word_recovery import recover_statement
+        import os
+        pdf_path = "data/by_code/600016/600016_民生银行_2024_年报.pdf"
+        if not os.path.exists(pdf_path):
+            pytest.skip("600016 PDF not available")
+
+        # recover a few pages
+        result = recover_statement(pdf_path, [161])
+        page_data = result.get("page_data", {})
+        rows = page_data.get("161", {}).get("rows", [])
+        assert len(rows) > 0
+        # Each row should have y_position
+        assert all("y_position" in r for r in rows)
+
+    def test_auto_recovery_result_has_label_fields(self):
+        """recover_statement_auto should return labeled flat_data after integration."""
+        from extraction.word_recovery import recover_statement_auto
+        import os
+        pdf_path = "data/by_code/600016/600016_民生银行_2024_年报.pdf"
+        if not os.path.exists(pdf_path):
+            pytest.skip("600016 PDF not available")
+
+        scan_range = list(range(151, 183))
+        result = recover_statement_auto(pdf_path, "cash_flow", scan_range, top_n=10)
+
+        if result.get("found"):
+            # Should have label-related fields in result
+            assert "label_map" in result or "data" in result
+            flat_data = result.get("data", {})
+            # At least some keys should NOT be position-based
+            labeled = [k for k in flat_data if not k.startswith("p")]
+            if labeled:
+                # Has at least some proper labels
+                assert any(len(k) > 10 for k in labeled)

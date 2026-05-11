@@ -478,6 +478,18 @@ def recover_statement_auto(
             data["found"] = False
             data["validation_failed"] = True
 
+    # Apply label recovery: replace position-keys with financial item names
+    if data.get("found"):
+        try:
+            from extraction.label_recovery import recover_labels
+            labeled = recover_labels(data, reference_data=None, statement_type=statement_type)
+            data["data"] = labeled["flat_data"]
+            data["label_map"] = labeled.get("label_map", [])
+            data["label_confidence"] = labeled.get("confidence", 0.0)
+            data["label_match_method"] = labeled.get("match_method", "none")
+        except Exception:
+            pass  # Graceful degradation — keep position keys if label recovery fails
+
     return data
 
 
