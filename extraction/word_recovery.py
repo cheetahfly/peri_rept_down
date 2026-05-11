@@ -315,7 +315,11 @@ def recover_statement(pdf_path: str, pages: List[int]) -> Dict:
         page_rows = []
         for r in result.get("rows", []):
             vals = [v for v in r["values"] if v is not None]
-            page_rows.append({"row": r.get("row_idx", 0), "values": vals})
+            page_rows.append({
+                "row": r.get("row_idx", 0),
+                "values": vals,
+                "y_position": r.get("y", 0.0),
+            })
             for j, v in enumerate(vals):
                 flat_data[f"p{p}_r{r.get('row_idx',0)}_c{j}"] = v
 
