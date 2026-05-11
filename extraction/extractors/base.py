@@ -101,7 +101,7 @@ class BaseExtractor(ABC):
         min_items = min_items_for_quality.get(self.STATEMENT_TYPE, 5)
 
         if found_items < min_items:
-            from extraction.word_recovery import recover_statement_auto
+            from extraction.semantic_recovery import SemanticRecovery
             import os as _os
 
             pdf_path = getattr(parser, "pdf_path", None) or getattr(parser, "_pdf_path", None)
@@ -125,14 +125,16 @@ class BaseExtractor(ABC):
                     else:
                         scan_range = list(range(total_pages))
 
-                    recovered = recover_statement_auto(
-                        pdf_path, self.STATEMENT_TYPE, scan_range, top_n=10
+                    # Use new semantic recovery
+                    recovery = SemanticRecovery()
+                    recovered = recovery.recover_from_html(
+                        pdf_path, scan_range, self.STATEMENT_TYPE
                     )
-                    if recovered.get("found"):
-                        result["data"] = recovered.get("data", {})
+                    if recovered:
+                        result["data"] = recovered
                         result["recovered"] = True
-                        result["recovery_method"] = recovered.get("recovery_method", "auto")
-                        result["pages"] = recovered.get("pages", section_pages)
+                        result["recovery_method"] = "semantic"
+                        result["pages"] = scan_range
 
         return result
 
