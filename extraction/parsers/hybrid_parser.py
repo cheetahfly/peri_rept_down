@@ -12,6 +12,7 @@
 """
 
 import os
+import re
 import tempfile
 import shutil
 from typing import List, Optional, Tuple
@@ -224,6 +225,60 @@ class HybridParser:
         """当前使用的解析方法"""
         return self._parsing_method
 
+    def _get_lo_page_text(self, page_num: int) -> str:
+        """
+        从LO HTML中提取指定页面的文本
+
+        Args:
+            page_num: 页码（从0开始）
+
+        Returns:
+            页面文本内容
+        """
+        if not self._lo_parser or not self._lo_parser.soup:
+            return ""
+        soup = self._lo_parser.soup
+        all_content = soup.find_all(["p", "h1", "h2", "h3", "h4", "span", "div"])
+        pages_text = []
+        current_page = []
+        for elem in all_content:
+            style = elem.get("style") or ""
+            if elem.name == "h1" and "page-break" in style:
+                if current_page:
+                    pages_text.append("\n".join(current_page))
+                    current_page = []
+            txt = elem.get_text(strip=True)
+            if txt:
+                current_page.append(txt)
+        if current_page:
+            pages_text.append("\n".join(current_page))
+        if 0 <= page_num < len(pages_text):
+            return pages_text[page_num]
+        return "" if not pages_text else pages_text[-1] if page_num >= len(pages_text) else ""
+
+    def _parse_text_to_tables(self, text: str) -> List[pd.DataFrame]:
+        """将文本按空白分割解析为表格"""
+        if not text:
+            return []
+        lines = text.split("\n")
+        tables = []
+        current_table = []
+        for line in lines:
+            line = line.strip()
+            if not line:
+                if current_table and len(current_table) >= 3:
+                    df = pd.DataFrame(current_table)
+                    tables.append(df)
+                    current_table = []
+                continue
+            parts = re.split(r"\s{2,}", line)
+            if len(parts) >= 2:
+                current_table.append(parts)
+        if current_table and len(current_table) >= 3:
+            df = pd.DataFrame(current_table)
+            tables.append(df)
+        return tables
+
     def extract_text(self, page_num: int) -> str:
         """
         提取页面文本
@@ -235,6 +290,8 @@ class HybridParser:
             页面文本内容
         """
         self._initialize()
+        if self._use_lo and self._lo_parser:
+            return self._get_lo_page_text(page_num)
         if self._use_pymupdf and self._pymupdf_parser:
             return self._pymupdf_parser.extract_text(page_num)
         if self._use_html and self._html_parser:
@@ -256,6 +313,10 @@ class HybridParser:
             表格DataFrame列表
         """
         self._initialize()
+        if self._use_lo and self._lo_parser:
+            text = self._get_lo_page_text(page_num)
+            tables = self._parse_text_to_tables(text)
+            return [t for t in tables if t.shape[0] >= min_rows and t.shape[1] >= min_cols]
         # PyMuPDF doesn't support table extraction, fall back to pdfplumber for tables
         if self._use_pymupdf and self._pymupdf_parser:
             tables = self._pdf_parser.extract_tables(page_num, min_rows, min_cols)
@@ -264,6 +325,26 @@ class HybridParser:
         if self._use_html and self._html_parser:
             return self._html_parser.extract_tables(page_num, min_rows, min_cols)
         return self._pdf_parser.extract_tables(page_num, min_rows, min_cols)
+
+    def extract_text_tables(self, page_num: int) -> List[pd.DataFrame]:
+        """
+        基于文本解析提取表格（备选方法，用于表格提取失败时）
+
+        Args:
+            page_num: 页码（从0开始）
+
+        Returns:
+            表格DataFrame列表
+        """
+        self._initialize()
+        if self._use_lo and self._lo_parser:
+            text = self._get_lo_page_text(page_num)
+            return self._parse_text_to_tables(text)
+        if self._use_html and self._html_parser:
+            return self._html_parser.extract_text_tables(page_num)
+        if self._use_pymupdf and self._pymupdf_parser:
+            return self._pdf_parser.extract_text_tables(page_num)
+        return self._pdf_parser.extract_text_tables(page_num)
 
     def find_pages(
         self, keywords: List[str], case_sensitive: bool = False
@@ -279,6 +360,13 @@ class HybridParser:
             匹配的页码列表
         """
         self._initialize()
+        if self._use_lo and self._lo_parser and self._lo_parser.soup:
+            all_text = self._lo_parser.soup.get_text()
+            kw_list = [k.lower() for k in keywords] if not case_sensitive else keywords
+            full_text_lower = all_text.lower() if not case_sensitive else all_text
+            if any(kw in full_text_lower for kw in kw_list):
+                return [0]
+            return []
         if self._use_pymupdf and self._pymupdf_parser:
             return self._pymupdf_parser.find_pages(keywords, case_sensitive)
         if self._use_html and self._html_parser:
@@ -297,6 +385,11 @@ class HybridParser:
             合并后的文本
         """
         self._initialize()
+        if self._use_lo and self._lo_parser:
+            texts = []
+            for p in range(start_page, end_page + 1):
+                texts.append(self._get_lo_page_text(p))
+            return "\n".join(texts)
         if self._use_pymupdf and self._pymupdf_parser:
             return self._pymupdf_parser.extract_text_range(start_page, end_page)
         if self._use_html and self._html_parser:
@@ -315,6 +408,8 @@ class HybridParser:
             页码列表
         """
         self._initialize()
+        if self._use_lo and self._lo_parser:
+            return list(range(start_page, end_page + 1))
         if self._use_pymupdf and self._pymupdf_parser:
             return self._pymupdf_parser.get_pages_range(start_page, end_page)
         if self._use_html and self._html_parser:
@@ -329,6 +424,8 @@ class HybridParser:
             合并后的所有文本
         """
         self._initialize()
+        if self._use_lo and self._lo_parser and self._lo_parser.soup:
+            return self._lo_parser.soup.get_text()
         if self._use_pymupdf and self._pymupdf_parser:
             return self._pymupdf_parser.extract_all_text()
         if self._use_html and self._html_parser:
@@ -336,7 +433,8 @@ class HybridParser:
         return self._pdf_parser.extract_all_text()
 
     def extract_tables_with_continuation(
-        self, page_num: int, prev_table: pd.DataFrame = None, prev_columns: list = None
+        self, page_num: int, prev_table: pd.DataFrame = None, prev_columns: list = None,
+        prefer_text_parse: bool = False
     ) -> Tuple[List[pd.DataFrame], Optional[pd.DataFrame], Optional[list]]:
         """
         提取页面表格，并处理跨页表格延续
@@ -350,6 +448,9 @@ class HybridParser:
             (当前页表格列表, 延续到下一页的表格, 延续到下一页的列标题)
         """
         self._initialize()
+        if self._use_lo and self._lo_parser:
+            tables = self.extract_tables(page_num)
+            return tables, None, None
         # PyMuPDF doesn't support table extraction, fall back to pdfplumber for tables
         # Use prefer_text_parse=True for complex financial tables
         if self._use_pymupdf and self._pymupdf_parser:

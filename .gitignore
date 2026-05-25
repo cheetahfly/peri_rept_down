@@ -106,3 +106,7 @@ PROGRESS_*.md
 PROGRESS_*.json
 PROJECT_ARCHIVE.*
 README_PROGRESS.md
+
+# Generated / cache data
+temp_eastmoney/lo_output/
+data/stock_list.json

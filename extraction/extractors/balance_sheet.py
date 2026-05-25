@@ -111,13 +111,27 @@ class BalanceSheetExtractor(BaseExtractor):
         return count
 
     def _find_total_by_pattern(self, items: Dict, pattern_key: str) -> Optional[float]:
-        """根据模式查找合计项"""
+        """根据模式查找合计项，优先精确匹配而非子串匹配"""
         patterns = self.KEY_ITEM_PATTERNS.get(pattern_key, [])
+        candidates = []
         for key in items.keys():
             for pattern in patterns:
                 if re.search(pattern, key):
-                    return items[key]
-        return None
+                    # Score: exact match = 0, starts_with = len(prefix), substring = large
+                    stripped = pattern.replace(r"\.\*", "").replace(".*", "")
+                    stripped = re.sub(r"[\(（].*?[\)）]", "", stripped)
+                    stripped = re.sub(r"[\\^$*+?.()|{}\[\]]", "", stripped)
+                    if key == stripped:
+                        score = -1  # exact match wins
+                    elif key.startswith(stripped):
+                        score = len(key) - len(stripped)
+                    else:
+                        score = 100 + key.index(stripped) if stripped in key else 999
+                    candidates.append((score, key, items[key]))
+        if not candidates:
+            return None
+        candidates.sort(key=lambda x: x[0])
+        return candidates[0][2]
 
     def _find_total(self, items: Dict, keywords: List[str]) -> float:
         """查找合计项"""

@@ -32,14 +32,10 @@ jobs:
         sudo apt-get install -y tesseract-ocr tesseract-ocr-chi-sim
     
     - name: Run regression tests
-      run: |
-        cd /mnt/f/ai_fin_proj/peri_rept_down
-        python tests/test_regression.py
+      run: python tests/test_regression.py
 
     - name: Run expansion tests
-      run: |
-        cd /mnt/f/ai_fin_proj/peri_rept_down
-        python tests/test_expansion.py --no-report || true
+      run: python tests/test_expansion.py --no-report || true
     - name: Upload test results
       uses: actions/upload-artifact@v4
       if: always()

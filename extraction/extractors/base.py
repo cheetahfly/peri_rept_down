@@ -222,7 +222,7 @@ class BaseExtractor(ABC):
             r'[一二三四五六七八]、.{0,15}(经营|投资|筹资)活动.{0,30}(现金|流量|净额)'
         )
 
-        for page_num in range(len(parser.doc.pages)):
+        for page_num in range(parser.page_count):
             text = parser.extract_text(page_num)
             if section_pattern.search(text):
                 # 进一步验证：页面应该包含数字（财务数据）
@@ -254,7 +254,7 @@ class BaseExtractor(ABC):
             r'\s*[\d,]+(?:\.\d+)?(?:\s|$|\n)'
         )
 
-        for page_num in range(len(parser.doc.pages)):
+        for page_num in range(parser.page_count):
             text = parser.extract_text(page_num)
             if section_pattern.search(text):
                 extra.append(page_num)
