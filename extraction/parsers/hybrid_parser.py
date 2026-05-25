@@ -326,26 +326,6 @@ class HybridParser:
             return self._html_parser.extract_tables(page_num, min_rows, min_cols)
         return self._pdf_parser.extract_tables(page_num, min_rows, min_cols)
 
-    def extract_text_tables(self, page_num: int) -> List[pd.DataFrame]:
-        """
-        基于文本解析提取表格（备选方法，用于表格提取失败时）
-
-        Args:
-            page_num: 页码（从0开始）
-
-        Returns:
-            表格DataFrame列表
-        """
-        self._initialize()
-        if self._use_lo and self._lo_parser:
-            text = self._get_lo_page_text(page_num)
-            return self._parse_text_to_tables(text)
-        if self._use_html and self._html_parser:
-            return self._html_parser.extract_text_tables(page_num)
-        if self._use_pymupdf and self._pymupdf_parser:
-            return self._pdf_parser.extract_text_tables(page_num)
-        return self._pdf_parser.extract_text_tables(page_num)
-
     def find_pages(
         self, keywords: List[str], case_sensitive: bool = False
     ) -> List[int]:
@@ -431,6 +411,26 @@ class HybridParser:
         if self._use_html and self._html_parser:
             return self._html_parser.extract_all_text()
         return self._pdf_parser.extract_all_text()
+
+    def extract_text_tables(self, page_num: int) -> List[pd.DataFrame]:
+        """
+        基于文本解析提取表格（备选方法，用于表格提取失败时）
+
+        Args:
+            page_num: 页码（从0开始）
+
+        Returns:
+            表格DataFrame列表
+        """
+        self._initialize()
+        if self._use_lo and self._lo_parser:
+            text = self._get_lo_page_text(page_num)
+            return self._parse_text_to_tables(text)
+        if self._use_html and self._html_parser:
+            return self._html_parser.extract_text_tables(page_num)
+        if self._use_pymupdf and self._pymupdf_parser:
+            return self._pdf_parser.extract_text_tables(page_num)
+        return self._pdf_parser.extract_text_tables(page_num)
 
     def extract_tables_with_continuation(
         self, page_num: int, prev_table: pd.DataFrame = None, prev_columns: list = None,

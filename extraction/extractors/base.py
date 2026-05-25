@@ -156,13 +156,43 @@ class BaseExtractor(ABC):
         if not candidate_pages:
             return []
 
+        # 页面距离约束：仅包含第一个候选页附近有限范围的页面
+        # 排除距首候选页过远的页面（通常是附注页被误匹配）
+        first_page = candidate_pages[0]
+        MAX_SPREAD = 8
+
+        # 对于CID字体PDF，find_pages可能在早期页面误匹配关键词（如管理层分析表格含"利润表"）
+        # 优先用含有严格section header（独立标题行，而非嵌入在段落中）的候选页作为锚点
+        # 注意：不能使用_text_has_section_header（含宽松fallback），需用纯行首匹配
+        # layout=True会在文本前后填充空格，因此需\s*处理行首行尾空白
+        section_prefix = r'(?:\d+[\.、]?\s*)?'
+        anchor_kws = SECTION_KEYWORDS.get(self.STATEMENT_TYPE, [])
+        for p in candidate_pages:
+            text = parser.extract_text(p)
+            if not text:
+                continue
+            if any(re.search(rf'^\s*{section_prefix}{re.escape(kw)}\s*$', text, re.MULTILINE)
+                   for kw in anchor_kws):
+                first_page = p
+                break
+
+        filtered_pages = [p for p in candidate_pages if abs(p - first_page) <= MAX_SPREAD]
+        if filtered_pages:
+            candidate_pages = filtered_pages
+
         real_pages = []
         for page_num in candidate_pages:
             # 提取页面文本进行附注页检测
             page_text = parser.extract_text(page_num)
 
-            # 排除附注页：页面开头包含"附注"字样的页面不参与报表正文
+            # 排除附注页：页面包含"财务报表附注"等字幕
             if self._is_appendix_page(page_text):
+                continue
+
+            # 优先检查页面是否包含明确的section header（如"合并利润表"）
+            # 某些CID字体PDF无法提取表格，但文本中包含表头关键词
+            if self._text_has_section_header(page_text):
+                real_pages.append(page_num)
                 continue
 
             tables = parser.extract_tables(page_num, min_rows=5, min_cols=2)
@@ -174,11 +204,16 @@ class BaseExtractor(ABC):
                         if self._is_valid_table(table):
                             real_pages.append(page_num)
                             break
-                # 即使没有表格，也检查页面文本是否包含section header
-                # （某些PDF的表格无法被pdfplumber提取，但关键词已在页眉）
+                # 如果本节表未能提取到表格，也检查是否包含报表科目关键词
+                # （CID字体PDF的表格可能完全无法被pdfplumber解析）
                 if page_num not in real_pages:
                     if self._text_has_section_header(page_text):
                         real_pages.append(page_num)
+                    elif self.STATEMENT_ITEMS:
+                        # 最后兜底：检查页面是否包含报表科目关键词
+                        has_stmt_keywords = any(kw in page_text for kw in self.STATEMENT_ITEMS[:5])
+                        if has_stmt_keywords and len(page_text) > 500:
+                            real_pages.append(page_num)
             else:
                 for table in tables:
                     if self._is_valid_table(table):
@@ -190,15 +225,81 @@ class BaseExtractor(ABC):
         if self.STATEMENT_TYPE == "cash_flow":
             extra_pages = self._find_cf_continuation_pages(parser)
             for p in extra_pages:
-                if p not in real_pages:
-                    real_pages.append(p)
+                if p not in real_pages and abs(p - first_page) <= MAX_SPREAD:
+                    # 对延续页也要做附注页检查，避免IS页（含有BS关键词的）被加入BS
+                    text = parser.extract_text(p)
+                    if text and not self._is_appendix_page(text):
+                        real_pages.append(p)
             real_pages.sort()
         elif self.STATEMENT_TYPE == "balance_sheet":
             extra_pages = self._find_bs_continuation_pages(parser)
             for p in extra_pages:
-                if p not in real_pages:
-                    real_pages.append(p)
+                if p not in real_pages and abs(p - first_page) <= MAX_SPREAD:
+                    # 对延续页也要做附注页检查
+                    text = parser.extract_text(p)
+                    if text and not self._is_appendix_page(text):
+                        real_pages.append(p)
             real_pages.sort()
+        elif self.STATEMENT_TYPE == "income_statement":
+            extra_pages = self._find_is_continuation_pages(parser)
+            for p in extra_pages:
+                if p not in real_pages and abs(p - first_page) <= MAX_SPREAD:
+                    text = parser.extract_text(p)
+                    if text and not self._is_appendix_page(text):
+                        real_pages.append(p)
+            real_pages.sort()
+
+        # 补充填写：对已确认的连续页面之间的空隙进行填充
+        # CID字体PDF中部分页面无法通过关键词匹配或表格验证，但实际报表页面是连续的
+        # 例如pages=[55, 57, 58, 59] -> gap_fill 56
+        filled_pages = set(real_pages)
+        for i in range(len(real_pages) - 1):
+            start = real_pages[i]
+            end = real_pages[i + 1]
+            if end - start > 1:
+                for p in range(start + 1, end):
+                    if p not in filled_pages:
+                        text = parser.extract_text(p)
+                        if text and not self._is_appendix_page(text):
+                            filled_pages.add(p)
+        real_pages = sorted(filled_pages)
+
+        # 去重：当同一个报表类型匹配到多个章节（如BS的"一、合并资产负债表"和"二、母公司资产负债表"，
+        # 或IS的"三、合并利润表"和"四、母公司利润表"），只保留第一个章节（通常是合并报表）
+        # 基于section header页面是否连续来判断：同章节的header页连续，不同章节间有间隔
+        if len(real_pages) > 1:
+            header_pages = []
+            for p in real_pages:
+                text = parser.extract_text(p)
+                if text and self._text_has_section_header(text):
+                    header_pages.append(p)
+            if len(header_pages) > 1:
+                # 文本层面检测到多个section header（适用于非CID字体PDF）
+                non_consecutive = False
+                for i in range(len(header_pages) - 1):
+                    if header_pages[i + 1] - header_pages[i] > 1:
+                        non_consecutive = True
+                        first_section_end = header_pages[i + 1] - 1
+                        real_pages = [p for p in real_pages if p <= first_section_end]
+                        logger.info("Multiple sections for %s, keeping first section: pages %s",
+                                    self.STATEMENT_TYPE, real_pages)
+                        break
+                if not non_consecutive:
+                    logger.debug("All header pages consecutive for %s, treating as single section: %s",
+                                 self.STATEMENT_TYPE, real_pages)
+            elif len(header_pages) == 0:
+                # CID字体PDF兜底：文字乱码导致_text_has_section_header无法匹配，
+                # 此时如果页面不连续，说明有多个报表章节，只保留第一个连续块
+                first_block = [real_pages[0]] # 此时如果页面不连续，说明有多个报表章节，只保留第一个连续块
+                first_block = [real_pages[0]]
+                for p in real_pages[1:]:
+                    if p == first_block[-1] + 1:
+                        first_block.append(p)
+                    else:
+                        break
+                if len(first_block) < len(real_pages):
+                    logger.info("CID fallback: multiple sections via gap, keeping first block: %s", first_block)
+                    real_pages = first_block
 
         return real_pages
 
@@ -217,7 +318,7 @@ class BaseExtractor(ABC):
         """
         extra = []
 
-        # 扫描所有页面，查找CF章节header
+        # 方法1：关键词搜索（适用于非CID字体PDF）
         section_pattern = re.compile(
             r'[一二三四五六七八]、.{0,15}(经营|投资|筹资)活动.{0,30}(现金|流量|净额)'
         )
@@ -228,6 +329,28 @@ class BaseExtractor(ABC):
                 # 进一步验证：页面应该包含数字（财务数据）
                 if re.search(r'\d{3,}', text):
                     extra.append(page_num)
+
+        # 方法2：CID字体PDF回退——关键词搜索找到的页面太少时，
+        # 使用数值密度法：查找包含大量"中文+6位以上数字"数据行的页面
+        # 财务数据行特征：一行中同时出现中文字符和大数字
+        if len(extra) < 3:
+            cid_extra = []
+            for page_num in range(parser.page_count):
+                text = parser.extract_text(page_num)
+                if not text:
+                    continue
+                lines = text.split('\n')
+                data_lines = sum(
+                    1 for l in lines
+                    if any('一' <= c <= '鿿' for c in l)
+                    and re.search(r'[\d,]{6,}', l)
+                )
+                if data_lines >= 15:
+                    cid_extra.append(page_num)
+            # 去重合并
+            for p in cid_extra:
+                if p not in extra:
+                    extra.append(p)
 
         return extra
 
@@ -261,6 +384,35 @@ class BaseExtractor(ABC):
 
         return extra
 
+    def _find_is_continuation_pages(self, parser: 'PdfParser') -> List[int]:
+        """
+        扫描可能包含利润表延续行但未被find_pages找到的页面
+
+        Args:
+            parser: PDF解析器
+
+        Returns:
+            额外发现的页码列表
+        """
+        extra = []
+
+        # 扫描所有页面，查找IS关键科目（行首 + 数字）
+        section_pattern = re.compile(
+            r'(?:^|\n)\s*(?:减|加|其(?:中|他))?\s*'
+            r'(营业收入|营业成本|营业利润|利润总额|净利润|'
+            r'综合收益总额|所得税费用|利息净收入|已赚保费|'
+            r'保险业务收入|投资收益|公允价值变动)'
+            r'\s*[\d,]+(?:\.\d+)?(?:\s|$)'
+        )
+
+        for page_num in range(parser.page_count):
+            text = parser.extract_text(page_num)
+            if section_pattern.search(text):
+                if re.search(r'\d{4,}', text):
+                    extra.append(page_num)
+
+        return extra
+
     def _text_has_section_header(self, text: str) -> bool:
         """
         检查页面文本是否包含报表类型的section header
@@ -279,59 +431,83 @@ class BaseExtractor(ABC):
             # 利润表必须是"合并利润表"或"银行利润表"作为独立标题行（后面跟年度/金额/附注等）
             # 排除：目录页"XX利润表 11-12"、章节标题"XX利润表项目分析"等
             # 使用行首匹配+后缀验证，避免误判
-            
-            # 匹配行首的"合并利润表"或"银行利润表"
-            valid_header_pattern = r'^(合并利润表|银行利润表|利润表)$'
-            valid_header_with_content = r'^(合并利润表|银行利润表)\s+(?![\d\-]+\s*$)'  # 后面跟内容但不是纯页码
-            
-            for p in [valid_header_pattern, valid_header_with_content]:
+
+            # 匹配"三、合并利润表"、"3、合并利润表" 或 "合并利润表" 位于行首（含母公司变体）
+            # layout=True会在文本前添加空格，因此用\s*处理行首空白
+            section_prefix = r'(?:\d+[\.、]?\s*)?'
+            valid_headers = [
+                rf'^\s*{section_prefix}(合并利润表|母公司利润表|银行利润表|利润表)\s*$',
+            ]
+            for p in valid_headers:
                 if re.search(p, text, re.MULTILINE):
                     return True
-            
+
+            # 匹配"合并利润表"后跟内容但不是纯页码
+            if re.search(r'^\s*(合并利润表|银行利润表)\s+(?![\d\-]+\s*$)', text, re.MULTILINE):
+                return True
+
             # 如果"利润表"出现在行首但匹配失败，说明可能是"XX利润表 11-12"这样的目录项
-            if re.search(r'^合并利润表|^银行利润表', text, re.MULTILINE):
+            if re.search(r'^\s*.*合并利润表|^\s*.*银行利润表', text, re.MULTILINE):
                 # 检查是否是"XX利润表 11-12"或"XX利润表 13"这样的页码引用
                 if re.search(r'(合并|银行)利润表\s+[\d\-]+\s*$', text, re.MULTILINE):
                     return False  # 目录项，不算
                 # 可能是"XX利润表"后跟其他内容（如"XX利润表补充"）
                 if re.search(r'(合并|银行)利润表\s+[^\d]', text, re.MULTILINE):
                     return True
-            
+
             # 排除"XX利润表项目"、"XX利润表中"等干扰（中间无空格的短语）
             if re.search(r'(合并|银行)利润表项目|(合并|银行)利润表中|利润表项目分析', text):
                 return False
-            
+
             # 检查"利润表"关键词后是否有列标题特征
             if '利润表' in text:
-                # 真正的标题应该有"金额"或"本期"或"上期"等列标题
-                if re.search(r'本期|上期|金额|年度|发生额', text):
-                    return True
+                # CID字体PDF中，"利润表"可能出现在附注引用中（如"详见合并利润表附注"）或
+                # "财务报表"乱码产生的"利润表"字符（如公司治理段落中的引用）而非表头
+                # 真正的利润表表头始终在页面前部出现（前1/3行数以内），
+                # 而附注引用在页面中后部
+                lines = text.split('\n')
+                header_zone = max(5, len(lines) // 3)
+                # 额外检查："利润表"必须位于行首附近（前20个非空白字符内）
+                # 段落中间的"利润表"（如"相关财务报表附注"中的乱码匹配）不是标题
+                has_line_start_header = False
+                for l in lines[:header_zone]:
+                    if '利润表' in l:
+                        stripped = l.lstrip()
+                        if stripped.find('利润表') <= 20:
+                            has_line_start_header = True
+                            break
+                if has_line_start_header:
+                    # 验证页面确实包含财务数据行（中文+5位以上数字），
+                    # 排除仅有"利润表"关键词但无实际数据的页（如公司治理段中的乱码匹配）
+                    data_lines = sum(
+                        1 for l in lines
+                        if any('一' <= c <= '鿿' for c in l)
+                        and re.search(r'[\d,]{5,}', l)
+                    )
+                    if data_lines >= 5:
+                        # 真正的标题应该有"金额"或"本期"或"上期"等列标题
+                        if re.search(r'本期|上期|金额|年度|发生额', text):
+                            return True
 
         elif self.STATEMENT_TYPE == "balance_sheet":
-            # 资产负债表必须是"合并资产负债表"或"银行资产负债表"
-            patterns = [
-                r'^合并资产负债表',
-                r'^银行资产负债表',
-                r'^\s*合并资产负债表\s',
-                r'^\s*银行资产负债表\s',
-            ]
-            for p in patterns:
-                if re.search(p, text, re.MULTILINE):
+            # 资产负债表（可选章节编号前缀），含合并/母公司/银行变体
+            # layout=True会在文本前添加空格，因此用\s*处理行首空白
+            section_prefix = r'(?:\d+[\.、]?\s*)?'
+            for kw in ['合并资产负债表', '母公司资产负债表', '银行资产负债表', '资产负债表']:
+                if re.search(rf'^\s*{section_prefix}{re.escape(kw)}\s*$', text, re.MULTILINE):
                     return True
+            # 如果"资产负债表"在行首后跟数字（非延续页的简单表格），也算
+            if re.search(r'^\s*资产负债表\s+[\d,]', text, re.MULTILINE):
+                return True
 
         elif self.STATEMENT_TYPE == "cash_flow":
-            # 现金流量表必须是"合并现金流量表"或"银行现金流量表"
-            patterns = [
-                r'^合并现金流量表',
-                r'^银行现金流量表',
-                r'^\s*合并现金流量表\s',
-                r'^\s*银行现金流量表\s',
-            ]
-            for p in patterns:
-                if re.search(p, text, re.MULTILINE):
+            # 现金流量表（可选章节编号前缀），含(续)后缀
+            section_prefix = r'(?:\d+[\.、]?\s*)?'
+            for kw in ['合并现金流量表', '母公司现金流量表', '银行现金流量表', '现金流量表']:
+                if re.search(rf'^\s*{section_prefix}{re.escape(kw)}(?:\(续\))?\s*$', text, re.MULTILINE):
                     return True
             # 同时检查 CF 章节：数字+顿号开头，后面跟经营活动/投资活动/筹资活动
-            section_pattern = r'[一二三四五六七八]、.{0,15}(经营|投资|筹资)活动.{0,30}(现金|流量|净额)'
+            section_pattern = r'[一二三四五六七八九十]、.{0,15}(经营|投资|筹资)活动.{0,30}(现金|流量|净额)'
             if re.search(section_pattern, text):
                 return True
 
@@ -359,8 +535,9 @@ class BaseExtractor(ABC):
         检测页面是否为附注页（附录页）
 
         附注页的特征：
-        - 页面标题区域包含"财务报表附注"（如"四、财务报表附注"）
-        - 包含章节编号+科目附注（如"47. 其他综合收益"）
+        - 页面任意位置包含"财务报表附注"（完整标题）
+        - 页面包含"附注"章节标题 + 科目编号（如"五、附注"或"四、财务报表附注"）
+        - 包含会计政策说明语句（如"于资产负债表日"、"以公允价值计量"等）
 
         注意：不能仅因为表格中包含"附注"列标题就判定为附注页
 
@@ -373,29 +550,81 @@ class BaseExtractor(ABC):
         if not text:
             return False
 
-        # 获取页面开头区域（前1500字符，覆盖页面标题区域）
-        header_area = text[:1500]
+        # 如果页面包含明确的报表标题（如"合并资产负债表"等），不是附注页
+        # 银行PDF的BS表有"附注"列，底部也有"财务报表附注"抬头，需优先排除
+        if self._text_has_section_header(text):
+            return False
 
-        # 附注页的明确标志：页面标题包含"财务报表附注"
-        if '财务报表附注' in header_area:
+        # 同时检查延续页标题（如"合并资产负债表(续)"），同样不是附注页
+        section_prefix = r'(?:\d+[\.、]?\s*)?'
+        cont_kws = SECTION_KEYWORDS.get(self.STATEMENT_TYPE, [])
+        if any(re.search(rf'^\s*{section_prefix}{re.escape(kw)}\(续\)\s*$', text, re.MULTILINE)
+               for kw in cont_kws):
+            return False
+
+        # 整页扫描是否存在"财务报表附注"（notes页面的明确标志）
+        if '财务报表附注' in text:
+            # 排除"后附财务报表附注为财务报表的组成部分"（报表页标准脚注，非附注页）
+            # 真正的附注页至少会有2处"财务报表附注"（如标题+章节号或正文引用）
+            if '后附财务报表附注为财务报表的组成部分' in text:
+                if text.count('财务报表附注') <= 1:
+                    return False
             return True
 
-        # 检查是否包含"附注"作为独立章节（章节编号 + 附注 + 科目名称）
-        # 例如："47. 其他综合收益" 出现在页面开头部分
-        # 这种格式是附注页的典型特征
+        # 检查页面开头区域（前2000字符）是否包含附注特征
+        header_area = text[:2000]
+
+        # 包含章节编号+附注关键词（如"四、财务报表附注"、"五、附注"）
         lines = header_area.split('\n')
-        for i, line in enumerate(lines[:20]):  # 检查前20行
+        for i, line in enumerate(lines[:25]):
             line = line.strip()
-            # 匹配 "47. 其他综合收益" 格式（章节编号 + 科目名称）
-            if re.match(r'\d+\.\s*.+', line):
-                # 检查这一行是否在页面开头部分（而不是表格中间）
-                # 附注页的章节标题通常在页面开头几行
-                if i < 10 and ('其他综合收益' in line or '外币报表' in line or '无形资产' in line or '应收账款' in line):
+            if not line:
+                continue
+            # 匹配形如 "四、财务报表附注" 或 "五、附注" 的中文章节标题
+            if re.match(r'[一二三四五六七八九十]+、', line) and '附注' in line:
+                return True
+            # 匹配形如 "1. 公司基本情况"、"2. 财务报表编制基础" 等编号科目
+            # 这些是附注页开头部分的典型特征
+            if re.match(r'\d+\.\s+', line) and i < 8:
+                # 包含常见的附注章节名
+                if any(kw in line for kw in ['公司基本情况', '财务报表编制', '重要会计政策',
+                                               '会计估计', '税项', '合并范围', '分部报告']):
                     return True
-            # 匹配 "四、" 格式（中文章节编号）
-            if re.match(r'[一二三四五六七八九十]+、', line):
-                if '附注' in line and i < 10:
-                    return True
+
+        # 检查全文是否包含"会计政策"说明或附注编号（如"附注三"、"附注四"）
+        # 这是notes页面的辅助判断（避免误判主表页面上因表格包含"附注"列而被排除）
+        note_section_refs = ['附注三', '附注四', '附注五', '附注六', '附注七',
+                              '附注八', '附注九', '附注十', '附注十一', '附注十二']
+        if any(ref in header_area for ref in note_section_refs):
+            return True
+
+        # 会计政策说明语句（notes页的典型内容特征）
+        # 这些短语在BS/IS/CF主表页面上几乎不会出现
+        # 但如果页面已经包含明确的报表标题（如"合并利润表"），则不应判定为附注页
+        if not self._text_has_section_header(text):
+            accounting_policy_indicators = [
+                '于资产负债表日', '以公允价值计量', '采用公允价值',
+                '外币业务', '外币报表折算', '股份支付', '企业合并',
+                '会计政策', '会计估计', '前期差错',
+            ]
+            # 移除易误判的短语（如"职工薪酬"会匹配科目"应付职工薪酬"、"所得税"会匹配"递延所得税负债"）
+            # 同时要求短语出现在句子语境中（周围30字符内有中文字，无大数字），而非表格行内
+            policy_hits = 0
+            for phrase in accounting_policy_indicators:
+                if phrase not in text:
+                    continue
+                idx = text.find(phrase)
+                start = max(0, idx - 30)
+                end = min(len(text), idx + len(phrase) + 30)
+                context = text[start:end]
+                # 表格行特征：短语附近有大数字（4位以上），判断为科目名而非政策说明
+                if re.search(r'\d{4,}', context):
+                    continue
+                # 进一步确认：短语附近有中文字（排除页眉/页脚等孤立匹配）
+                if re.search(r'[一-鿿]', context[max(0, idx-start-5):idx-start+5]):
+                    policy_hits += 1
+            if policy_hits >= 2:
+                return True
 
         return False
 
@@ -458,7 +687,117 @@ class BaseExtractor(ABC):
                     else None
                 )
 
+        # 如果表格提取失败（0个有效表格），尝试从页面文本直接提取（CID字体PDF回退）
+        if not result and pages:
+            text_items = self._extract_items_from_text(parser, pages)
+            if text_items:
+                # 将文本提取的科目构建为DataFrame，复用下游合并逻辑
+                text_df = pd.DataFrame([
+                    {'item': k, 'value': str(v)} for k, v in text_items.items()
+                ])
+                if not text_df.empty:
+                    result.append((pages[0], text_df))
+
         return result
+
+    def _extract_items_from_text(self, parser: PdfParser, pages: List[int]) -> Dict[str, float]:
+        """
+        从页面文本直接提取科目数据（文本回退方案，用于CID字体PDF）
+
+        pdfplumber对CID字体PDF的表格提取可能丢失列结构（如缺少科目名称列），
+        但文本提取（layout=True）通常能正确保留科目名和数值。
+        此方法在表格提取失败时作为回退使用。
+
+        Args:
+            parser: PDF解析器
+            pages: 页面列表
+
+        Returns:
+            {科目名: 数值} 字典
+        """
+        items = {}
+        seen = set()
+
+        # 过滤：值太小的（可能是年份/页码，不是财务数据）
+        VALUE_MIN = 50000
+        # 无效科目名（表头行、说明文字等）
+        INVALID_NAMES = [
+            '单位', '项目', '附注', '期末', '期初', '年初', '年末',
+            '报表日期', '货币单位', '人民币',
+            '公允反映', '按照规定', '会计报表',
+        ]
+
+        for p in pages:
+            text = parser.extract_text(p)
+            if not text:
+                continue
+
+            for line in text.split('\n'):
+                line = line.strip()
+                if not line:
+                    continue
+
+                # 检查行中是否包含中文文本
+                if not any('一' <= c <= '鿿' for c in line):
+                    continue
+
+                # 检查行中是否包含大数值（至少4位连续数字）
+                nums = re.findall(r'[\d,]+\.?\d*', line)
+
+                # 过滤有效的财务数值（去逗号后 >= 1千且 <= 1000万亿）
+                valid_nums = []
+                for n_str in nums:
+                    try:
+                        v = float(n_str.replace(',', ''))
+                        if abs(v) >= 1000 and abs(v) <= 1e15:
+                            valid_nums.append(v)
+                    except ValueError:
+                        continue
+
+                if not valid_nums:
+                    continue
+
+                # 取行中第一个有效数值
+                first_val = valid_nums[0]
+
+                # 找到对应数值在行中的位置
+                first_num_str = None
+                for n_str in nums:
+                    try:
+                        v = float(n_str.replace(',', ''))
+                        if v == first_val:
+                            first_num_str = n_str
+                            break
+                    except ValueError:
+                        continue
+
+                if not first_num_str:
+                    continue
+
+                # 数值前的文本作为科目名称
+                idx = line.find(first_num_str)
+                if idx < 0:
+                    continue
+
+                item_name = line[:idx].strip()
+                # 去掉章节编号（如"十八、"）
+                item_name = re.sub(r'^[一二三四五六七八九十]+、', '', item_name).strip()
+                # 去掉多余空格
+                item_name = re.sub(r'\s+', ' ', item_name).strip()
+
+                if not item_name or len(item_name) < 2 or len(item_name) > 50:
+                    continue
+
+                if not any('一' <= c <= '鿿' for c in item_name):
+                    continue
+
+                if item_name in seen:
+                    continue
+
+                items[item_name] = first_val
+                seen.add(item_name)
+
+        return items
 
     def _is_valid_table(self, table: pd.DataFrame) -> bool:
         """
@@ -617,7 +956,16 @@ class BaseExtractor(ABC):
         if multiplier != 1:
             return unit, multiplier
 
-        for page_num in range(min(50, self.parser.page_count)):
+        # 扫描报表数据区域的页面来判断单位（年报的财务报表通常位于文档中后部）
+        total_pages = self.parser.page_count
+        if total_pages > 60:
+            start = max(0, total_pages // 3 - 10)
+            end = min(total_pages, total_pages // 3 + 90)
+        else:
+            start = 0
+            end = min(50, total_pages)
+
+        for page_num in range(start, end):
             tables = self.parser.extract_tables(page_num, min_rows=5)
 
             for table in tables:
@@ -844,6 +1192,18 @@ class BaseExtractor(ABC):
             if 0 <= profit_margin <= 1:
                 return 1.0
 
+        # 当"净利润"因表格解析问题未提取到时，用营业利润作为替代
+        if operating_profit is not None and revenue is not None and revenue > 0:
+            profit_margin = abs(operating_profit) / revenue
+            if 0 <= profit_margin <= 1:
+                return 0.8
+
+        # 用利润总额作为进一步替代
+        if total_profit is not None and revenue is not None and revenue > 0:
+            profit_margin = abs(total_profit) / revenue
+            if 0 <= profit_margin <= 1:
+                return 0.8
+
         return 0.5
 
     def _find_cash_flow_total(self, items: Dict[str, float], flow_type: str) -> float:
@@ -866,6 +1226,7 @@ class BaseExtractor(ABC):
                 r"投资活动现金流量净额",
                 r"^投资活动$",
                 r"^投资活动\s",
+                r"投资活动.*小计",
             ],
             "financing": [
                 r"筹资活动产生的现金流量净额",
@@ -877,6 +1238,7 @@ class BaseExtractor(ABC):
                 r"^筹资活动产生$",
                 r"^筹资活动$",
                 r"^筹资活动\s",
+                r"筹资活动.*小计",
             ],
             "net_increase": [
                 r"现金及现金等价物净增加额",

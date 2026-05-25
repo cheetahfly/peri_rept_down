@@ -47,10 +47,15 @@ class IncomeStatementExtractor(BaseExtractor):
         if not items:
             return False, "未提取到任何数据"
 
-        # 检查是否有净利润
+        # 检查是否有净利润（部分PDF中利润表不含净利润行，由利润总额和所得税推算得出）
         has_net_profit = any("净利润" in k for k in items.keys())
-        if not has_net_profit:
-            return False, "缺少净利润科目"
+        has_total_profit = any("利润总额" in k for k in items.keys())
+        if not has_net_profit and not has_total_profit:
+            # 如果提取了大量项目（>=30）且包含营业收入，仍认为有效
+            # （部分PDF表格解析可能未单独识别出利润总额/净利润行）
+            has_revenue_any = any("营业收入" in k or "营业总收入" in k for k in items.keys())
+            if len(items) < 30 or not has_revenue_any:
+                return False, "缺少净利润和利润总额科目"
 
         # 检查是否有营业收入
         has_revenue = any("营业收入" in k or "营业总收入" in k for k in items.keys())

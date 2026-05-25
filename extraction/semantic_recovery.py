@@ -18,22 +18,27 @@ class SemanticRecovery:
         """从pdf2htmlEX转换的HTML中恢复科目名称和数值"""
         from extraction.parsers.html_converter import convert_pdf_to_html
         import os
+        import shutil
+        import tempfile
 
-        # 1. 转换为HTML
-        html_path, temp_dir = convert_pdf_to_html(pdf_path)
+        # 创建持久性的临时目录（避免convert_pdf_to_html的finally自动清理导致文件被删）
+        persist_dir = tempfile.mkdtemp()
         try:
+            success, html_result = convert_pdf_to_html(pdf_path, output_dir=persist_dir)
+            if not success or not html_result or not os.path.exists(html_result):
+                return {}
+
             # 2. 解析HTML提取文本和位置
-            items = self._parse_html_structure(html_path, page_nums)
+            items = self._parse_html_structure(html_result, page_nums)
 
             # 3. 词汇匹配 + 上下文推断
             result = self._match_vocabulary(items, statement_type)
 
             return result
         finally:
-            # 清理临时文件
-            if temp_dir and os.path.exists(temp_dir):
-                import shutil
-                shutil.rmtree(temp_dir)
+            # 清理我们自己的临时目录
+            if os.path.exists(persist_dir):
+                shutil.rmtree(persist_dir)
 
     def _parse_html_structure(self, html_path: str, page_nums: List[int]) -> List[Dict]:
         """解析HTML结构，提取文本和位置"""

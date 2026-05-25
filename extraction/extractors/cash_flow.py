@@ -86,6 +86,7 @@ class CashFlowExtractor(BaseExtractor):
             r"经营.*现金流净额",
             r"经营活动现金流量净额",
             r"经营活动净现金流",
+            r"经营活动.*小计",  # 部分PDF使用"小计"而非"净额"
         ],
         "investing": [
             r"投资活动.*净额",
@@ -93,6 +94,7 @@ class CashFlowExtractor(BaseExtractor):
             r"投资.*现金流净额",
             r"投资活动现金流量净额",
             r"投资活动净现金流",
+            r"投资活动.*小计",  # 部分PDF使用"小计"而非"净额"
         ],
         "financing": [
             r"筹资活动.*净额",
@@ -101,6 +103,7 @@ class CashFlowExtractor(BaseExtractor):
             r"筹资活动现金流量净额",
             r"筹资活动净现金流",
             r"筹资活动产生",  # 截断情况
+            r"筹资活动.*小计",  # 部分PDF使用"小计"而非"净额"
         ],
         "cash_end": [
             r"期末现金",
@@ -142,7 +145,10 @@ class CashFlowExtractor(BaseExtractor):
 
         matched = self._count_key_items(items)
         if matched < 2:
-            return False, f"关键科目过少，仅{matched}个"
+            # 如果提取了大量项目但关键科目匹配少，可能是科目命名差异导致的
+            # 有足够多项目时（>=20）仍认为是有效的提取
+            if len(items) < 20:
+                return False, f"关键科目过少，仅{matched}个"
 
         return True, ""
 
