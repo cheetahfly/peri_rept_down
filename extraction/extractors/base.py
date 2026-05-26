@@ -136,6 +136,25 @@ class BaseExtractor(ABC):
                         result["recovery_method"] = "semantic"
                         result["pages"] = scan_range
 
+                # Fallback: word-level recovery (pdfplumber-based, no external deps)
+                if len(result["data"]) < min_items:
+                    from extraction.word_recovery import recover_statement_auto
+                    word_data = recover_statement_auto(
+                        pdf_path, self.STATEMENT_TYPE, scan_range, top_n=10
+                    )
+                    if word_data.get("found"):
+                        existing = result["data"]
+                        recovered_flat = word_data.get("data", {})
+                        merged = dict(existing)
+                        for k, v in recovered_flat.items():
+                            if k not in merged and isinstance(v, (int, float)) and abs(v) >= 1000:
+                                merged[k] = v
+                        if len(merged) > len(existing):
+                            result["data"] = merged
+                            result["recovered"] = True
+                            result["recovery_method"] = "word_recovery"
+                            result["word_recovery_stats"] = word_data.get("stats", {})
+
         return result
 
     def _find_section_pages(self, parser: PdfParser) -> List[int]:

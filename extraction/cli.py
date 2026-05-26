@@ -24,8 +24,9 @@ from extraction.extractors.indicators import FinancialIndicatorsExtractor, Ratio
 from extraction.storage.json_store import JsonStore
 from extraction.storage.sqlite_store import SqliteStore
 from extraction.config import EXTRACTED_BY_CODE_DIR, EXPORT_DIR
+from extraction.quality_gate import QualityGate
 from extraction.table_formatter import MultiPeriodTableBuilder, export_to_csv
-from extraction.exporters import CsvExporter
+from extraction.exporters import CsvExporter, ExcelExporter
 from config import BY_CODE_DIR
 
 
@@ -236,6 +237,21 @@ def extract_single_pdf(pdf_path: str, output_dir: str = None,
                 results["ratios"] = ratios
                 print(f"    计算了 {sum(len(v) for v in ratios.values())} 个财务比率")
 
+            # 质量门控：跨报表交叉验证
+            qg = QualityGate()
+            quality = qg.validate_all(
+                balance_sheet_data.get("data", {}),
+                income_data.get("data", {}),
+                cash_flow_data.get("data", {}),
+            )
+            results["quality"] = quality
+            if quality["quality_flags"]:
+                print(f"    质量门控: {len(quality['quality_flags'])} 个标记")
+                for flag in quality["quality_flags"]:
+                    print(f"      {flag}")
+            if not quality["passed"]:
+                print(f"    质量门控未通过 (置信度: {quality['confidence']:.1%})")
+
             # 保存JSON
             if save_json:
                 json_store = JsonStore(output_dir or EXTRACTED_BY_CODE_DIR)
@@ -399,6 +415,8 @@ def main():
                                      choices=['balance_sheet', 'income_statement', 'cash_flow', 'indicators'],
                                      help="报表类型")
     batch_export_parser.add_argument("-o", "--output", help="输出目录")
+    batch_export_parser.add_argument("-f", "--format", default='csv',
+                                     choices=['csv', 'excel', 'both'], help="导出格式")
 
     report_parser = subparsers.add_parser("report", help="生成提取质量报告")
     report_parser.add_argument("-s", "--stock", required=True, help="股票代码")
@@ -476,14 +494,34 @@ def main():
             sys.exit(1)
 
         # 导出
+        export_format = args.format
         output_path = args.output
-        if not output_path:
-            os.makedirs(EXPORT_DIR, exist_ok=True)
-            output_path = os.path.join(EXPORT_DIR, f"{stock_code}_{statement_type}_{years[0]}_{years[-1]}_table.csv")
 
-        exporter = CsvExporter()
-        exporter.export(df, output_path)
-        print(f"导出成功: {output_path}")
+        def _do_export(fmt: str) -> str:
+            if fmt == "excel":
+                exporter = ExcelExporter()
+                if output_path:
+                    path = output_path.replace(".csv", ".xlsx") if output_path.endswith(".csv") else output_path
+                else:
+                    os.makedirs(EXPORT_DIR, exist_ok=True)
+                    path = os.path.join(EXPORT_DIR, f"{stock_code}_{statement_type}_{years[0]}_{years[-1]}_table.xlsx")
+            else:
+                exporter = CsvExporter()
+                if output_path:
+                    path = output_path.replace(".xlsx", ".csv") if output_path.endswith(".xlsx") else output_path
+                else:
+                    os.makedirs(EXPORT_DIR, exist_ok=True)
+                    path = os.path.join(EXPORT_DIR, f"{stock_code}_{statement_type}_{years[0]}_{years[-1]}_table.csv")
+            exporter.export(df, path)
+            return path
+
+        if export_format == "both":
+            csv_path = _do_export("csv")
+            xlsx_path = _do_export("excel")
+            print(f"导出成功:\n  CSV:  {csv_path}\n  Excel: {xlsx_path}")
+        else:
+            path = _do_export(export_format)
+            print(f"导出成功: {path}")
 
     elif args.command == "batch-export":
         input_file = args.input
@@ -508,9 +546,19 @@ def main():
 
         json_store = JsonStore()
         builder = MultiPeriodTableBuilder()
-        exporter = CsvExporter()
+
+        def _export_one(df, stock_code, fmt):
+            if fmt == "excel":
+                exporter = ExcelExporter()
+                path = os.path.join(output_dir, f"{stock_code}_{statement_type}_table.xlsx")
+            else:
+                exporter = CsvExporter()
+                path = os.path.join(output_dir, f"{stock_code}_{statement_type}_table.csv")
+            exporter.export(df, path)
+            return path
 
         success_count = 0
+        export_format = args.format
         for stock_code in stock_codes:
             if not _STOCK_CODE_RE.match(stock_code):
                 print(f"跳过无效股票代码: {stock_code}")
@@ -519,8 +567,11 @@ def main():
             if kv_data_by_year:
                 df = builder.build_single_stock(kv_data_by_year, statement_type, include_yoy=True)
                 if not df.empty:
-                    output_path = os.path.join(output_dir, f"{stock_code}_{statement_type}_table.csv")
-                    exporter.export(df, output_path)
+                    if export_format == "both":
+                        _export_one(df, stock_code, "csv")
+                        _export_one(df, stock_code, "excel")
+                    else:
+                        _export_one(df, stock_code, export_format)
                     success_count += 1
 
         print(f"导出完成: {success_count}/{len(stock_codes)} 成功")
