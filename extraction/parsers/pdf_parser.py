@@ -25,7 +25,9 @@ class PdfParser:
 
         self.pdf_path = pdf_path
         self.doc = pdfplumber.open(pdf_path)
-        self._page_texts = {}  # 缓存页面文本
+        self._page_texts = {}  # 缓存页面文本 (layout=True, 快速)
+        self._page_texts_detail = {}  # 缓存页面详细文本 (layout=False, 用于文本表格解析)
+        self._table_cache = {}  # 缓存页面表格，避免重复提取
 
     def __len__(self) -> int:
         """返回总页数"""
@@ -48,13 +50,15 @@ class PdfParser:
         """总页数"""
         return len(self.doc.pages)
 
-    def extract_text(self, page_num: int, layout: bool = False) -> str:
+    def extract_text(self, page_num: int, layout: bool = True) -> str:
         """
         提取页面文本
 
         Args:
             page_num: 页码（从0开始）
-            layout: 是否保留布局（默认False，速度快）
+            layout: True=保留布局（速度快75x，适合关键词搜索），
+                    False=精确文本顺序（适合文本表格解析）
+                    默认True以保持向后兼容和最快速度。
 
         Returns:
             页面文本内容
@@ -62,19 +66,22 @@ class PdfParser:
         if page_num < 0 or page_num >= len(self.doc.pages):
             return ""
 
-        if page_num not in self._page_texts:
-            page = self.doc.pages[page_num]
-            # 使用 layout=True 预热缓存（速度快75x），关键词搜索质量不变
-            # 注意：后续 layout=False 的调用会复用这个缓存（关键词内容一致）
-            self._page_texts[page_num] = page.extract_text(layout=True) or ""
-
-        return self._page_texts[page_num]
+        if layout:
+            if page_num not in self._page_texts:
+                page = self.doc.pages[page_num]
+                self._page_texts[page_num] = page.extract_text(layout=True) or ""
+            return self._page_texts[page_num]
+        else:
+            if page_num not in self._page_texts_detail:
+                page = self.doc.pages[page_num]
+                self._page_texts_detail[page_num] = page.extract_text(layout=False) or ""
+            return self._page_texts_detail[page_num]
 
     def extract_tables(
         self, page_num: int, min_rows: int = 3, min_cols: int = 2
     ) -> List[pd.DataFrame]:
         """
-        提取页面表格
+        提取页面表格（带缓存）
 
         Args:
             page_num: 页码（从0开始）
@@ -87,16 +94,21 @@ class PdfParser:
         if page_num < 0 or page_num >= len(self.doc.pages):
             return []
 
-        page = self.doc.pages[page_num]
-        tables = page.extract_tables()
+        if page_num not in self._table_cache:
+            page = self.doc.pages[page_num]
+            raw_tables = page.extract_tables()
+            cached = []
+            for table in raw_tables:
+                if table and len(table) > 0:
+                    df = pd.DataFrame(table[1:], columns=table[0] if table[0] else None)
+                    cached.append(df)
+            self._table_cache[page_num] = cached
 
         result = []
-        for table in tables:
-            if table and len(table) > 0:
-                df = pd.DataFrame(table[1:], columns=table[0] if table[0] else None)
-                df = self._clean_table(df, page_num)
-                if df.shape[0] >= min_rows and df.shape[1] >= min_cols:
-                    result.append(df)
+        for df in self._table_cache[page_num]:
+            df = self._clean_table(df, page_num)
+            if df.shape[0] >= min_rows and df.shape[1] >= min_cols:
+                result.append(df)
 
         return result
 
@@ -272,8 +284,8 @@ class PdfParser:
         if page_num < 0 or page_num >= len(self.doc.pages):
             return []
 
-        page = self.doc.pages[page_num]
-        text = page.extract_text()
+        # 使用缓存的非布局文本（避免重复调用慢速 page.extract_text()）
+        text = self.extract_text(page_num, layout=False)
 
         if not text:
             return []

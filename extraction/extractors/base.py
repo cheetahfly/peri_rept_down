@@ -195,6 +195,23 @@ class BaseExtractor(ABC):
                 real_pages.append(page_num)
                 continue
 
+            # 预检查：页面是否包含报表科目关键词——跳过明显不相关的页面
+            # （如find_pages误匹配到"利润表"的附注页、TOC页等）
+            # 这避免了在这些无关页面上调用极慢的pdfplumber extract_tables()（单页可达100s+）
+            has_stmt_keywords = (
+                self.STATEMENT_ITEMS
+                and any(kw in page_text for kw in self.STATEMENT_ITEMS[:5])
+            )
+            if not has_stmt_keywords:
+                # CID字体PDF回退：关键词可能因乱码而无法匹配，
+                # 此时用中文比例+最长连续串长度判断是否为乱码数据页
+                if self._is_text_cid_garbled(page_text):
+                    # 乱码页面仍有可能是报表页（关键词被替换），允许继续
+                    pass
+                else:
+                    # 既无关键词、又非CID乱码 → 不相关页，跳过
+                    continue
+
             tables = parser.extract_tables(page_num, min_rows=5, min_cols=2)
 
             if not tables:
@@ -366,21 +383,26 @@ class BaseExtractor(ABC):
         """
         extra = []
 
-        # 扫描所有页面，查找BS汇总行（必须是"关键词 + 数字"的组合，排除干扰页）
-        # 匹配: 关键词 换行/空格 亿元级数字（6位以上）
-        section_pattern = re.compile(
-            r'(?:^|\n)\s*(负债合计|非流动负债合计|流动负债合计|'
+        # 逐行处理避免 layout=True 空格的 catastrophic backtracking
+        kw_pattern = re.compile(
+            r'(负债合计|非流动负债合计|流动负债合计|'
             r'所有者权益.*?合计|股东权益.*?合计|'
             r'归属于母公司.*?权益.*?合计|'
             r'负债和所有者权益.*?总计|'
             r'负债和股东权益.*?总计)'
-            r'\s*[\d,]+(?:\.\d+)?(?:\s|$|\n)'
         )
 
         for page_num in range(parser.page_count):
             text = parser.extract_text(page_num)
-            if section_pattern.search(text):
-                extra.append(page_num)
+            if not text:
+                continue
+            for line in text.split('\n'):
+                line = line.strip()
+                if not line:
+                    continue
+                if re.search(r'[\d,]{6,}', line) and kw_pattern.search(line):
+                    extra.append(page_num)
+                    break
 
         return extra
 
@@ -396,20 +418,25 @@ class BaseExtractor(ABC):
         """
         extra = []
 
-        # 扫描所有页面，查找IS关键科目（行首 + 数字）
-        section_pattern = re.compile(
-            r'(?:^|\n)\s*(?:减|加|其(?:中|他))?\s*'
+        # 逐行处理避免 layout=True 空格的 catastrophic backtracking
+        kw_pattern = re.compile(
+            r'(?:减|加|其(?:中|他))?\s*'
             r'(营业收入|营业成本|营业利润|利润总额|净利润|'
             r'综合收益总额|所得税费用|利息净收入|已赚保费|'
             r'保险业务收入|投资收益|公允价值变动)'
-            r'\s*[\d,]+(?:\.\d+)?(?:\s|$)'
         )
 
         for page_num in range(parser.page_count):
             text = parser.extract_text(page_num)
-            if section_pattern.search(text):
-                if re.search(r'\d{4,}', text):
+            if not text:
+                continue
+            for line in text.split('\n'):
+                line = line.strip()
+                if not line:
+                    continue
+                if re.search(r'\d{4,}', line) and kw_pattern.search(line):
                     extra.append(page_num)
+                    break
 
         return extra
 
@@ -627,6 +654,45 @@ class BaseExtractor(ABC):
                 return True
 
         return False
+
+    @staticmethod
+    def _is_text_cid_garbled(text: str) -> bool:
+        """
+        检测文本是否因CID字体导致乱码
+
+        CID字体PDF中，pdfplumber提取的文本因字体编码映射错误导致中文字符被替换为
+        其他Unicode字符。判断依据：
+        1. 中文比例偏低（<30%，正常中文文本>40%）
+        2. 最长连续中文字符串长度<4（正常页面有"营业收入"等4+字科目名，CID乱码
+           则中文字符被孤立成1-2个字符，如"营^%X收p"）
+
+        Args:
+            text: 页面文本
+
+        Returns:
+            是否疑似CID字体乱码
+        """
+        if not text or len(text) < 200:
+            return False
+
+        chinese_chars = 0
+        max_run = 0
+        current_run = 0
+
+        for c in text:
+            if '一' <= c <= '鿿':
+                chinese_chars += 1
+                current_run += 1
+                max_run = max(max_run, current_run)
+            else:
+                current_run = 0
+
+        if chinese_chars == 0:
+            return True
+
+        ratio = chinese_chars / len(text)
+        # CID乱码：低中文比例 + 无长中文连续串（正常页面必有4+字科目名）
+        return ratio < 0.3 and max_run < 4
 
     def _extract_tables_from_pages(
         self, parser: PdfParser, pages: List[int], prefer_text_parse: bool = False
