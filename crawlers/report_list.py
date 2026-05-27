@@ -208,6 +208,15 @@ class ReportListCrawler:
                 import datetime
                 year = datetime.datetime.fromtimestamp(announcement_time / 1000).year
 
+        # 季报子类型检测：从标题区分Q1和Q3
+        if category == "quarter":
+            if any(kw in clean_title for kw in ["第一季度", "一季报", "第一季"]):
+                category = "quarter_q1"
+                category_name = "一季报"
+            elif any(kw in clean_title for kw in ["第三季度", "三季报", "第三季", "三季"]):
+                category = "quarter_q3"
+                category_name = "三季报"
+
         return {
             "announcement_id": ann.get("announcementId"),
             "stock_code": stock_code,

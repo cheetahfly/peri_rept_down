@@ -7,7 +7,7 @@ import re
 from typing import Dict, Tuple, List, Optional
 
 from extraction.extractors.base import BaseExtractor
-from extraction.config import SECTION_KEYWORDS
+from extraction.config import SECTION_KEYWORDS, EXPECTED_ITEMS_PER_TYPE
 
 
 class IncomeStatementExtractor(BaseExtractor):
@@ -54,7 +54,8 @@ class IncomeStatementExtractor(BaseExtractor):
             # 如果提取了大量项目（>=30）且包含营业收入，仍认为有效
             # （部分PDF表格解析可能未单独识别出利润总额/净利润行）
             has_revenue_any = any("营业收入" in k or "营业总收入" in k for k in items.keys())
-            if len(items) < 30 or not has_revenue_any:
+            min_items = EXPECTED_ITEMS_PER_TYPE.get(self.STATEMENT_TYPE, 20)
+            if len(items) < min_items or not has_revenue_any:
                 return False, "缺少净利润和利润总额科目"
 
         # 检查是否有营业收入

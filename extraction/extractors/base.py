@@ -85,7 +85,7 @@ class BaseExtractor(ABC):
         merged_data = self._merge_tables(tables_data)
 
         # 单位规范化
-        normalized_data = self._normalize_units(merged_data)
+        normalized_data = self._normalize_units(merged_data, section_pages)
 
         result = {
             "statement_type": self.STATEMENT_TYPE,
@@ -113,6 +113,7 @@ class BaseExtractor(ABC):
                 except Exception:
                     pass
 
+                scan_range = []  # 兜底值，当 total_pages == 0 时使用
                 if total_pages > 0:
                     # Build targeted scan range: neighborhood around discovered pages
                     # This avoids being flooded by unrelated high-density pages (e.g. TOC)
@@ -325,7 +326,6 @@ class BaseExtractor(ABC):
             elif len(header_pages) == 0:
                 # CID字体PDF兜底：文字乱码导致_text_has_section_header无法匹配，
                 # 此时如果页面不连续，说明有多个报表章节，只保留第一个连续块
-                first_block = [real_pages[0]] # 此时如果页面不连续，说明有多个报表章节，只保留第一个连续块
                 first_block = [real_pages[0]]
                 for p in real_pages[1:]:
                     if p == first_block[-1] + 1:
@@ -1005,18 +1005,19 @@ class BaseExtractor(ABC):
 
         return all_items
 
-    def _normalize_units(self, data: Dict[str, float]) -> Dict[str, float]:
+    def _normalize_units(self, data: Dict[str, float], section_pages: List[int] = None) -> Dict[str, float]:
         """
         单位规范化（转换为元）
 
         Args:
             data: 原始数据字典
+            section_pages: 报表页面列表（用于单位检测）
 
         Returns:
             规范化后的数据
         """
         # 检测单位
-        unit, multiplier = self._detect_unit()
+        unit, multiplier = self._detect_unit(section_pages)
 
         if multiplier == 1:
             return data
@@ -1028,9 +1029,12 @@ class BaseExtractor(ABC):
 
         return normalized
 
-    def _detect_unit(self) -> Tuple[str, float]:
+    def _detect_unit(self, section_pages: List[int] = None) -> Tuple[str, float]:
         """
         检测PDF中的单位（结合文档声明和数值特征）
+
+        Args:
+            section_pages: 报表页面列表（优先使用这些页面检测单位）
 
         Returns:
             (单位名称, 乘数)
@@ -1040,16 +1044,13 @@ class BaseExtractor(ABC):
         if multiplier != 1:
             return unit, multiplier
 
-        # 扫描报表数据区域的页面来判断单位（年报的财务报表通常位于文档中后部）
-        total_pages = self.parser.page_count
-        if total_pages > 60:
-            start = max(0, total_pages // 3 - 10)
-            end = min(total_pages, total_pages // 3 + 90)
-        else:
-            start = 0
-            end = min(50, total_pages)
+        # 使用报表页面检测单位（更准确）
+        pages_to_scan = section_pages if section_pages else []
+        if not pages_to_scan:
+            # 如果没有指定页面，扫描整个文档
+            pages_to_scan = range(self.parser.page_count)
 
-        for page_num in range(start, end):
+        for page_num in pages_to_scan:
             tables = self.parser.extract_tables(page_num, min_rows=5)
 
             for table in tables:

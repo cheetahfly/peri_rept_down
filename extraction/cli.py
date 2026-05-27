@@ -25,7 +25,7 @@ from extraction.storage.json_store import JsonStore
 from extraction.storage.sqlite_store import SqliteStore
 from extraction.config import EXTRACTED_BY_CODE_DIR, EXPORT_DIR
 from extraction.quality_gate import QualityGate
-from extraction.table_formatter import MultiPeriodTableBuilder, export_to_csv
+from extraction.table_formatter import MultiPeriodTableBuilder
 from extraction.exporters import CsvExporter, ExcelExporter
 from config import BY_CODE_DIR
 
@@ -41,17 +41,24 @@ def _is_safe_path(path: str) -> bool:
     """
     Check if a path is safe from traversal attacks.
 
-    A path is unsafe if it contains .. traversal sequences that could escape
-    the intended directory, or if it resolves to an absolute path outside
-    the project directory.
+    Uses whitelist: the resolved path must be within the project directory
+    (or an OS temp directory for intermediate files).
     """
-    if ".." in path:
+    if not path:
         return False
     abs_path = os.path.abspath(path)
-    # Prevent absolute paths to system directories
-    if abs_path.startswith("/etc") or abs_path.startswith("/root") or abs_path.startswith("C:\\Windows"):
-        return False
-    return True
+    # Only allow paths within the project directory
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    real_path = os.path.realpath(abs_path)
+    real_project = os.path.realpath(project_root)
+    if real_path.startswith(real_project + os.sep) or real_path == real_project:
+        return True
+    # Also allow temp/system temp directories (for export output)
+    temp_dirs = [os.environ.get("TEMP", ""), os.environ.get("TMP", ""), "/tmp"]
+    for td in temp_dirs:
+        if td and real_path.startswith(os.path.realpath(td) + os.sep):
+            return True
+    return False
 
 
 def _validate_path_arg(path: str, arg_name: str, is_file: bool = True) -> None:
@@ -71,6 +78,15 @@ def _validate_path_arg(path: str, arg_name: str, is_file: bool = True) -> None:
 
 _STOCK_CODE_RE = re.compile(r"^\d{6}$")
 
+# 文件名中的分类名到内部类型的映射
+CATEGORY_NAME_TO_TYPE = {
+    "年报": "annual",
+    "半年报": "half_year",
+    "一季报": "quarter_q1",
+    "三季报": "quarter_q3",
+    "季度报告": "quarter_q1",
+}
+
 
 def _validate_stock_code(stock_code: str, arg_name: str = "stock_code") -> None:
     """Validate stock code format (6 digits); exit with error if invalid."""
@@ -81,20 +97,24 @@ def _validate_stock_code(stock_code: str, arg_name: str = "stock_code") -> None:
 
 def parse_pdf_path(pdf_path: str) -> tuple:
     """
-    从PDF路径解析股票代码和年份
+    从PDF路径解析股票代码、年份和报告类型
 
     Args:
         pdf_path: PDF文件路径
 
     Returns:
-        (股票代码, 年份) 或 (None, None)
+        (股票代码, 年份, 报告类型) 或 (None, None, None)
     """
     filename = os.path.basename(pdf_path)
 
     # 匹配 000001_平安银行_2024_年报.pdf 格式
-    match = re.match(r'^(\d{6})_.+?_(\d{4})_', filename)
+    match = re.match(r'^(\d{6})_.+?_(\d{4})_(.+)\.pdf$', filename, re.IGNORECASE)
     if match:
-        return match.group(1), int(match.group(2))
+        code = match.group(1)
+        year = int(match.group(2))
+        category_name = match.group(3)
+        report_type = CATEGORY_NAME_TO_TYPE.get(category_name, "annual")
+        return code, year, report_type
 
     # 尝试其他格式
     stock_match = re.search(r'^(\d{6})', filename)
@@ -103,7 +123,7 @@ def parse_pdf_path(pdf_path: str) -> tuple:
     stock_code = stock_match.group(1) if stock_match else None
     year = int(year_match.group(1)) if year_match else None
 
-    return stock_code, year
+    return stock_code, year, "annual"
 
 
 def deduplicate_pages(all_pages: Dict[str, List[int]], parser: 'PdfParser') -> Dict[str, List[int]]:
@@ -175,12 +195,12 @@ def extract_single_pdf(pdf_path: str, output_dir: str = None,
     if not os.path.exists(pdf_path):
         return {"success": False, "error": f"文件不存在: {pdf_path}"}
 
-    stock_code, year = parse_pdf_path(pdf_path)
+    stock_code, year, report_type = parse_pdf_path(pdf_path)
     if not stock_code or not year:
         return {"success": False, "error": "无法解析股票代码和年份"}
 
     print(f"处理: {pdf_path}")
-    print(f"  股票代码: {stock_code}, 年份: {year}")
+    print(f"  股票代码: {stock_code}, 年份: {year}, 报告类型: {report_type}")
 
     try:
         # 初始化PDF解析器
@@ -256,19 +276,20 @@ def extract_single_pdf(pdf_path: str, output_dir: str = None,
             # 保存JSON
             if save_json:
                 json_store = JsonStore(output_dir or EXTRACTED_BY_CODE_DIR)
-                saved_files = json_store.save_all(stock_code, year, results)
+                saved_files = json_store.save_all(stock_code, year, results, report_type=report_type)
                 print(f"  保存JSON: {len(saved_files)} 个文件")
 
             # 保存数据库
             if save_db:
                 db_store = SqliteStore()
-                saved_count = db_store.save_all(stock_code, year, results)
+                saved_count = db_store.save_all(stock_code, year, results, report_type=report_type)
                 print(f"  保存数据库: {saved_count} 条记录")
 
             return {
                 "success": True,
                 "stock_code": stock_code,
                 "year": year,
+                "report_type": report_type,
                 "results": results
             }
 

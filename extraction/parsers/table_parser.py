@@ -97,13 +97,14 @@ class TableParser:
         if not isinstance(text, str):
             text = str(text)
 
-        text = cls.clean_text(text)
-
-        # 处理括号表示负数
+        # 处理括号表示负数 — 必须在 clean_text() 之前，因为 clean_text 会移除空括号对
         is_negative = "(" in text and ")" in text
-        text = (
-            text.replace("(", "").replace(")", "").replace("（", "").replace("）", "")
-        )
+        if is_negative:
+            text = (
+                text.replace("(", "").replace(")", "").replace("（", "").replace("）", "")
+            )
+
+        text = cls.clean_text(text)
 
         # 匹配数值
         match = re.search(cls.NUMBER_PATTERN, text.replace(",", "").replace("，", ""))

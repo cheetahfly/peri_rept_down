@@ -1,5 +1,5 @@
 # extraction/quality_gate.py
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 from extraction.config import EXPECTED_ITEMS_PER_TYPE
 
 class QualityGate:
@@ -107,9 +107,23 @@ class QualityGate:
 
         return completeness * 0.6 + reasonableness * 0.4
 
-    def _find_item(self, data: Dict, names: List[str]) -> float:
-        """查找科目数值"""
+    def _find_item(self, data: Dict, names: List[str]) -> Optional[float]:
+        """查找科目数值，优先精确匹配，避免短子串误匹配"""
+        if not data:
+            return None
+
+        # 优先精确匹配
         for name in names:
+            for key, val in data.items():
+                if key == name:
+                    if isinstance(val, dict):
+                        return val.get("value", 0)
+                    return val
+
+        # 回退：子串匹配（仅用于较长关键词，防止短子串误匹配）
+        for name in names:
+            if len(name) < 4:
+                continue
             for key, val in data.items():
                 if name in key:
                     if isinstance(val, dict):
@@ -140,13 +154,15 @@ class QualityGate:
         return 0.9  # 默认
 
     def _calculate_overall_confidence(self, results: Dict) -> float:
-        """计算总体置信度"""
-        weights = {"balance_sheet": 0.4, "income_statement": 0.3, "cash_flow": 0.3}
+        """计算总体置信度（权重归一化处理，避免 cross_statement 被掩盖）"""
+        weights = {"balance_sheet": 0.35, "income_statement": 0.25, "cash_flow": 0.25, "cross_statement": 0.15}
         total = 0.0
+        weight_sum = 0.0
         for name, result in results.items():
-            w = weights.get(name, 0.25)
+            w = weights.get(name, 0.0)
             total += w * (1.0 if result.get("passed") else 0.3)
-        return min(total, 1.0)
+            weight_sum += w
+        return total / weight_sum if weight_sum > 0 else 0.0
 
     def _collect_flags(self, results: Dict) -> List[str]:
         """收集所有异常标记"""

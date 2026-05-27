@@ -28,7 +28,7 @@ class JsonStore:
         os.makedirs(self.base_dir, exist_ok=True)
 
     def save(self, stock_code: str, year: int, statement_type: str,
-             data: Dict, file_path: str = None) -> str:
+             data: Dict, file_path: str = None, report_type: str = "annual") -> str:
         """
         保存提取结果
 
@@ -38,6 +38,7 @@ class JsonStore:
             statement_type: 报表类型
             data: 提取的数据
             file_path: 指定路径（可选）
+            report_type: 报告类型 (annual/half_year/quarter_q1/quarter_q3)
 
         Returns:
             保存的文件路径
@@ -53,6 +54,7 @@ class JsonStore:
             "stock_code": stock_code,
             "report_year": year,
             "statement_type": statement_type,
+            "report_type": report_type,
             "data": data,
             "saved_at": datetime.now().isoformat(),
         }
@@ -62,7 +64,8 @@ class JsonStore:
 
         return file_path
 
-    def save_all(self, stock_code: str, year: int, extracted_data: Dict) -> List[str]:
+    def save_all(self, stock_code: str, year: int, extracted_data: Dict,
+                 report_type: str = "annual") -> List[str]:
         """
         保存所有报表类型
 
@@ -70,6 +73,7 @@ class JsonStore:
             stock_code: 股票代码
             year: 报告年份
             extracted_data: {报表类型: 数据}
+            report_type: 报告类型 (annual/half_year/quarter_q1/quarter_q3)
 
         Returns:
             保存的文件路径列表
@@ -78,7 +82,7 @@ class JsonStore:
 
         for statement_type, data in extracted_data.items():
             if data and data.get("found"):
-                file_path = self.save(stock_code, year, statement_type, data)
+                file_path = self.save(stock_code, year, statement_type, data, report_type=report_type)
                 saved_paths.append(file_path)
 
         return saved_paths

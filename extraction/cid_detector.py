@@ -66,7 +66,11 @@ class CIDFontDetector:
         words = page.extract_words()
         numeric_count = sum(1 for w in words if self._is_numeric(w['text']))
         if len(words) > 0 and numeric_count / len(words) > 0.5:
-            return 0.3  # Possibly a financial statement page
+            # 正常财务页面数值密度高，进一步检查是否同时有乱码特征
+            # 纯数字多并不代表CID乱码——财务表格本就包含大量数字
+            if is_garbled_text(text):
+                return 0.3  # 数字多+乱码 → 可能是CID乱码页
+            return 0.1  # 仅数字多 → 大概率是正常财务页，不给高分
 
         return 0.0
 

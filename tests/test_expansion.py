@@ -124,7 +124,7 @@ def find_pdf(stock_code: str, pdf_file: str) -> Optional[str]:
         return None
     
     stock_dir = os.path.join(DATA_DIR, stock_code)
-    if not os.exists(stock_dir):
+    if not os.path.exists(stock_dir):
         return None
     
     pdf_path = os.path.join(stock_dir, pdf_file)

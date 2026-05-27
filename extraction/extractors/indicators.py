@@ -6,6 +6,8 @@
 import re
 from typing import Dict, Tuple, List, Optional
 
+import pandas as pd
+
 from extraction.extractors.base import BaseExtractor
 
 
@@ -97,7 +99,7 @@ class FinancialIndicatorsExtractor(BaseExtractor):
             value = None
             for col_idx in range(1, min(len(row), 5)):
                 cell_value = row.iloc[col_idx]
-                if self.table_parser.pd.notna(cell_value):
+                if pd.notna(cell_value):
                     parsed = self.table_parser.parse_number(cell_value)
                     if parsed is not None:
                         value = parsed

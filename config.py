@@ -47,6 +47,24 @@ REPORT_CATEGORIES = {
     },
 }
 
+# 季报子类型（Q1/Q3通过标题区分）
+QUARTER_SUB_TYPES = {
+    "quarter_q1": {"name": "一季报", "title_keywords": ["第一季度报告", "一季报", "第一季度"]},
+    "quarter_q3": {"name": "三季报", "title_keywords": ["第三季度报告", "三季报", "第三季度"]},
+}
+
+# 目标年份范围
+TARGET_YEARS = list(range(2022, 2026))  # 2022-2025
+
+# 文件名中的分类名到内部类型的映射
+CATEGORY_NAME_TO_TYPE = {
+    "年报": "annual",
+    "半年报": "half_year",
+    "一季报": "quarter_q1",
+    "三季报": "quarter_q3",
+    "季度报告": "quarter_q1",  # 兼容旧命名
+}
+
 # User-Agent 池
 USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",

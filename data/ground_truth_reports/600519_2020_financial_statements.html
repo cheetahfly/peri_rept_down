@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贵州茅台 (600519) 2020年度财务报表 - RDS Ground Truth</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        .header .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        .header .info {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+        .content {
+            padding: 30px;
+        }
+        .nav-tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 30px;
+        }
+        .nav-tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .nav-tab:hover {
+            background: #f5f5f5;
+        }
+        .nav-tab.active {
+            border-bottom-color: #1a237e;
+            color: #1a237e;
+        }
+        .statement-section {
+            display: none;
+        }
+        .statement-section.active {
+            display: block;
+        }
+        .statement-title {
+            font-size: 22px;
+            color: #1a237e;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e8eaf6;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .statement-title .icon {
+            width: 32px;
+            height: 32px;
+            background: #1a237e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+        .summary-box {
+            background: #e8eaf6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .summary-item {
+            text-align: center;
+        }
+        .summary-item .label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .summary-item .value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1a237e;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+            color: #555;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+        td {
+            font-size: 14px;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+        .item-name {
+            color: #333;
+            font-weight: 500;
+        }
+        .item-value {
+            text-align: right;
+            font-family: "SF Mono", Monaco, monospace;
+            font-size: 14px;
+        }
+        .positive {
+            color: #2e7d32;
+        }
+        .negative {
+            color: #c62828;
+        }
+        .zero {
+            color: #999;
+        }
+        .section-header {
+            background: #e3f2fd;
+            font-weight: 600;
+            color: #1565c0;
+        }
+        .section-header td {
+            padding: 10px 15px;
+        }
+        .total-row {
+            background: #f5f5f5;
+            font-weight: bold;
+        }
+        .total-row td {
+            border-top: 2px solid #1a237e;
+            padding-top: 12px;
+            padding-bottom: 12px;
+        }
+        .note {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #e65100;
+        }
+        .footer {
+            background: #f5f5f5;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            border-top: 1px solid #e0e0e0;
+        }
+        .data-source {
+            display: inline-block;
+            background: #e8eaf6;
+            color: #1a237e;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-direction: column;
+            }
+            .nav-tab {
+                border-bottom: none;
+                border-left: 3px solid transparent;
+                margin-bottom: 0;
+                margin-left: 0;
+            }
+            .nav-tab.active {
+                border-left-color: #1a237e;
+                border-bottom-color: transparent;
+            }
+            .summary-box {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>贵州茅台 (600519)</h1>
+            <div class="subtitle">2020年度财务报表</div>
+            <div class="info">
+                <span class="data-source">数据来源: CNINFO RDS Ground Truth</span>
+                <span style="margin-left: 10px;">报告期: 2020-12-31 (年报)</span>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="nav-tabs">
+                <div class="nav-tab active" onclick="showTab('income')">利润表</div>
+                <div class="nav-tab" onclick="showTab('balance')">资产负债表</div>
+                <div class="nav-tab" onclick="showTab('cashflow')">现金流量表</div>
+            </div>
+
+            <!-- 利润表 -->
+            <div id="income" class="statement-section active">
+                <h2 class="statement-title">
+                    <span class="icon">收</span>
+                    利润表 (Income Statement)
+                </h2>
+
+                <div class="summary-box">
+                    <div class="summary-item">
+                        <div class="label">营业总收入</div>
+                        <div class="value">979.93亿</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">净利润</div>
+                        <div class="value">495.23亿</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">净利润率</div>
+                        <div class="value">50.54%</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">每股收益</div>
+                        <div class="value">37.17元</div>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 60%">科目名称</th>
+                            <th style="width: 40%; text-align: right">金额 (元)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="section-header">
+                            <td colspan="2">一、营业总收入</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">一、营业总收入</td>
+                            <td class="item-value positive">97,993,240,501.21</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">&nbsp;&nbsp;其中：营业收入</td>
+                            <td class="item-value positive">94,915,380,916.72</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">&nbsp;&nbsp;利息收入</td>
+                            <td class="item-value positive">3,077,859,584.49</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">&nbsp;&nbsp;手续费及佣金收入</td>
+                            <td class="item-value positive">292,452.83</td>
+                        </tr>
+
+                        <tr class="section-header">
+                            <td colspan="2">二、营业总成本</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">二、营业总成本</td>
+                            <td class="item-value negative">31,305,130,587.56</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">&nbsp;&nbsp;其中：营业成本</td>
+                            <td class="item-value negative">8,154,001,476.28</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">&nbsp;&nbsp;营业税金及附加</td>
+                            <td class="item-value negative">13,886,517,290.78</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">&nbsp;&nbsp;销售费用</td>
+                            <td class="item-value negative">2,547,745,650.95</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">&nbsp;&nbsp;管理费用</td>
+                            <td class="item-value negative">6,789,844,289.39</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">&nbsp;&nbsp;研发费用</td>
+                            <td class="item-value negative">50,398,036.33</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">&nbsp;&nbsp;财务费用</td>
+                            <td class="item-value positive">-234,610,582.44</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">&nbsp;&nbsp;利息支出</td>
+                            <td class="item-value negative">111,128,537.31</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">&nbsp;&nbsp;手续费及佣金支出</td>
+                            <td class="item-value negative">105,888.96</td>
+                        </tr>
+
+                        <tr class="section-header">
+                            <td colspan="2">三、其他收益</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">基它收入</td>
+                            <td class="item-value positive">13,138,152.69</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">投资收益</td>
+                            <td class="item-value positive">305,631.46</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">加：公允价值变动净收益</td>
+                            <td class="item-value positive">4,897,994.43</td>
+                        </tr>
+
+                        <tr class="section-header">
+                            <td colspan="2">四、营业利润</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">营业外收入</td>
+                            <td class="item-value positive">11,051,136.15</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">减：营业外支出</td>
+                            <td class="item-value negative">449,189,027.42</td>
+                        </tr>
+
+                        <tr class="section-header">
+                            <td colspan="2">五、利润总额</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td class="item-name">四、利润总额</td>
+                            <td class="item-value positive">66,196,941,991.11</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">减：所得税费用</td>
+                            <td class="item-value negative">16,673,612,108.71</td>
+                        </tr>
+
+                        <tr class="section-header">
+                            <td colspan="2">六、净利润</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td class="item-name">五、净利润</td>
+                            <td class="item-value positive">49,523,329,882.40</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">&nbsp;&nbsp;持续经营净利润</td>
+                            <td class="item-value positive">49,523,329,882.40</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">&nbsp;&nbsp;归属于母公司所有者的净利润</td>
+                            <td class="item-value positive">46,697,285,429.81</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">&nbsp;&nbsp;少数股东损益</td>
+                            <td class="item-value positive">2,826,044,452.59</td>
+                        </tr>
+
+                        <tr class="section-header">
+                            <td colspan="2">七、每股收益</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">（一）基本每股收益</td>
+                            <td class="item-value">37.17</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">（二）稀释每股收益</td>
+                            <td class="item-value">37.17</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 资产负债表 -->
+            <div id="balance" class="statement-section">
+                <h2 class="statement-title">
+                    <span class="icon">资</span>
+                    资产负债表 (Balance Sheet)
+                </h2>
+
+                <div class="summary-box">
+                    <div class="summary-item">
+                        <div class="label">资产总计</div>
+                        <div class="value">2,133.96亿</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">负债合计</div>
+                        <div class="value">456.75亿</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">所有者权益合计</div>
+                        <div class="value">1,677.21亿</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">资产负债率</div>
+                        <div class="value">21.40%</div>
+                    </div>
+                </div>
+
+                <div class="note">
+                    注：RDS数据中资产负债表仅包含部分科目（11项），完整资产负债表数据请参考PDF提取结果。
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 60%">科目名称</th>
+                            <th style="width: 40%; text-align: right">金额 (元)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="section-header">
+                            <td colspan="2">资产类</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">拆出资金</td>
+                            <td class="item-value">118,199,586,541.06</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">发放贷款及垫款-非流动资产</td>
+                            <td class="item-value">2,953,036,834.80</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">债权投资</td>
+                            <td class="item-value">20,143,397.78</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">其他非流动金融资产</td>
+                            <td class="item-value">9,830,052.91</td>
+                        </tr>
+
+                        <tr class="section-header">
+                            <td colspan="2">负债类</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">吸收存款及同业存放</td>
+                            <td class="item-value">14,241,859,949.77</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">合同负债</td>
+                            <td class="item-value">13,321,549,147.69</td>
+                        </tr>
+
+                        <tr class="section-header">
+                            <td colspan="2">所有者权益类</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">一般风险准备</td>
+                            <td class="item-value">927,577,822.67</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">其他综合收益</td>
+                            <td class="item-value negative">-5,331,367.75</td>
+                        </tr>
+                        <tr>
+                            <td class="item-name">归属于母公司所有者权益</td>
+                            <td class="item-value">161,322,735,087.56</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td class="item-name">所有者权益（或股东权益）合计</td>
+                            <td class="item-value">167,720,683,101.28</td>
+                        </tr>
+
+                        <tr class="section-header">
+                            <td colspan="2">总计</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td class="item-name">负债和所有者（或股东权益）合计</td>
+                            <td class="item-value">213,395,810,527.46</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 现金流量表 -->
+            <div id="cashflow" class="statement-section">
+                <h2 class="statement-title">
+                    <span class="icon">现</span>
+                    现金流量表 (Cash Flow Statement)
+                </h2>
+
+                <div class="note">
+                    注：RDS数据库中600519（贵州茅台）2020年度现金流量表数据为空。<br>
+                    原因：cf_o.rds文件中该股票的现金流量表字段编码未映射到中文名，或数据缺失。<br>
+                    完整现金流量表数据请参考PDF提取结果（已提取到data/extracted/by_code/600519/）。
+                </div>
+
+                <div class="summary-box">
+                    <div class="summary-item">
+                        <div class="label">经营活动现金流量净额</div>
+                        <div class="value" style="color: #999;">数据缺失</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">投资活动现金流量净额</div>
+                        <div class="value" style="color: #999;">数据缺失</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">筹资活动现金流量净额</div>
+                        <div class="value" style="color: #999;">数据缺失</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">现金净增加额</div>
+                        <div class="value" style="color: #999;">数据缺失</div>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 60%">科目名称</th>
+                            <th style="width: 40%; text-align: right">金额 (元)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="2" style="text-align: center; color: #999; padding: 40px;">
+                                暂无现金流量表数据
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>贵州茅台 (600519) 2020年度财务报表 | 数据来源: CNINFO RDS Ground Truth | 生成时间: 2026-05-27</p>
+            <p style="margin-top: 5px;">注：RDS数据为结构化数据库中的标准数据，与PDF提取数据可能存在差异</p>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all sections
+            document.querySelectorAll('.statement-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

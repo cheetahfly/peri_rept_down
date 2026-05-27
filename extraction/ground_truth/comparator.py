@@ -1,0 +1,267 @@
+# -*- coding: utf-8 -*-
+"""
+Ground truth comparison engine.
+
+Compares extracted PDF data against RDS ground truth at the item level.
+"""
+
+import json
+import os
+import re
+import yaml
+from collections import defaultdict
+from dataclasses import dataclass, field
+from difflib import SequenceMatcher
+from typing import Dict, List, Optional, Tuple
+
+# 规则文件目录
+RULES_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "rules")
+
+
+def load_yaml_rule(filename: str, default=None):
+    """从 rules/ 目录加载 YAML 规则文件"""
+    path = os.path.join(RULES_DIR, filename)
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            return yaml.safe_load(f)
+    except (FileNotFoundError, yaml.YAMLError):
+        return default
+
+
+@dataclass
+class ItemComparison:
+    ground_truth_name: str
+    ground_truth_value: Optional[float]
+    extracted_name: Optional[str]
+    extracted_value: Optional[float]
+    match_type: str  # exact, alias, fuzzy, missing, unmatched
+    value_error_pct: Optional[float] = None
+
+
+@dataclass
+class ComparisonResult:
+    stock_code: str
+    year: int
+    statement_type: str
+    items: List[ItemComparison] = field(default_factory=list)
+
+    @property
+    def matched(self) -> List[ItemComparison]:
+        return [i for i in self.items if i.match_type in ("exact", "alias", "fuzzy")]
+
+    @property
+    def missing(self) -> List[ItemComparison]:
+        return [i for i in self.items if i.match_type == "missing"]
+
+    @property
+    def unmatched(self) -> List[ItemComparison]:
+        return [i for i in self.items if i.match_type == "unmatched"]
+
+    @property
+    def coverage(self) -> float:
+        gt_count = len(self.matched) + len(self.missing)
+        return len(self.matched) / gt_count if gt_count > 0 else 0.0
+
+    @property
+    def value_accuracy(self) -> float:
+        matched = [i for i in self.matched if i.value_error_pct is not None]
+        if not matched:
+            return 0.0
+        accurate = sum(1 for i in matched if i.value_error_pct < 1.0)
+        return accurate / len(matched)
+
+    def summary(self) -> Dict:
+        return {
+            "stock_code": self.stock_code,
+            "year": self.year,
+            "statement_type": self.statement_type,
+            "gt_items": len(self.matched) + len(self.missing),
+            "matched": len(self.matched),
+            "missing": len(self.missing),
+            "unmatched": len(self.unmatched),
+            "coverage": round(self.coverage, 3),
+            "value_accuracy": round(self.value_accuracy, 3),
+        }
+
+
+def normalize_name(name: str) -> str:
+    """Normalize an item name for comparison."""
+    # Remove column suffixes: _c1, _c2, etc.
+    name = re.sub(r'_c\d+$', '', name)
+    # Remove prefixes: 其中：, 减：, 加：, 其中：对联营...
+    name = re.sub(r'^(其中[：:]|减[：:]|加[：:])', '', name)
+    # Remove numbering: 一、, 二、, 三、, (一), (二), 1., 2.
+    name = re.sub(r'^[一二三四五六七八九十]+[、.]', '', name)
+    name = re.sub(r'^[（(][一二三四五六七八九十1234567890]+[)）]', '', name)
+    name = re.sub(r'^\d+[、.]', '', name)
+    # Remove trailing parenthetical notes (with or without closing parenthesis)
+    name = re.sub(r'[（(][^)）]*$', '', name)
+    # Strip whitespace
+    name = name.strip()
+    return name
+
+
+# Items to skip (from YAML, with fallback to defaults)
+SKIP_ITEMS_LIST = load_yaml_rule("skip_items.yaml", [
+    "合并类型编码", "报表来源编码", "合并类型", "报表来源",
+    "盈余公积", "未分配利润", "资本公积", "所有者权益（或股东权",
+    "负债和所有者权益", "股本", "库存股",
+    "（一）基本每股收益", "（二）稀释每股收益",
+])
+SKIP_ITEMS = set(SKIP_ITEMS_LIST if isinstance(SKIP_ITEMS_LIST, list) else [])
+
+
+def _name_similarity(a: str, b: str) -> float:
+    if a == b:
+        return 1.0
+    if a in b or b in a:
+        shorter, longer = (a, b) if len(a) <= len(b) else (b, a)
+        return 0.7 + 0.3 * (len(shorter) / len(longer))
+    return SequenceMatcher(None, a, b).ratio()
+
+
+def _compare_values(gt_val, ext_val, tolerance=0.01):
+    if gt_val is None or ext_val is None:
+        return None
+    if gt_val == 0 and ext_val == 0:
+        return 0.0
+    if gt_val == 0:
+        return float("inf") if abs(ext_val) > 1000 else 0.0
+    return abs(ext_val - gt_val) / abs(gt_val) * 100
+
+
+def compare_stock(
+    gt_data: Dict[str, float],
+    ext_data: Dict[str, float],
+    alias_map: Dict[str, List[str]],
+    stock_code: str = "",
+    year: int = 0,
+    statement_type: str = "",
+) -> ComparisonResult:
+    result = ComparisonResult(stock_code, year, statement_type)
+
+    # Build reverse alias lookup: variant -> standard_name
+    reverse_aliases = {}
+    for standard, variants in alias_map.items():
+        for v in variants:
+            reverse_aliases[v] = standard
+
+    # Build normalized extracted data
+    norm_ext = {}
+    for k, v in ext_data.items():
+        nk = normalize_name(k)
+        if nk and nk not in ("", "行") and not re.match(r'^行\d+$', nk):
+            norm_ext[nk] = (k, v)
+
+    # Match ground truth items to extracted items
+    matched_ext_keys = set()
+    for gt_name, gt_val in gt_data.items():
+        # Skip non-financial metadata
+        if gt_name in SKIP_ITEMS or "编码" in gt_name or "来源" in gt_name or "F0" in gt_name:
+            continue
+
+        ext_name = None
+        ext_val = None
+        match_type = "missing"
+
+        # Normalize gt_name for comparison
+        norm_gt = normalize_name(gt_name)
+
+        # 1. Exact match (normalized) with value validation
+        if norm_gt in norm_ext:
+            orig_key, ext_val = norm_ext[norm_gt]
+            # Validate that values are similar
+            value_error = _compare_values(gt_val, ext_val)
+            if value_error is not None and value_error < 10:  # <10% error
+                ext_name = orig_key
+                match_type = "exact"
+            else:
+                # Values don't match, skip this exact match
+                ext_val = None
+        else:
+            # 2. Check if norm_gt is a standard name with aliases in ext
+            if norm_gt in alias_map:
+                for variant in alias_map[norm_gt]:
+                    norm_v = normalize_name(variant)
+                    if norm_v in norm_ext:
+                        orig_key, ext_val = norm_ext[norm_v]
+                        ext_name = orig_key
+                        match_type = "alias"
+                        break
+
+            # 3. Check reverse aliases (variant -> standard)
+            if match_type == "missing":
+                standard = reverse_aliases.get(norm_gt)
+                if standard:
+                    norm_std = normalize_name(standard)
+                    if norm_std in norm_ext:
+                        orig_key, ext_val = norm_ext[norm_std]
+                        ext_name = orig_key
+                        match_type = "alias"
+
+            if match_type == "missing":
+                # 4. Fuzzy match with value validation
+                best_score = 0.0
+                best_key = None
+                best_orig = None
+                best_val = None
+                for norm_k, (orig_k, v) in norm_ext.items():
+                    if orig_k in matched_ext_keys:
+                        continue
+                    name_score = _name_similarity(norm_gt, norm_k)
+                    # Require high name similarity AND value similarity
+                    if name_score >= 0.8:
+                        val_score = _compare_values(gt_val, v)
+                        if val_score is not None and val_score < 10:  # <10% error
+                            combined = 0.6 * name_score + 0.4 * (1 - val_score/100)
+                            if combined > best_score:
+                                best_score = combined
+                                best_key = norm_k
+                                best_orig = orig_k
+                                best_val = v
+                if best_score >= 0.7:
+                    ext_name = best_orig
+                    ext_val = best_val
+                    match_type = "fuzzy"
+
+        if ext_name:
+            matched_ext_keys.add(ext_name)
+
+        value_error = _compare_values(gt_val, ext_val) if ext_val is not None else None
+
+        result.items.append(ItemComparison(
+            ground_truth_name=gt_name,
+            ground_truth_value=gt_val,
+            extracted_name=ext_name,
+            extracted_value=ext_val,
+            match_type=match_type,
+            value_error_pct=value_error,
+        ))
+
+    # Unmatched extracted items
+    for orig_key, (norm_k, ext_val) in norm_ext.items():
+        if orig_key not in matched_ext_keys:
+            result.items.append(ItemComparison(
+                ground_truth_name="",
+                ground_truth_value=None,
+                extracted_name=orig_key,
+                extracted_value=ext_val,
+                match_type="unmatched",
+            ))
+
+    return result
+
+
+def load_extracted_json(json_path: str) -> Dict[str, float]:
+    with open(json_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    inner = data.get("data", data)
+    if isinstance(inner, dict) and "data" in inner:
+        return inner["data"]
+    return {}
+
+
+def find_extracted_json(extracted_dir: str, stock_code: str, year: int, statement_type: str) -> Optional[str]:
+    fname = f"{stock_code}_{year}_{statement_type}.json"
+    path = os.path.join(extracted_dir, stock_code, fname)
+    return path if os.path.exists(path) else None

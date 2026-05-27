@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>600519 贵州茅台 2020年年报 PDF提取数据</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        h1 { text-align: center; color: #1a1a2e; margin-bottom: 10px; font-size: 28px; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 30px; font-size: 14px; }
+        .tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+        .tab { padding: 12px 24px; background: #fff; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.3s; font-size: 15px; font-weight: 500; }
+        .tab:hover { border-color: #667eea; color: #667eea; }
+        .tab.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-color: transparent; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 20px; }
+        .card-header { padding: 16px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-size: 18px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+        .card-header .badge { background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 13px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f8f9fa; padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; border-bottom: 2px solid #dee2e6; font-size: 13px; text-transform: uppercase; }
+        td { padding: 12px 16px; border-bottom: 1px solid #eee; }
+        tr:hover { background: #f8f9ff; }
+        tr:last-child td { border-bottom: none; }
+        .amount { text-align: right; font-family: "SF Mono", "Fira Code", monospace; font-weight: 500; }
+        .amount.positive { color: #28a745; }
+        .amount.negative { color: #dc3545; }
+        .item-name { font-weight: 500; }
+        .item-name.sub { padding-left: 20px; color: #666; }
+        .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .summary-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: center; }
+        .summary-card .label { font-size: 13px; color: #666; margin-bottom: 8px; }
+        .summary-card .value { font-size: 22px; font-weight: 700; color: #1a1a2e; }
+        .summary-card .value.green { color: #28a745; }
+        .summary-card .value.red { color: #dc3545; }
+        .meta-info { background: #f8f9fa; padding: 16px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; color: #666; display: flex; flex-wrap: wrap; gap: 20px; }
+        .meta-info span { display: flex; align-items: center; gap: 6px; }
+        .meta-info .dot { width: 6px; height: 6px; background: #667eea; border-radius: 50%; }
+        .warning { background: #fff3cd; border: 1px solid #ffc107; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; color: #856404; }
+        .warning strong { display: block; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>600519 贵州茅台 2020年年报</h1>
+        <p class="subtitle">PDF提取数据展示 | 提取时间: 2026-05-27</p>
+
+        <div class="meta-info">
+            <span><span class="dot"></span>股票代码: 600519.SH</span>
+            <span><span class="dot"></span>报告期: 2020-12-31</span>
+            <span><span class="dot"></span>行业: 白酒Ⅱ</span>
+            <span><span class="dot"></span>提取置信度: 85%</span>
+            <span><span class="dot"></span>数据来源: PDF年报提取</span>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('income')">利润表</div>
+            <div class="tab" onclick="switchTab('balance')">资产负债表</div>
+            <div class="tab" onclick="switchTab('cashflow')">现金流量表</div>
+        </div>
+
+        <!-- 利润表 -->
+        <div id="income" class="tab-content active">
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <div class="label">营业总收入</div>
+                    <div class="value">979.93亿</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">营业总成本</div>
+                    <div class="value">313.05亿</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">利润总额</div>
+                    <div class="value green">661.97亿</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">净利润</div>
+                    <div class="value green">495.23亿</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    利润表科目明细
+                    <span class="badge">共35项</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 60%">科目名称</th>
+                            <th style="width: 40%; text-align: right">金额（元）</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="item-name">一、营业总收入</td><td class="amount">97,993,240,501.21</td></tr>
+                        <tr><td class="item-name sub">其中：营业收入</td><td class="amount">94,915,380,916.72</td></tr>
+                        <tr><td class="item-name sub">利息收入</td><td class="amount">278,697,733.32</td></tr>
+                        <tr><td class="item-name sub">手续费及佣金收入</td><td class="amount">292,452.83</td></tr>
+                        <tr><td class="item-name">二、营业总成本</td><td class="amount">31,305,130,587.56</td></tr>
+                        <tr><td class="item-name sub">其中：营业成本</td><td class="amount">8,154,001,476.28</td></tr>
+                        <tr><td class="item-name sub">利息支出</td><td class="amount">111,128,537.31</td></tr>
+                        <tr><td class="item-name sub">手续费及佣金支出</td><td class="amount">105,888.96</td></tr>
+                        <tr><td class="item-name sub">税金及附加</td><td class="amount">13,886,517,290.78</td></tr>
+                        <tr><td class="item-name sub">销售费用</td><td class="amount">2,547,745,650.95</td></tr>
+                        <tr><td class="item-name sub">管理费用</td><td class="amount">6,789,844,289.39</td></tr>
+                        <tr><td class="item-name sub">研发费用</td><td class="amount">50,398,036.33</td></tr>
+                        <tr><td class="item-name sub">财务费用</td><td class="amount negative">-234,610,582.44</td></tr>
+                        <tr><td class="item-name">加：其他收益</td><td class="amount">13,138,152.69</td></tr>
+                        <tr><td class="item-name">投资收益</td><td class="amount">305,631.46</td></tr>
+                        <tr><td class="item-name">公允价值变动收益</td><td class="amount">4,897,994.43</td></tr>
+                        <tr><td class="item-name">信用减值损失</td><td class="amount negative">-71,371,809.85</td></tr>
+                        <tr><td class="item-name">资产处置收益</td><td class="amount negative">-32,123.57</td></tr>
+                        <tr><td class="item-name">三、营业利润</td><td class="amount green">66,635,079,882.38</td></tr>
+                        <tr><td class="item-name">加：营业外收入</td><td class="amount">11,051,136.15</td></tr>
+                        <tr><td class="item-name">减：营业外支出</td><td class="amount">449,189,027.42</td></tr>
+                        <tr><td class="item-name">四、利润总额</td><td class="amount green">66,196,941,991.11</td></tr>
+                        <tr><td class="item-name">减：所得税费用</td><td class="amount">16,673,612,108.71</td></tr>
+                        <tr><td class="item-name">五、净利润</td><td class="amount green">49,523,329,882.40</td></tr>
+                        <tr><td class="item-name sub">1.持续经营净利润</td><td class="amount">49,523,329,882.40</td></tr>
+                        <tr><td class="item-name sub">1.归属于母公司股东的净利润</td><td class="amount">46,697,285,429.81</td></tr>
+                        <tr><td class="item-name sub">2.少数股东损益</td><td class="amount">2,826,044,452.59</td></tr>
+                        <tr><td class="item-name">六、其他综合收益的税后净额</td><td class="amount">1,867,354.04</td></tr>
+                        <tr><td class="item-name sub">（一）归属母公司所有者的其他</td><td class="amount">1,867,354.04</td></tr>
+                        <tr><td class="item-name sub">2．将重分类进损益的其他综</td><td class="amount">1,867,354.04</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="warning">
+                <strong>注意：科目名称截断</strong>
+                部分科目名称因PDF提取时截断显示不完整，如"投资收益（损失以"－"号"应为"投资收益（损失以"－"号填列）"。
+            </div>
+        </div>
+
+        <!-- 资产负债表 -->
+        <div id="balance" class="tab-content">
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <div class="label">资产总计</div>
+                    <div class="value">2,133.96亿</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">负债合计</div>
+                    <div class="value red">456.75亿</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">所有者权益</div>
+                    <div class="value green">1,677.21亿</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">资产负债率</div>
+                    <div class="value">21.40%</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    资产负债表科目明细
+                    <span class="badge">共33项</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 60%">科目名称</th>
+                            <th style="width: 40%; text-align: right">金额（元）</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="item-name">货币资金</td><td class="amount">36,091,090,060.90</td></tr>
+                        <tr><td class="item-name">拆出资金</td><td class="amount">118,199,586,541.06</td></tr>
+                        <tr><td class="item-name">应收票据</td><td class="amount">1,532,728,979.67</td></tr>
+                        <tr><td class="item-name">应收账款</td><td class="amount">4.00</td></tr>
+                        <tr><td class="item-name">预付款项</td><td class="amount">898,436,259.15</td></tr>
+                        <tr><td class="item-name">其他应收款</td><td class="amount">34,488,582.19</td></tr>
+                        <tr><td class="item-name">其他流动资产</td><td class="amount">26,736,855.91</td></tr>
+                        <tr><td class="item-name">流动资产合计</td><td class="amount">185,652,154,956.94</td></tr>
+                        <tr><td class="item-name">发放贷款和垫款</td><td class="amount">2,953,036,834.80</td></tr>
+                        <tr><td class="item-name">债权投资</td><td class="amount">20,143,397.78</td></tr>
+                        <tr><td class="item-name">其他非流动金融资产</td><td class="amount">9,830,052.91</td></tr>
+                        <tr><td class="item-name">固定资产</td><td class="amount">16,225,082,847.29</td></tr>
+                        <tr><td class="item-name">在建工程</td><td class="amount">2,447,444,843.03</td></tr>
+                        <tr><td class="item-name">无形资产</td><td class="amount">4,817,170,981.91</td></tr>
+                        <tr><td class="item-name">长期待摊费用</td><td class="amount">147,721,526.43</td></tr>
+                        <tr><td class="item-name">递延所得税资产</td><td class="amount">1,123,225,086.37</td></tr>
+                        <tr><td class="item-name">非流动资产合计</td><td class="amount">27,743,655,570.52</td></tr>
+                        <tr><td class="item-name">资产总计</td><td class="amount green">213,395,810,527.46</td></tr>
+                        <tr><td class="item-name">应付账款</td><td class="amount">1,342,267,668.12</td></tr>
+                        <tr><td class="item-name">预收款项</td><td class="amount">13,740,329,698.82</td></tr>
+                        <tr><td class="item-name">合同负债</td><td class="amount">13,321,549,147.69</td></tr>
+                        <tr><td class="item-name">吸收存款及同业存放</td><td class="amount">14,241,859,949.77</td></tr>
+                        <tr><td class="item-name">应付职工薪酬</td><td class="amount">2,981,125,503.86</td></tr>
+                        <tr><td class="item-name">应交税费</td><td class="amount">8,919,821,015.58</td></tr>
+                        <tr><td class="item-name">其他应付款</td><td class="amount">3,257,245,259.42</td></tr>
+                        <tr><td class="item-name sub">其中：应付利息</td><td class="amount">11,081.87</td></tr>
+                        <tr><td class="item-name sub">应付股利</td><td class="amount">446,880,000.00</td></tr>
+                        <tr><td class="item-name">其他流动负债</td><td class="amount">1,609,801,368.51</td></tr>
+                        <tr><td class="item-name">流动负债合计</td><td class="amount">45,673,669,912.95</td></tr>
+                        <tr><td class="item-name">递延所得税负债</td><td class="amount">1,457,513.23</td></tr>
+                        <tr><td class="item-name">非流动负债合计</td><td class="amount">1,457,513.23</td></tr>
+                        <tr><td class="item-name">负债合计</td><td class="amount red">45,675,127,426.18</td></tr>
+                        <tr><td class="item-name">实收资本（或股本）</td><td class="amount">1,256,197,800.00</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 现金流量表 -->
+        <div id="cashflow" class="tab-content">
+            <div class="warning">
+                <strong>注意：现金流量表数据异常</strong>
+                提取的现金流量表包含大量带后缀（_c1, _c2等）的重复科目，可能是提取错误或比较数据混入。以下仅展示主要科目。
+            </div>
+
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <div class="label">经营活动现金流量净额</div>
+                    <div class="value green">157.43亿</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">投资活动现金流量净额</div>
+                    <div class="value red">-18.05亿</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">筹资活动现金流量净额</div>
+                    <div class="value red">-241.28亿</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">现金净增加额</div>
+                    <div class="value green">257.37亿</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    现金流量表主要科目
+                    <span class="badge">筛选后主要项</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 60%">科目名称</th>
+                            <th style="width: 40%; text-align: right">金额（元）</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="item-name" style="font-weight:700; color:#667eea;">一、经营活动产生的现金流量</td><td></td></tr>
+                        <tr><td class="item-name sub">销售商品、提供劳务收到的现金</td><td class="amount">107,024,384,560.17</td></tr>
+                        <tr><td class="item-name sub">收到其他与经营活动有关的现金</td><td class="amount">521,030,214.32</td></tr>
+                        <tr><td class="item-name sub">经营活动现金流出小计</td><td class="amount">25,308,800,828.70</td></tr>
+                        <tr><td class="item-name sub">购买商品、接受劳务支付的现金</td><td class="amount">8,161,813,197.26</td></tr>
+                        <tr><td class="item-name"><strong>经营活动产生的现金流量净额</strong></td><td class="amount green"><strong>15,742,514,190.13</strong></td></tr>
+
+                        <tr><td class="item-name" style="font-weight:700; color:#667eea; padding-top:20px;">二、投资活动产生的现金流量</td><td></td></tr>
+                        <tr><td class="item-name sub">收回投资收到的现金</td><td class="amount">557,514,370.46</td></tr>
+                        <tr><td class="item-name sub">取得投资收益收到的现金</td><td class="amount">2,846,669,812.23</td></tr>
+                        <tr><td class="item-name sub">购建固定资产、无形资产支付的现金</td><td class="amount">926,532,063.22</td></tr>
+                        <tr><td class="item-name sub">投资支付的现金</td><td class="amount">10,440,715,450.54</td></tr>
+                        <tr><td class="item-name"><strong>投资活动产生的现金流量净额</strong></td><td class="amount red"><strong>-1,805,227,155.72</strong></td></tr>
+
+                        <tr><td class="item-name" style="font-weight:700; color:#667eea; padding-top:20px;">三、筹资活动产生的现金流量</td><td></td></tr>
+                        <tr><td class="item-name sub">吸收投资收到的现金</td><td class="amount">1,256,197,800.00</td></tr>
+                        <tr><td class="item-name sub">筹资活动现金流入小计</td><td class="amount">9,830,052.91</td></tr>
+                        <tr><td class="item-name sub">筹资活动现金流出小计</td><td class="amount">2,127,304,901.08</td></tr>
+                        <tr><td class="item-name"><strong>筹资活动产生的现金流量净额</strong></td><td class="amount red"><strong>-24,127,536,908.26</strong></td></tr>
+
+                        <tr><td class="item-name" style="font-weight:700; color:#667eea; padding-top:20px;">四、汇率变动对现金的影响</td><td class="amount">833,000,000.00</td></tr>
+
+                        <tr><td class="item-name" style="font-weight:700; color:#667eea; padding-top:20px;">五、现金及现金等价物净增加额</td><td class="amount green"><strong>25,736,685,268.41</strong></td></tr>
+                        <tr><td class="item-name sub">加：期初现金及现金等价物余额</td><td class="amount">4,507,157.75</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

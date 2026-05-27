@@ -7,10 +7,13 @@
 """
 
 import os
+import logging
 from typing import Dict, List, Optional, Tuple, Any
 import pandas as pd
 
 from . import config
+
+logger = logging.getLogger(__name__)
 
 
 class SchemaMapper:
@@ -40,12 +43,6 @@ class SchemaMapper:
             return None
 
         raw_name = raw_name.strip()
-
-        # 精确匹配标准名称
-        for std_name in config.STATEMENT_TYPE_STANDARD_ITEMS.values():
-            if raw_name in std_name:
-                # 找到了所属的报表类型，检查是否匹配
-                pass
 
         # 先在别名映射中查找
         for std_name, aliases in self.alias_map.items():
@@ -136,7 +133,12 @@ class TableFormatter:
             for col in df.columns:
                 if col not in ["指标名称", "指标名称_标准"]:
                     # 将数据映射到标准科目
-                    mapped = df.groupby("指标名称_标准")[col].first()
+                    grp = df.groupby("指标名称_标准")[col]
+                    dupes = grp.size()
+                    multi = dupes[dupes > 1]
+                    if not multi.empty:
+                        logger.warning("映射到同一标准名称的多条记录被合并: %s", list(multi.index))
+                    mapped = grp.first()
                     result_df = result_df.merge(
                         mapped.reset_index().rename(
                             columns={"指标名称_标准": "指标名称"}
@@ -171,7 +173,12 @@ class TableFormatter:
             col_change = f"{curr_year}年同比变化%"
 
             if col_prev in df.columns and col_curr in df.columns:
-                df[col_change] = ((df[col_curr] - df[col_prev]) / df[col_prev] * 100).round(2)
+                df[col_change] = df.apply(
+                    lambda r: round(((r[col_curr] - r[col_prev]) / r[col_prev] * 100), 2)
+                    if pd.notna(r[col_prev]) and r[col_prev] != 0
+                    else None,
+                    axis=1,
+                )
 
         return df
 

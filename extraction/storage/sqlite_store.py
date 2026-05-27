@@ -39,6 +39,9 @@ class SqliteStore:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
+        # 启用 WAL 模式以支持并发多进程写入
+        cursor.execute("PRAGMA journal_mode=WAL")
+
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS extractions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -102,6 +105,7 @@ class SqliteStore:
             ("engine_version", "TEXT"),
             ("quality_flags", "TEXT"),
             ("extraction_id", "TEXT"),
+            ("report_type", "TEXT DEFAULT 'annual'"),
         ]:
             if col_def[0] not in existing_cols:
                 try:
@@ -109,12 +113,20 @@ class SqliteStore:
                 except Exception:
                     pass
 
+        # 迁移：更新 extraction_items 表添加 report_type 列
+        items_cols = {c[1] for c in cursor.execute("PRAGMA table_info(extraction_items)").fetchall()}
+        if "report_type" not in items_cols:
+            try:
+                cursor.execute("ALTER TABLE extraction_items ADD COLUMN report_type TEXT DEFAULT 'annual'")
+            except Exception:
+                pass
+
         conn.commit()
         conn.close()
 
     def save(self, stock_code: str, year: int, statement_type: str,
              data: Dict, confidence: float = None, quality_flags: list = None,
-             extraction_id: str = None) -> bool:
+             extraction_id: str = None, report_type: str = "annual") -> bool:
         """
         保存提取结果（含元数据和审计追踪）
 
@@ -126,6 +138,7 @@ class SqliteStore:
             confidence: 提取置信度
             quality_flags: 质量门控标记
             extraction_id: 提取批次ID
+            report_type: 报告类型 (annual/half_year/quarter_q1/quarter_q3)
 
         Returns:
             是否成功
@@ -152,6 +165,8 @@ class SqliteStore:
             # 2. 写入新记录
             data_json = json.dumps(data, ensure_ascii=False)
             flat = data.get("data", {}) if isinstance(data, dict) else {}
+            if not isinstance(flat, dict):
+                flat = {}
             items_count = len(flat)
             qflags_json = json.dumps(quality_flags or [], ensure_ascii=False)
             eid = extraction_id or f"{stock_code}_{year}_{statement_type}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -160,11 +175,11 @@ class SqliteStore:
             cursor.execute("""
                 INSERT OR REPLACE INTO extractions
                     (stock_code, report_year, statement_type, data,
-                     confidence, items_count, engine_version, quality_flags, extraction_id, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                     confidence, items_count, engine_version, quality_flags, extraction_id, created_at, report_type)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (stock_code, year, statement_type, data_json,
                   confidence, items_count, self.ENGINE_VERSION, qflags_json, eid_stmt,
-                  datetime.now().isoformat()))
+                  datetime.now().isoformat(), report_type))
 
             # 3. 写入科目级数据（支持SQL查询）
             cursor.execute("""
@@ -175,9 +190,9 @@ class SqliteStore:
                 if isinstance(item_value, (int, float)):
                     cursor.execute("""
                         INSERT INTO extraction_items
-                            (extraction_id, stock_code, report_year, statement_type, item_name, item_value)
-                        VALUES (?, ?, ?, ?, ?, ?)
-                    """, (eid_stmt, stock_code, year, statement_type, item_name, item_value))
+                            (extraction_id, stock_code, report_year, statement_type, item_name, item_value, report_type)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """, (eid_stmt, stock_code, year, statement_type, item_name, item_value, report_type))
 
             conn.commit()
             return True
@@ -189,7 +204,8 @@ class SqliteStore:
         finally:
             conn.close()
 
-    def save_all(self, stock_code: str, year: int, extracted_data: Dict) -> int:
+    def save_all(self, stock_code: str, year: int, extracted_data: Dict,
+                 report_type: str = "annual") -> int:
         """
         保存所有报表类型（含置信度等元数据）
 
@@ -197,6 +213,7 @@ class SqliteStore:
             stock_code: 股票代码
             year: 报告年份
             extracted_data: {报表类型: 结果}, 结果中含 confidence/quality_flags
+            report_type: 报告类型 (annual/half_year/quarter_q1/quarter_q3)
 
         Returns:
             保存成功数量
@@ -216,7 +233,7 @@ class SqliteStore:
 
             if self.save(stock_code, year, statement_type, data,
                          confidence=confidence, quality_flags=qflags,
-                         extraction_id=extraction_id):
+                         extraction_id=extraction_id, report_type=report_type):
                 count += 1
 
         return count
@@ -307,16 +324,18 @@ class SqliteStore:
             [(股票代码, [年份列表])]
         """
         conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
+        try:
+            cursor = conn.cursor()
 
-        cursor.execute("""
-            SELECT DISTINCT stock_code, report_year
-            FROM extractions
-            ORDER BY stock_code, report_year DESC
-        """)
+            cursor.execute("""
+                SELECT DISTINCT stock_code, report_year
+                FROM extractions
+                ORDER BY stock_code, report_year DESC
+            """)
 
-        rows = cursor.fetchall()
-        conn.close()
+            rows = cursor.fetchall()
+        finally:
+            conn.close()
 
         # 转换为 {股票代码: [年份]} 格式
         stock_years = {}
@@ -343,12 +362,27 @@ class SqliteStore:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
+        # 级联删除：先清理关联表
+        eid_stmt = f"{stock_code}_{year}_{statement_type}" if statement_type else f"{stock_code}_{year}_%"
+        cursor.execute("""
+            DELETE FROM extraction_items
+            WHERE extraction_id LIKE ?
+        """, (eid_stmt,))
+
         if statement_type:
+            cursor.execute("""
+                DELETE FROM extraction_archive
+                WHERE stock_code = ? AND report_year = ? AND statement_type = ?
+            """, (stock_code, year, statement_type))
             cursor.execute("""
                 DELETE FROM extractions
                 WHERE stock_code = ? AND report_year = ? AND statement_type = ?
             """, (stock_code, year, statement_type))
         else:
+            cursor.execute("""
+                DELETE FROM extraction_archive
+                WHERE stock_code = ? AND report_year = ?
+            """, (stock_code, year))
             cursor.execute("""
                 DELETE FROM extractions
                 WHERE stock_code = ? AND report_year = ?
@@ -408,6 +442,9 @@ class SqliteStore:
         Returns:
             {年份: {科目名: 值}}
         """
+        if not years:
+            return {}
+
         conn = sqlite3.connect(self.db_path)
         try:
             cursor = conn.cursor()
