@@ -1,5 +1,6 @@
 # extraction/quality_gate.py
 from typing import Dict, List, Tuple
+from extraction.config import EXPECTED_ITEMS_PER_TYPE
 
 class QualityGate:
     """质量门控 - 零容忍验证"""
@@ -97,13 +98,8 @@ class QualityGate:
             return 0.0
 
         # 基于数据完整度
-        expected_items = {
-            "balance_sheet": 20,  # 至少应有20项
-            "income_statement": 10,
-            "cash_flow": 15,
-        }
+        expected = EXPECTED_ITEMS_PER_TYPE.get(statement_type, 30) // 2
         item_count = len(data)
-        expected = expected_items.get(statement_type, 10)
         completeness = min(item_count / expected, 1.0)
 
         # 基于数值合理性

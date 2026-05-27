@@ -30,8 +30,10 @@ class SqliteStore:
         self.db_path = db_path or EXTRACTION_DB_PATH
         self._init_db()
 
+    ENGINE_VERSION = "1.0"
+
     def _init_db(self):
-        """初始化数据库表"""
+        """初始化数据库表和迁移"""
         os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
 
         conn = sqlite3.connect(self.db_path)
@@ -44,34 +46,86 @@ class SqliteStore:
                 report_year INTEGER NOT NULL,
                 statement_type TEXT NOT NULL,
                 data TEXT NOT NULL,
+                confidence REAL,
+                items_count INTEGER,
+                engine_version TEXT,
+                quality_flags TEXT,
+                extraction_id TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 UNIQUE(stock_code, report_year, statement_type)
             )
         """)
 
         cursor.execute("""
-            CREATE INDEX IF NOT EXISTS idx_stock_code
-            ON extractions(stock_code)
+            CREATE TABLE IF NOT EXISTS extraction_archive (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                stock_code TEXT NOT NULL,
+                report_year INTEGER NOT NULL,
+                statement_type TEXT NOT NULL,
+                data TEXT NOT NULL,
+                confidence REAL,
+                items_count INTEGER,
+                engine_version TEXT,
+                quality_flags TEXT,
+                extraction_id TEXT,
+                archived_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
         """)
 
         cursor.execute("""
-            CREATE INDEX IF NOT EXISTS idx_report_year
-            ON extractions(report_year)
+            CREATE TABLE IF NOT EXISTS extraction_items (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                extraction_id TEXT NOT NULL,
+                stock_code TEXT NOT NULL,
+                report_year INTEGER NOT NULL,
+                statement_type TEXT NOT NULL,
+                item_name TEXT NOT NULL,
+                item_value REAL
+            )
         """)
+
+        for idx in ["idx_stock_code", "idx_report_year", "idx_extraction_id", "idx_items_name"]:
+            if idx == "idx_stock_code":
+                cursor.execute("CREATE INDEX IF NOT EXISTS idx_stock_code ON extractions(stock_code)")
+            elif idx == "idx_report_year":
+                cursor.execute("CREATE INDEX IF NOT EXISTS idx_report_year ON extractions(report_year)")
+            elif idx == "idx_extraction_id":
+                cursor.execute("CREATE INDEX IF NOT EXISTS idx_extraction_id ON extraction_items(extraction_id)")
+            elif idx == "idx_items_name":
+                cursor.execute("CREATE INDEX IF NOT EXISTS idx_items_name ON extraction_items(statement_type, item_name)")
+
+        # 迁移：为已有 extractions 表添加新列（SQLite 不支持 IF NOT EXISTS for ALTER）
+        existing_cols = {c[1] for c in cursor.execute("PRAGMA table_info(extractions)").fetchall()}
+        for col_def in [
+            ("confidence", "REAL"),
+            ("items_count", "INTEGER"),
+            ("engine_version", "TEXT"),
+            ("quality_flags", "TEXT"),
+            ("extraction_id", "TEXT"),
+        ]:
+            if col_def[0] not in existing_cols:
+                try:
+                    cursor.execute(f"ALTER TABLE extractions ADD COLUMN {col_def[0]} {col_def[1]}")
+                except Exception:
+                    pass
 
         conn.commit()
         conn.close()
 
     def save(self, stock_code: str, year: int, statement_type: str,
-             data: Dict) -> bool:
+             data: Dict, confidence: float = None, quality_flags: list = None,
+             extraction_id: str = None) -> bool:
         """
-        保存提取结果
+        保存提取结果（含元数据和审计追踪）
 
         Args:
             stock_code: 股票代码
             year: 报告年份
             statement_type: 报表类型
             data: 提取的数据
+            confidence: 提取置信度
+            quality_flags: 质量门控标记
+            extraction_id: 提取批次ID
 
         Returns:
             是否成功
@@ -80,13 +134,50 @@ class SqliteStore:
         cursor = conn.cursor()
 
         try:
+            # 1. 存档旧记录
+            cursor.execute("""
+                SELECT data, confidence, items_count, engine_version, quality_flags, extraction_id
+                FROM extractions
+                WHERE stock_code = ? AND report_year = ? AND statement_type = ?
+            """, (stock_code, year, statement_type))
+            old = cursor.fetchone()
+            if old:
+                cursor.execute("""
+                    INSERT INTO extraction_archive
+                        (stock_code, report_year, statement_type, data,
+                         confidence, items_count, engine_version, quality_flags, extraction_id)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (stock_code, year, statement_type) + old)
+
+            # 2. 写入新记录
             data_json = json.dumps(data, ensure_ascii=False)
+            flat = data.get("data", {}) if isinstance(data, dict) else {}
+            items_count = len(flat)
+            qflags_json = json.dumps(quality_flags or [], ensure_ascii=False)
+            eid = extraction_id or f"{stock_code}_{year}_{statement_type}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+            eid_stmt = f"{eid}_{statement_type}"
 
             cursor.execute("""
                 INSERT OR REPLACE INTO extractions
-                (stock_code, report_year, statement_type, data, created_at)
-                VALUES (?, ?, ?, ?, ?)
-            """, (stock_code, year, statement_type, data_json, datetime.now().isoformat()))
+                    (stock_code, report_year, statement_type, data,
+                     confidence, items_count, engine_version, quality_flags, extraction_id, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (stock_code, year, statement_type, data_json,
+                  confidence, items_count, self.ENGINE_VERSION, qflags_json, eid_stmt,
+                  datetime.now().isoformat()))
+
+            # 3. 写入科目级数据（支持SQL查询）
+            cursor.execute("""
+                DELETE FROM extraction_items
+                WHERE extraction_id = ? AND statement_type = ?
+            """, (eid_stmt, statement_type))
+            for item_name, item_value in flat.items():
+                if isinstance(item_value, (int, float)):
+                    cursor.execute("""
+                        INSERT INTO extraction_items
+                            (extraction_id, stock_code, report_year, statement_type, item_name, item_value)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                    """, (eid_stmt, stock_code, year, statement_type, item_name, item_value))
 
             conn.commit()
             return True
@@ -100,22 +191,33 @@ class SqliteStore:
 
     def save_all(self, stock_code: str, year: int, extracted_data: Dict) -> int:
         """
-        保存所有报表类型
+        保存所有报表类型（含置信度等元数据）
 
         Args:
             stock_code: 股票代码
             year: 报告年份
-            extracted_data: {报表类型: 数据}
+            extracted_data: {报表类型: 结果}, 结果中含 confidence/quality_flags
 
         Returns:
             保存成功数量
         """
         count = 0
+        extraction_id = f"{stock_code}_{year}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
 
         for statement_type, data in extracted_data.items():
-            if data and data.get("found"):
-                if self.save(stock_code, year, statement_type, data):
-                    count += 1
+            if not isinstance(data, dict) or not data.get("found"):
+                continue
+            if statement_type in ("ratios", "quality", "indicators"):
+                continue
+
+            confidence = data.get("confidence")
+            quality = extracted_data.get("quality", {})
+            qflags = quality.get("quality_flags") if quality.get("quality_flags") else None
+
+            if self.save(stock_code, year, statement_type, data,
+                         confidence=confidence, quality_flags=qflags,
+                         extraction_id=extraction_id):
+                count += 1
 
         return count
 

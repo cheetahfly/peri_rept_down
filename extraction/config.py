@@ -133,6 +133,16 @@ ITEM_ALIAS_MAP = {
     "期末现金及现金等价物余额": ["期末现金及现金等价物余额", "年末现金及现金等价物余额"],
 }
 
+# 各报表类型的预期科目数（单源真理）
+# 恢复触发阈值 = EXPECTED_ITEMS // 3（非常少，触发深层恢复）
+# 质量门控预期 = EXPECTED_ITEMS // 2（中等，评价置信度）
+# 完整性分母   = EXPECTED_ITEMS     （100% = 完整提取）
+EXPECTED_ITEMS_PER_TYPE = {
+    "balance_sheet": 30,
+    "income_statement": 20,
+    "cash_flow": 30,
+}
+
 # 各报表类型的标准科目列表（按展示顺序）
 STATEMENT_TYPE_STANDARD_ITEMS = {
     "balance_sheet": [

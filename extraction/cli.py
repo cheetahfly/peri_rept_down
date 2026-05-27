@@ -211,6 +211,7 @@ def extract_single_pdf(pdf_path: str, output_dir: str = None,
 
                 if result.get("found"):
                     confidence = extractor.calculate_confidence(result)
+                    result["confidence"] = confidence["overall"]
                     print(f"    成功: {len(result.get('data', {}))} 条数据, 置信度: {confidence['overall']:.1%}")
                 else:
                     print(f"    失败: {result.get('error', '未知错误')}")

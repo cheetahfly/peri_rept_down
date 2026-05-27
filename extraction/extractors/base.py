@@ -13,7 +13,7 @@ import pandas as pd
 
 from extraction.parsers.pdf_parser import PdfParser
 from extraction.parsers.table_parser import TableParser
-from extraction.config import SECTION_KEYWORDS
+from extraction.config import SECTION_KEYWORDS, EXPECTED_ITEMS_PER_TYPE
 
 logger = logging.getLogger(__name__)
 
@@ -97,8 +97,7 @@ class BaseExtractor(ABC):
 
         # NEW: Quality gate — if found but very few items, try auto-recovery
         found_items = len(normalized_data)
-        min_items_for_quality = {"balance_sheet": 10, "income_statement": 5, "cash_flow": 5}
-        min_items = min_items_for_quality.get(self.STATEMENT_TYPE, 5)
+        min_items = EXPECTED_ITEMS_PER_TYPE.get(self.STATEMENT_TYPE, 30) // 3
 
         if found_items < min_items:
             from extraction.semantic_recovery import SemanticRecovery
@@ -1383,7 +1382,8 @@ class BaseExtractor(ABC):
 
         total_items = len(items)
 
-        item_count_score = min(total_items / 40, 1.0)
+        expected = EXPECTED_ITEMS_PER_TYPE.get(self.STATEMENT_TYPE, 30)
+        item_count_score = min(total_items / expected, 1.0)
 
         expected_key_items = min(len(key_items_to_find), 5) if key_items_to_find else 5
         key_item_score = min(key_items_found / expected_key_items, 1.0)
