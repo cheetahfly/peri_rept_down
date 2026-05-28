@@ -321,6 +321,20 @@ class PdfParser:
 
             if has_chinese:
                 current_table.append(parts)
+            elif len(parts) >= 2:
+                # CID\u5b57\u4f53\u56de\u9000\uff1a\u6587\u672c\u53ef\u80fd\u4e71\u7801\uff08\u65e0\u6709\u6548\u4e2d\u6587\u5b57\u7b26\uff09\uff0c\u4f46\u5305\u542b\u5927\u6570\u5b57\u548c
+                # \u6587\u672c\u5b57\u7b26\u7684\u4ecd\u53ef\u80fd\u662f\u8d22\u52a1\u6570\u636e\u884c\uff08\u5982"\u5229\u606f\u6536\u5165"\u4e71\u7801\u6210\u5176\u4ed6\u5b57\u7b26\uff09\u3002
+                has_text = any(c.isalpha() for c in parts[0])
+                has_large_num = False
+                for p in parts[1:]:
+                    try:
+                        if abs(float(p.replace(",", "").replace("\uff0c", ""))) >= 1000:
+                            has_large_num = True
+                            break
+                    except ValueError:
+                        continue
+                if has_text and has_large_num:
+                    current_table.append(parts)
 
         # 移除表头行（如果存在）
         if current_table:

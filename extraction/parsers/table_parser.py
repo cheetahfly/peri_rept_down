@@ -224,6 +224,10 @@ class TableParser:
                 value = best_value
 
             if value is not None:
+                # Keep larger absolute value when duplicate names exist (e.g. 利息收入
+                # appears both as main item (3B+) and as sub-item under 财务费用 (278M))
+                if item_name in result and abs(value) <= abs(result[item_name]):
+                    continue
                 result[item_name] = value
 
         return result

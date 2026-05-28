@@ -25,6 +25,13 @@ class BaseExtractor(ABC):
     STATEMENT_TYPE = None  # 报表类型标识
     SECTION_KEYWORDS = []  # 关键词列表
 
+    # 母公司报表标题关键词（用于过滤，只保留合并报表）
+    _PARENT_HEADERS = {
+        "cash_flow": ["母公司现金流量表"],
+        "income_statement": ["母公司利润表", "母公司损益表"],
+        "balance_sheet": ["母公司资产负债表", "母公司资产表"],
+    }
+
     def __init__(self, pdf_parser: PdfParser):
         """
         初始化提取器
@@ -77,8 +84,8 @@ class BaseExtractor(ABC):
                 "error": "未找到报表页面",
             }
 
-        # 提取报表数据（利润表优先使用文本解析以避免表格结构误判）
-        prefer_text = self.STATEMENT_TYPE == "income_statement"
+        # 提取报表数据（利润表和现金流量表优先使用文本解析以避免表格结构误判）
+        prefer_text = self.STATEMENT_TYPE in ("income_statement", "cash_flow")
         tables_data = self._extract_tables_from_pages(parser, section_pages, prefer_text_parse=prefer_text)
 
         # 合并跨页表格
@@ -336,10 +343,68 @@ class BaseExtractor(ABC):
                     logger.info("CID fallback: multiple sections via gap, keeping first block: %s", first_block)
                     real_pages = first_block
 
+        # 现金流量表补充资料：在去重逻辑之后追加，避免被非连续块过滤掉
+        if self.STATEMENT_TYPE == "cash_flow":
+            supp_pages = self._find_cf_supplementary_pages(parser)
+            for p in supp_pages:
+                if p not in real_pages:
+                    text = parser.extract_text(p)
+                    if text and not self._is_appendix_page(text):
+                        real_pages.append(p)
+            real_pages.sort()
+
         return real_pages
 
     # 子类需要定义的科目关键词（用于过滤）
     STATEMENT_ITEMS = []
+
+    def _find_cf_supplementary_pages(self, parser: 'PdfParser') -> List[int]:
+        """
+        查找现金流量表补充资料页面（间接法调节项目）
+
+        间接法调节项目（现金流量表补充资料）将净利润调节为经营活动现金流量，
+        包含折旧、摊销、存货变动、应收应付变动等调节项。这些页面通常独立于
+        主现金流量表页面，可能出现在 PDF 稍后位置（如附注前）。
+
+        Returns:
+            补充资料页面列表
+        """
+        extra = set()
+
+        # 精确匹配间接法补充资料的唯一性标题
+        header_patterns = [
+            re.compile(r'将净利润调节为经营活动现金流量'),
+            re.compile(r'现金流量表补充资料'),
+        ]
+
+        for page_num in range(parser.page_count):
+            text = parser.extract_text(page_num)
+            if not text:
+                continue
+            for pattern in header_patterns:
+                if pattern.search(text):
+                    if re.search(r'[\d,]{6,}', text):
+                        extra.add(page_num)
+                        break
+
+        # 补充资料的延续页：紧跟在已匹配页之后的页面，且包含调节项目典型特征
+        if extra:
+            min_supp = min(extra)
+            max_supp = max(extra)
+            for p in range(max(0, min_supp - 1), min(parser.page_count, max_supp + 3)):
+                if p in extra:
+                    continue
+                text = parser.extract_text(p)
+                if not text or not re.search(r'[\d,]{6,}', text):
+                    continue
+                adj_kw = ['折旧', '摊销', '存货', '应收', '应付', '净利润',
+                           '固定资产', '无形资产', '公允价值', '投资损失',
+                           '递延所得税', '信用减值']
+                hits = sum(1 for kw in adj_kw if kw in text)
+                if hits >= 2:
+                    extra.add(p)
+
+        return sorted(extra)
 
     def _find_cf_continuation_pages(self, parser: 'PdfParser') -> List[int]:
         """
@@ -538,22 +603,30 @@ class BaseExtractor(ABC):
             # 资产负债表（可选章节编号前缀），含合并/母公司/银行变体
             # layout=True会在文本前添加空格，因此用\s*处理行首空白
             section_prefix = r'(?:\d+[\.、]?\s*)?'
+            # 仅匹配前40%行范围内的标题——避免页面底部的"母公司资产负债表"等
+            # 下一章节标记被误判为当前页的section header，导致去重逻辑丢弃权益部分
+            lines = text.split('\n')
+            header_zone = max(5, len(lines) * 2 // 5)
+            page_top = '\n'.join(lines[:header_zone])
             for kw in ['合并资产负债表', '母公司资产负债表', '银行资产负债表', '资产负债表']:
-                if re.search(rf'^\s*{section_prefix}{re.escape(kw)}\s*$', text, re.MULTILINE):
+                if re.search(rf'^\s*{section_prefix}{re.escape(kw)}\s*$', page_top, re.MULTILINE):
                     return True
             # 如果"资产负债表"在行首后跟数字（非延续页的简单表格），也算
-            if re.search(r'^\s*资产负债表\s+[\d,]', text, re.MULTILINE):
+            if re.search(r'^\s*资产负债表\s+[\d,]', page_top, re.MULTILINE):
                 return True
 
         elif self.STATEMENT_TYPE == "cash_flow":
             # 现金流量表（可选章节编号前缀），含(续)后缀
             section_prefix = r'(?:\d+[\.、]?\s*)?'
+            lines = text.split('\n')
+            header_zone = max(5, len(lines) * 2 // 5)
+            page_top = '\n'.join(lines[:header_zone])
             for kw in ['合并现金流量表', '母公司现金流量表', '银行现金流量表', '现金流量表']:
-                if re.search(rf'^\s*{section_prefix}{re.escape(kw)}(?:\(续\))?\s*$', text, re.MULTILINE):
+                if re.search(rf'^\s*{section_prefix}{re.escape(kw)}(?:\(续\))?\s*$', page_top, re.MULTILINE):
                     return True
             # 同时检查 CF 章节：数字+顿号开头，后面跟经营活动/投资活动/筹资活动
             section_pattern = r'[一二三四五六七八九十]、.{0,15}(经营|投资|筹资)活动.{0,30}(现金|流量|净额)'
-            if re.search(section_pattern, text):
+            if re.search(section_pattern, page_top):
                 return True
 
         else:
@@ -601,10 +674,15 @@ class BaseExtractor(ABC):
             return False
 
         # 同时检查延续页标题（如"合并资产负债表(续)"），同样不是附注页
+        # 注意：CID字体PDF中关键词可能乱码，因此同时检查(续)出现在页面前几行
         section_prefix = r'(?:\d+[\.、]?\s*)?'
         cont_kws = SECTION_KEYWORDS.get(self.STATEMENT_TYPE, [])
-        if any(re.search(rf'^\s*{section_prefix}{re.escape(kw)}\(续\)\s*$', text, re.MULTILINE)
+        if any(re.search(rf'^\s*{section_prefix}{re.escape(kw)}\s*\(续\)\s*$', text, re.MULTILINE)
                for kw in cont_kws):
+            return False
+        # CID字体回退：检查(续)是否出现在前20行（不受关键词乱码影响）
+        first_lines = text.split('\n')[:20]
+        if any('(续)' in line or '（续）' in line for line in first_lines):
             return False
 
         # 整页扫描是否存在"财务报表附注"（notes页面的明确标志）
@@ -612,6 +690,11 @@ class BaseExtractor(ABC):
             # 排除"后附财务报表附注为财务报表的组成部分"（报表页标准脚注，非附注页）
             # 真正的附注页至少会有2处"财务报表附注"（如标题+章节号或正文引用）
             if '后附财务报表附注为财务报表的组成部分' in text:
+                if text.count('财务报表附注') <= 1:
+                    return False
+            else:
+                # CID字体回退：免责声明文本可能乱码无法匹配，
+                # 但"财务报表附注"仅出现一次时仍是页脚引用而非附注页
                 if text.count('财务报表附注') <= 1:
                     return False
             return True
@@ -636,12 +719,21 @@ class BaseExtractor(ABC):
                                                '会计估计', '税项', '合并范围', '分部报告']):
                     return True
 
-        # 检查全文是否包含"会计政策"说明或附注编号（如"附注三"、"附注四"）
-        # 这是notes页面的辅助判断（避免误判主表页面上因表格包含"附注"列而被排除）
+        # 检查全文是否包含附注编号（如"附注三"、"附注四"）
+        # 这是notes页面的辅助判断——但需要排除主表页面上附注列的误匹配。
+        # 只有当附注编号出现在行首附近（section标题格式），而非表格列中间时，才判定为附注页
         note_section_refs = ['附注三', '附注四', '附注五', '附注六', '附注七',
                               '附注八', '附注九', '附注十', '附注十一', '附注十二']
-        if any(ref in header_area for ref in note_section_refs):
-            return True
+        for ref in note_section_refs:
+            for line in lines[:15]:
+                if ref in line:
+                    # 检查是否出现在行首±5字符范围内（section标题特征）
+                    stripped = line.lstrip()
+                    idx = stripped.find(ref)
+                    if idx >= 0 and idx <= 5:
+                        # 进一步确认不是表格行：行中没有大数字（4位+）
+                        if not re.search(r'\d{4,}', line):
+                            return True
 
         # 会计政策说明语句（notes页的典型内容特征）
         # 这些短语在BS/IS/CF主表页面上几乎不会出现
@@ -712,6 +804,52 @@ class BaseExtractor(ABC):
         # CID乱码：低中文比例 + 无长中文连续串（正常页面必有4+字科目名）
         return ratio < 0.3 and max_run < 4
 
+    def _page_has_parent_header(self, parser: PdfParser, page_num: int) -> bool:
+        """检查页面是否包含母公司报表标题"""
+        headers = self._PARENT_HEADERS.get(self.STATEMENT_TYPE, [])
+        if not headers:
+            return False
+        text = parser.extract_text(page_num)
+        return any(h in text for h in headers)
+
+    def _filter_parent_company_tables(
+        self, parser: PdfParser, page_num: int,
+        tables: List[pd.DataFrame],
+        continuation_table, continuation_columns
+    ) -> Tuple[List[pd.DataFrame], object, object]:
+        """过滤母公司报表的表，只保留合并报表的表。"""
+        headers = self._PARENT_HEADERS.get(self.STATEMENT_TYPE, [])
+        if not tables or not headers:
+            return tables, continuation_table, continuation_columns
+
+        page_text = parser.extract_text(page_num)
+        found_header = None
+        for h in headers:
+            if h in page_text:
+                found_header = h
+                break
+        if not found_header:
+            return tables, continuation_table, continuation_columns
+
+        page = parser.doc.pages[page_num]
+        search_results = page.search(found_header)
+        if not search_results:
+            return tables, continuation_table, continuation_columns
+
+        header_bottom = search_results[0]['bottom'] + 5  # 5px 容差
+        raw_tables = page.find_tables()
+        if not raw_tables:
+            return tables, continuation_table, continuation_columns
+
+        consolidated_count = sum(1 for t in raw_tables if t.bbox[3] <= header_bottom)
+        if consolidated_count >= len(tables):
+            return tables, continuation_table, continuation_columns
+
+        tables = tables[:consolidated_count]
+        continuation_table = None
+        continuation_columns = None
+        return tables, continuation_table, continuation_columns
+
     def _extract_tables_from_pages(
         self, parser: PdfParser, pages: List[int], prefer_text_parse: bool = False
     ) -> List[Tuple[int, pd.DataFrame]]:
@@ -731,9 +869,21 @@ class BaseExtractor(ABC):
         prev_columns = None
 
         for page_num in pages:
+            # 母公司报表页：改用 pdfplumber 表提取（保持表分离，便于按位置过滤）
+            use_text_parse = prefer_text_parse
+            if prefer_text_parse and self._page_has_parent_header(parser, page_num):
+                use_text_parse = False
+
             tables, continuation_table, continuation_columns = (
                 parser.extract_tables_with_continuation(
-                    page_num, prev_table, prev_columns, prefer_text_parse=prefer_text_parse
+                    page_num, prev_table, prev_columns, prefer_text_parse=use_text_parse
+                )
+            )
+
+            # 过滤母公司报表的表
+            tables, continuation_table, continuation_columns = (
+                self._filter_parent_company_tables(
+                    parser, page_num, tables, continuation_table, continuation_columns
                 )
             )
 
@@ -991,6 +1141,7 @@ class BaseExtractor(ABC):
                 for key, value in items.items():
                     clean_key = TableParser.clean_text(key)
 
+                    # 跨表重复：跳过（合并/母公司已在表级过滤）
                     if clean_key in seen_keys:
                         continue
 

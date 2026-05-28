@@ -98,8 +98,9 @@ find_stocks.py
 search_2025.py
 UNSUPPORTED_PDFS.py
 expansion_test*.py
-!expansion_test.py
-!expansion_test_v2.py
+!scripts/expansion_test.py
+!scripts/expansion_test_v2.py
+scripts/gen_cf_*.py
 
 # Progress tracking (regenerate from code)
 PROGRESS_*.md

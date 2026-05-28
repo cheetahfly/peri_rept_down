@@ -280,3 +280,130 @@ def analyze_value_matches(
 
     suggestions.sort(key=lambda x: -x.confidence)
     return suggestions
+
+
+class GapAnalyzer:
+    """Analyzes comparison report dicts and suggests new aliases.
+
+    Works with the detailed_report() output from ComparisonResult.
+    """
+
+    def __init__(self, min_similarity: float = 0.7):
+        self.min_similarity = min_similarity
+
+    @staticmethod
+    def _name_similarity(a: str, b: str) -> float:
+        """Calculate name similarity between two strings."""
+        if a == b:
+            return 1.0
+        if a in b or b in a:
+            shorter, longer = (a, b) if len(a) <= len(b) else (b, a)
+            return 0.7 + 0.3 * (len(shorter) / len(longer))
+        return SequenceMatcher(None, a, b).ratio()
+
+    def analyze(self, report: Dict) -> List[Dict]:
+        """Analyze a detailed report and suggest aliases.
+
+        Args:
+            report: Dict with keys: missing_items, unmatched_items, value_diffs
+                    (output of ComparisonResult.detailed_report())
+
+        Returns:
+            List of suggestion dicts with type, standard_name, variants/reason.
+        """
+        suggestions = []
+
+        missing = report.get("missing_items", [])
+        unmatched = report.get("unmatched_items", [])
+
+        # Group unmatched by potential standard name
+        unmatched_groups = defaultdict(list)
+        for item in unmatched:
+            unmatched_groups[item["name"]].append(item)
+
+        # Try to match each missing item to unmatched items
+        for missing_item in missing:
+            missing_name = missing_item["name"]
+            missing_code = missing_item.get("code")
+
+            similar_variants = []
+            for unmatched_name in unmatched_groups:
+                similarity = self._name_similarity(missing_name, unmatched_name)
+                if similarity >= self.min_similarity:
+                    similar_variants.append(unmatched_name)
+
+            if similar_variants:
+                suggestions.append({
+                    "type": "alias_suggestion",
+                    "standard_name": missing_name,
+                    "code": missing_code,
+                    "variants": similar_variants,
+                    "reason": "unmatched_item_similar_to_missing",
+                })
+
+        # Check for value mismatches (potential unit differences)
+        value_diffs = report.get("value_diffs", [])
+        for diff in value_diffs:
+            gt_val = diff.get("ground_truth_value")
+            ext_val = diff.get("extracted_value")
+            if gt_val and ext_val:
+                ratio = gt_val / ext_val
+                if 9900 < ratio < 10100:  # ~10000x
+                    suggestions.append({
+                        "type": "unit_suggestion",
+                        "standard_name": diff["name"],
+                        "code": diff.get("code"),
+                        "suggested_unit": "万元",
+                        "reason": "value_off_by_10000x",
+                    })
+                elif 0.00009 < ratio < 0.00011:  # ~1/10000
+                    suggestions.append({
+                        "type": "unit_suggestion",
+                        "standard_name": diff["name"],
+                        "code": diff.get("code"),
+                        "suggested_unit": "亿元",
+                        "reason": "value_off_by_1billion",
+                    })
+
+        return suggestions
+
+    def generate_yaml_updates(
+        self, suggestions: List[Dict], statement_type: str = "income_statement"
+    ) -> Dict[str, Dict[str, List[str]]]:
+        """Generate YAML update structure from suggestions.
+
+        Args:
+            suggestions: Output of analyze().
+            statement_type: Default statement type for alias suggestions.
+
+        Returns:
+            Dict mapping statement_type -> standard_name -> list of variants.
+        """
+        updates = defaultdict(lambda: defaultdict(list))
+
+        for suggestion in suggestions:
+            if suggestion["type"] == "alias_suggestion":
+                standard = suggestion["standard_name"]
+                variants = suggestion["variants"]
+                updates[statement_type][standard].extend(variants)
+
+        return dict(updates)
+
+    def print_report(self, suggestions: List[Dict]) -> List[Dict]:
+        """Print a summary of suggestions and return them."""
+        print("\n" + "=" * 70)
+        print("GAP ANALYSIS REPORT")
+        print("=" * 70)
+
+        alias_suggestions = [s for s in suggestions if s["type"] == "alias_suggestion"]
+        unit_suggestions = [s for s in suggestions if s["type"] == "unit_suggestion"]
+
+        print(f"\nAlias suggestions: {len(alias_suggestions)}")
+        for s in alias_suggestions[:10]:
+            print(f"  {s['standard_name']}: {s['variants']}")
+
+        print(f"\nUnit suggestions: {len(unit_suggestions)}")
+        for s in unit_suggestions[:5]:
+            print(f"  {s['standard_name']}: {s['suggested_unit']}")
+
+        return suggestions

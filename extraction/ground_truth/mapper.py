@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 from difflib import SequenceMatcher
 from typing import Dict, List, Optional, Set
 
+from extraction.config import get_aliases
 from extraction.ground_truth.comparator import normalize_name, load_extracted_json
 from extraction.ground_truth.rds_loader import RdsLoader, META_COLS
 
@@ -41,14 +42,28 @@ class ItemMapper:
         stock_codes: List[str],
         years: List[int],
         statement_types: List[str] = None,
+        industry: str = None,
+        report_type: str = "annual",
     ) -> List[NameMapping]:
         """
         Discover mappings between extracted and RDS names.
+
+        Args:
+            stock_codes: List of stock codes to analyze
+            years: List of years to analyze
+            statement_types: Statement types to include (default: all three)
+            industry: Industry code for industry-specific alias matching (reserved)
+            report_type: Report type for alias lookup ('annual', 'half_year', etc.)
 
         Returns: list of NameMapping
         """
         if statement_types is None:
             statement_types = ["income_statement", "balance_sheet", "cash_flow"]
+
+        # Pre-load aliases for each statement type
+        aliases_by_st = {}
+        for st in statement_types:
+            aliases_by_st[st] = get_aliases(st, report_type)
 
         # Collect all mappings across stocks
         all_mappings = defaultdict(lambda: {
@@ -71,8 +86,9 @@ class ItemMapper:
                     if not ext_data:
                         continue
 
-                    # Find mappings
-                    mappings = self._find_mappings(gt_data, ext_data, stock_code, year, st)
+                    # Find mappings with alias support
+                    aliases = aliases_by_st.get(st)
+                    mappings = self._find_mappings(gt_data, ext_data, stock_code, year, st, aliases=aliases)
                     for ext_name, rds_name, confidence, values_compared, values_matched in mappings:
                         key = (ext_name, rds_name)
                         all_mappings[key]["rds_name"] = rds_name
@@ -105,9 +121,33 @@ class ItemMapper:
         stock_code: str,
         year: int,
         statement_type: str,
+        aliases: Dict[str, List[str]] = None,
     ) -> List[tuple]:
-        """Find mappings between GT and extracted data for one stock."""
+        """
+        Find mappings between GT and extracted data for one stock.
+
+        Uses a three-tier matching strategy:
+          1. Exact match (normalized name equality)
+          2. Alias match (using hierarchical aliases from aliases.yaml)
+          3. Fuzzy match (sequence similarity)
+
+        Args:
+            aliases: Dict mapping standard_name -> list of variant names.
+                     When provided, enables alias-based matching.
+        """
         mappings = []
+
+        # Build reverse alias lookup: variant (normalized) -> standard_name
+        reverse_aliases = {}
+        if aliases:
+            for standard, variants in aliases.items():
+                norm_std = normalize_name(standard)
+                if norm_std:
+                    reverse_aliases[norm_std] = standard
+                for variant in variants:
+                    norm_v = normalize_name(variant)
+                    if norm_v:
+                        reverse_aliases[norm_v] = standard
 
         # Build normalized extracted names
         norm_ext = {}
@@ -127,19 +167,59 @@ class ItemMapper:
             best_match = None
             best_score = 0.0
 
-            for norm_ext_name, (ext_name, ext_val) in norm_ext.items():
-                # Name similarity
-                name_sim = self._name_similarity(norm_gt, norm_ext_name)
-
-                # Value similarity
+            # --- Tier 1: exact match (normalized) ---
+            if norm_gt in norm_ext:
+                ext_name, ext_val = norm_ext[norm_gt]
                 val_sim = self._value_similarity(gt_val, ext_val)
-
-                # Combined score (name is primary)
-                score = 0.7 * name_sim + 0.3 * val_sim
-
-                if score > best_score and score >= 0.6:
+                score = 0.7 + 0.3 * val_sim  # base 0.7 for exact name
+                if score > best_score:
                     best_score = score
-                    best_match = (ext_name, name_sim, val_sim)
+                    best_match = (ext_name, 1.0, val_sim)
+
+            # --- Tier 2: alias match ---
+            if best_match is None and aliases:
+                # Build normalized alias lookup (keys are normalized standard names)
+                norm_aliases = {}
+                for std_name, variants in aliases.items():
+                    norm_std = normalize_name(std_name)
+                    if norm_std:
+                        norm_aliases[norm_std] = variants
+
+                # Check if norm_gt is a standard name; if so, try its variants
+                if norm_gt in norm_aliases:
+                    for variant in norm_aliases[norm_gt]:
+                        norm_v = normalize_name(variant)
+                        if norm_v in norm_ext:
+                            ext_name, ext_val = norm_ext[norm_v]
+                            val_sim = self._value_similarity(gt_val, ext_val)
+                            score = 0.65 + 0.3 * val_sim
+                            if score > best_score:
+                                best_score = score
+                                best_match = (ext_name, 0.9, val_sim)
+                            break
+
+                # Check reverse aliases (variant -> standard)
+                if best_match is None:
+                    standard = reverse_aliases.get(norm_gt)
+                    if standard:
+                        norm_std = normalize_name(standard)
+                        if norm_std in norm_ext:
+                            ext_name, ext_val = norm_ext[norm_std]
+                            val_sim = self._value_similarity(gt_val, ext_val)
+                            score = 0.65 + 0.3 * val_sim
+                            if score > best_score:
+                                best_score = score
+                                best_match = (ext_name, 0.9, val_sim)
+
+            # --- Tier 3: fuzzy match ---
+            if best_match is None:
+                for norm_ext_name, (ext_name, ext_val) in norm_ext.items():
+                    name_sim = self._name_similarity(norm_gt, norm_ext_name)
+                    val_sim = self._value_similarity(gt_val, ext_val)
+                    score = 0.7 * name_sim + 0.3 * val_sim
+                    if score > best_score and score >= 0.6:
+                        best_score = score
+                        best_match = (ext_name, name_sim, val_sim)
 
             if best_match:
                 ext_name, name_sim, val_sim = best_match
@@ -166,7 +246,12 @@ class ItemMapper:
             data = json.load(f)
         inner = data.get("data", data)
         if isinstance(inner, dict) and "data" in inner:
-            return inner["data"]
+            raw = inner["data"]
+            if isinstance(raw, dict):
+                # Filter to numeric values only to prevent downstream TypeError
+                return {k: float(v) for k, v in raw.items() if isinstance(v, (int, float))}
+        if isinstance(inner, dict):
+            return {k: float(v) for k, v in inner.items() if isinstance(v, (int, float))}
         return {}
 
     def _name_similarity(self, a: str, b: str) -> float:
