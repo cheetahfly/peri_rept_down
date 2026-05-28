@@ -16,6 +16,22 @@ import os
 from typing import Dict, List, Optional, Tuple
 
 import pyreadr
+import yaml
+
+
+# Field display order from rules/field_order.yaml
+FIELD_ORDER_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+    "rules", "field_order.yaml"
+)
+
+def _load_field_order() -> Dict[str, Dict[str, int]]:
+    """Load field display order for each statement type."""
+    try:
+        with open(FIELD_ORDER_PATH, 'r', encoding='utf-8') as f:
+            return yaml.safe_load(f)
+    except FileNotFoundError:
+        return {}
 
 
 # Financial company stock codes (use _f tables)
@@ -57,6 +73,7 @@ class RdsLoader:
     def __init__(self, data_dir: str, decode_map_path: str = None):
         self.data_dir = data_dir
         self._decode_maps = self._load_decode_maps(decode_map_path)
+        self._field_order = _load_field_order()
         self._cache: Dict[str, object] = {}
 
     def _load_decode_maps(self, path: str = None) -> Dict[str, Dict[str, str]]:
@@ -156,6 +173,87 @@ class RdsLoader:
             if data:
                 result[st] = data
         return result
+
+    def load_stock_data_tidy(
+        self,
+        stock_code: str,
+        year: int,
+        statement_type: str,
+    ) -> List[Dict]:
+        """
+        Return Ground Truth data in Tidy Data format.
+
+        Returns: List[Dict] with fields:
+            stock_code, report_year, report_type, statement_type,
+            item_code, item_name, value, display_order
+        """
+        is_fin = self._is_financial(stock_code)
+        filename = TABLE_MAP.get((is_fin, statement_type))
+        if filename is None:
+            return []
+
+        df = self._load_rds(filename)
+        subset = df[df["SECCODE"] == stock_code]
+
+        # Filter by year
+        target_date = f"{year}-12-31"
+        row = subset[subset["ENDDATE"] == target_date]
+        if len(row) == 0:
+            target_date = f"{year + 1}-03-31"
+            row = subset[subset["ENDDATE"] == target_date]
+        if len(row) == 0:
+            return []
+
+        row = row.iloc[0]
+
+        # Determine report_type from date
+        month = int(target_date.split('-')[1])
+        report_type = self._date_to_report_type(month)
+
+        # Get decode map and field order for this statement type
+        decode_map = self._decode_maps.get(statement_type, {})
+        field_order_map = self._field_order.get(statement_type, {})
+
+        # Extract data
+        result = []
+        for col in df.columns:
+            if col in META_COLS:
+                continue
+            if col not in decode_map:
+                continue
+            val = row[col]
+            if val is not None and str(val) != "nan":
+                item_name = decode_map[col]
+                display_order = field_order_map.get(col, 999)
+                try:
+                    result.append({
+                        "stock_code": stock_code,
+                        "report_year": year,
+                        "report_type": report_type,
+                        "statement_type": statement_type,
+                        "item_code": col,
+                        "item_name": item_name,
+                        "value": float(val),
+                        "display_order": display_order,
+                    })
+                except (ValueError, TypeError):
+                    pass
+
+        # Sort by display_order
+        result.sort(key=lambda x: x["display_order"])
+        return result
+
+    def _date_to_report_type(self, month: int) -> str:
+        """Determine report type from month."""
+        if month == 12:
+            return "annual"
+        elif month == 6:
+            return "half_year"
+        elif month == 3:
+            return "quarter_q1"
+        elif month == 9:
+            return "quarter_q3"
+        return "annual"
 
     def list_periods(self, stock_code: str) -> List[str]:
         """List all available periods for a stock in the RDS."""
