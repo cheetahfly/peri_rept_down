@@ -250,165 +250,44 @@ def compare_stock(
             if nk not in norm_ext:  # Keep first occurrence to avoid overwrite
                 norm_ext[nk] = (k, v)
 
-    # Match ground truth items to extracted items
+    # Strategy-driven matching chain: ordered list of (name, func)
+    # Each func receives: (gt_name, gt_val, norm_gt, exact_ext, norm_ext, matched_keys)
+    # Returns: (ext_name, ext_val, match_type) or None
+    _STRATEGY = [
+        ("exact_original", lambda n,v,ng,ee,ne,mk:
+            (n,ee[n],"exact") if n in ee and _compare_values(v,ee[n]) is not None and _compare_values(v,ee[n])<10 else None),
+        ("exact_norm", lambda n,v,ng,ee,ne,mk:
+            (ne[ng][0],ne[ng][1],"exact") if ng in ne and _compare_values(v,ne[ng][1]) is not None and _compare_values(v,ne[ng][1])<10 else None),
+        ("alias", lambda n,v,ng,ee,ne,mk:
+            next(((va,ne[_mv(va)][1],"alias") for va in alias_map.get(ng,[]) if (_mv:=normalize_name)(va) in ne),None) if ng in alias_map else None),
+        ("reverse_alias", lambda n,v,ng,ee,ne,mk:
+            (ne[_ms(s)][0],ne[_ms(s)][1],"alias") if (s:=reverse_aliases.get(ng)) and (_ms:=normalize_name)(s) in ne else None),
+        ("fuzzy", lambda n,v,ng,ee,ne,mk:
+            (lambda b:(b[2],b[3],"fuzzy") if b[0]>=0.7 else None)(max([(0.6*_name_similarity(ng,nk)+0.4*(1-_compare_values(v,vl)/100),nk,ok,vl) for nk,(ok,vl) in ne.items() if ok not in mk and _name_similarity(ng,nk)>=0.8 and _compare_values(v,vl) is not None and _compare_values(v,vl)<10],default=[0]))),
+        ("cid", lambda n,v,ng,ee,ne,mk:
+            (lambda c:(c[0][0],c[0][1],"cid_value") if len(c)==1 else None)([(ok,vl) for nk,(ok,vl) in ne.items() if ok not in mk and _compare_values(v,vl) is not None and _compare_values(v,vl)<1.0])),
+        ("keyword", lambda n,v,ng,ee,ne,mk:
+            next(((ok,vl,"keyword") for kw in _extract_keywords(n) for nk,(ok,vl) in ne.items() if ok not in mk and any(k in nk for k in _extract_keywords(n)) and _compare_values(v,vl) is not None and _compare_values(v,vl)<5.0),
+                 next(((ok,vl,"keyword") for kw in _extract_keywords(n) for nk,(ok,vl) in ne.items() if ok in mk and any(k in nk for k in _extract_keywords(n)) and _compare_values(v,vl) is not None and _compare_values(v,vl)<1.0),None)) if _extract_keywords(n) else None),
+        ("redundant", lambda n,v,ng,ee,ne,mk:
+            next(((ok,vl,"redundant") for nk,(ok,vl) in ne.items() if ok in mk and _compare_values(v,vl) is not None and _compare_values(v,vl)<1.0),None)),
+        ("value_exact", lambda n,v,ng,ee,ne,mk:
+            next(((ek,ev,"value_exact") for ek,ev in ext_data.items() if ek not in mk and _compare_values(v,ev) is not None and _compare_values(v,ev)<0.001),None)),
+    ]
+
     matched_ext_keys = set()
     for gt_name, gt_val in gt_data.items():
-        # Skip non-financial metadata
         if gt_name in SKIP_ITEMS or "编码" in gt_name or "来源" in gt_name or "F0" in gt_name:
             continue
-
-        ext_name = None
-        ext_val = None
+        ext_name = ext_val = None
         match_type = "missing"
+        ng = normalize_name(gt_name)
 
-        # Normalize gt_name for comparison
-        norm_gt = normalize_name(gt_name)
-
-        # 1. Exact match (original name first)
-        if gt_name in exact_ext:
-            orig_key = gt_name
-            ext_val = exact_ext[gt_name]
-            match_check = _compare_values(gt_val, ext_val)
-            if match_check is not None and match_check < 10:
-                ext_name = orig_key
-                match_type = "exact"
-
-        if match_type == "missing":
-            # 2. Normalized exact match
-            if norm_gt in norm_ext:
-                orig_key, ext_val = norm_ext[norm_gt]
-                value_error = _compare_values(gt_val, ext_val)
-                if value_error is not None and value_error < 10:
-                    ext_name = orig_key
-                    match_type = "exact"
-                else:
-                    ext_val = None
-            else:
-                # 3. Alias match
-                if norm_gt in alias_map:
-                    for variant in alias_map[norm_gt]:
-                        norm_v = normalize_name(variant)
-                        if norm_v in norm_ext:
-                            orig_key, ext_val = norm_ext[norm_v]
-                            ext_name = orig_key
-                            match_type = "alias"
-                            break
-
-                # 4. Check reverse aliases (variant -> standard)
-            if match_type == "missing":
-                standard = reverse_aliases.get(norm_gt)
-                if standard:
-                    norm_std = normalize_name(standard)
-                    if norm_std in norm_ext:
-                        orig_key, ext_val = norm_ext[norm_std]
-                        ext_name = orig_key
-                        match_type = "alias"
-
-            if match_type == "missing":
-                # 4. Fuzzy match with value validation
-                best_score = 0.0
-                best_key = None
-                best_orig = None
-                best_val = None
-                for norm_k, (orig_k, v) in norm_ext.items():
-                    if orig_k in matched_ext_keys:
-                        continue
-                    name_score = _name_similarity(norm_gt, norm_k)
-                    # Require high name similarity AND value similarity
-                    if name_score >= 0.8:
-                        val_score = _compare_values(gt_val, v)
-                        if val_score is not None and val_score < 10:  # <10% error
-                            combined = 0.6 * name_score + 0.4 * (1 - val_score/100)
-                            if combined > best_score:
-                                best_score = combined
-                                best_key = norm_k
-                                best_orig = orig_k
-                                best_val = v
-                if best_score >= 0.7:
-                    ext_name = best_orig
-                    ext_val = best_val
-                    match_type = "fuzzy"
-
-            if match_type == "missing":
-                # 5. CID字体回退：纯数值匹配
-                # CID字体PDF中科目名称乱码，但数值正确。当名称匹配全部失败时，
-                # 尝试仅通过数值找到匹配项（要求值误差<1%且未匹配的提取项唯一）
-                best_v = None
-                best_k = None
-                candidates = []
-                for norm_k, (orig_k, v) in norm_ext.items():
-                    if orig_k in matched_ext_keys:
-                        continue
-                    val_error = _compare_values(gt_val, v)
-                    if val_error is not None and val_error < 1.0:  # <1% error
-                        candidates.append((norm_k, orig_k, v))
-                if len(candidates) == 1:
-                    ext_name = candidates[0][1]
-                    ext_val = candidates[0][2]
-                    match_type = "cid_value"
-
-            if match_type == "missing":
-                # 6. 关键词匹配（替代穷举变体法）
-                # 从RDS科目名提取核心关键词，在提取结果中搜索包含该关键词的项。
-                # 适用于RDS"归属于母公司"→提取"1.归属于母公司股东的净利润"
-                gt_keywords = _extract_keywords(gt_name)
-                if gt_keywords:
-                    # 6a. 优先匹配未消费的提取项
-                    for norm_k, (orig_k, v) in norm_ext.items():
-                        if orig_k in matched_ext_keys:
-                            continue
-                        if any(kw in norm_k for kw in gt_keywords):
-                            val_error = _compare_values(gt_val, v)
-                            if val_error is not None and val_error < 5.0:
-                                ext_name = orig_k
-                                ext_val = v
-                                match_type = "keyword"
-                                break
-
-                if match_type == "missing" and gt_keywords:
-                    # 6b. 若未消费项无匹配，尝试已消费项（值高度一致即为冗余科目）
-                    # RDS有时包含多个科目指向同一财务指标，如：
-                    #   F028N"归属于母公司所有者的净利润" 和 F040N"其中：归属于母公司"
-                    # 两者值相同，后者应共享前者的提取项。
-                    for norm_k, (orig_k, v) in norm_ext.items():
-                        if orig_k not in matched_ext_keys:
-                            continue
-                        if any(kw in norm_k for kw in gt_keywords):
-                            val_error = _compare_values(gt_val, v)
-                            if val_error is not None and val_error < 1.0:
-                                ext_name = orig_k
-                                ext_val = v
-                                match_type = "keyword"
-                                break
-
-            if match_type == "missing":
-                # 7. 纯冗余科目匹配：值完全相同但名称无关键词交集
-                # 如RDS"其中：归属于少数股东"与提取"2.少数股东损益"值相同
-                # 但关键词"归属于少数股东"不在"少数股东损益"中。
-                for norm_k, (orig_k, v) in norm_ext.items():
-                    if orig_k not in matched_ext_keys:
-                        continue
-                    val_error = _compare_values(gt_val, v)
-                    if val_error is not None and val_error < 1.0:
-                        ext_name = orig_k
-                        ext_val = v
-                        match_type = "redundant"
-                        break
-
-            if match_type == "missing":
-                # 8. 复杂金额全等匹配：值精确相等（小数点后2位一致）即认定为同一科目
-                # 适用于跨数据源比较（RDS vs AKShare/Pdf）时科目命名体系不同但值相同的场景。
-                # 搜索所有未匹配的提取项（包括已消费的），找到值完全一致的。
-                load_value_mapping_rules()
-                for ext_k, ext_v in ext_data.items():
-                    if ext_k in matched_ext_keys:
-                        continue
-                    val_error = _compare_values(gt_val, ext_v)
-                    if val_error is not None and val_error < 0.001:  # 值完全一致
-                        ext_name = ext_k
-                        ext_val = ext_v
-                        match_type = "value_exact"
-                        break
+        for sname, sfn in _STRATEGY:
+            r = sfn(gt_name, gt_val, ng, exact_ext, norm_ext, matched_ext_keys)
+            if r is not None:
+                ext_name, ext_val, match_type = r
+                break
 
         if ext_name:
             matched_ext_keys.add(ext_name)

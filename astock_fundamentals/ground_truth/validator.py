@@ -98,48 +98,23 @@ class FinancialValidator:
         return results
 
     def _check_cross(self, data: Dict[str, Dict[str, float]]) -> List[ValidationResult]:
-        """跨表校验"""
+        """跨表校验 - 复用 _eval_field 解析含跨表前缀(BS:/IS:/CF:)的表达式"""
         results = []
-        cross = self.rules.get("cross_statement", [])
-        for rule in cross:
+        for rule in self.rules.get("cross_statement", []):
             try:
-                left_expr = rule.get("left", "")
-                right_expr = rule.get("right", "")
-
-                lt = None
-                rt = None
-
-                # Parse "BS:F006N" style or direct expressions
-                for expr, store in [(left_expr, "L"), (right_expr, "R")]:
-                    val = None
-                    for st, prefix in [("balance_sheet", "BS"), ("income_statement", "IS"), ("cash_flow", "CF")]:
-                        if f"{prefix}:" in expr:
-                            field = expr.replace(f"{prefix}:", "")
-                            if st in data and field in data[st]:
-                                val = data[st][field]
-                            break
-                    if val is None:
-                        val = self._eval_field(expr, data.get("balance_sheet", {}), data)
-
-                    if store == "L":
-                        lt = val
-                    else:
-                        rt = val
-
+                lt = self._eval_field(rule.get("left", ""), data.get("balance_sheet", {}), data)
+                rt = self._eval_field(rule.get("right", ""), data.get("balance_sheet", {}), data)
                 if lt is None or rt is None:
                     continue
-
                 diff = lt - rt
                 denom = max(abs(lt), abs(rt), 1)
                 diff_pct = abs(diff) / denom
                 passed = diff_pct <= rule.get("tolerance", 0.05)
-
                 results.append(ValidationResult(
                     equation=rule.get("equation", ""),
                     left_value=lt, right_value=rt, diff=diff,
                     diff_pct=diff_pct, passed=passed,
-                    severity="pass" if passed else "warn"
-                ))
+                    severity="pass" if passed else "warn"))
             except (KeyError, ValueError):
                 continue
         return results
