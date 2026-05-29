@@ -164,10 +164,11 @@ class FinancialValidator:
         cross_match = re.match(r'^(BS|IS|CF):(.+)$', expr)
         if cross_match and all_data:
             st_map = {"BS": "balance_sheet", "IS": "income_statement", "CF": "cash_flow"}
-            st = st_map.get(cross_match.group(1))
+            xst = st_map.get(cross_match.group(1))
             field = cross_match.group(2)
-            if st and st in all_data and field in all_data[st]:
-                return all_data[st][field]
+            if xst and xst in all_data:
+                name = self._code_to_name(field, xst)
+                return all_data[xst].get(name) if name != field else all_data[xst].get(field)
             return None
 
         # Arithmetic expression: "F006N + F007N - F008N"
@@ -189,10 +190,12 @@ class FinancialValidator:
                 val = data.get(name) if name != part else data.get(part)
             elif part.startswith("BS:") or part.startswith("IS:") or part.startswith("CF:"):
                 if all_data:
-                    st_map = {"BS": "balance_sheet", "IS": "income_statement", "CF": "cash_flow"}
+                    xst_map = {"BS": "balance_sheet", "IS": "income_statement", "CF": "cash_flow"}
                     prefix, field = part.split(":", 1)
-                    st = st_map.get(prefix)
-                    val = all_data.get(st, {}).get(field) if st else None
+                    xst = xst_map.get(prefix)
+                    if xst and xst in all_data:
+                        name = self._code_to_name(field, xst)
+                        val = all_data[xst].get(name) if name != field else all_data[xst].get(field)
             else:
                 # Try by name
                 val = data.get(part)
@@ -205,7 +208,10 @@ class FinancialValidator:
             else:
                 result -= val
 
-        return result if result != 0 or any(data.get(p) for p in re.findall(r'[A-Z]\d{3}[A-Z]', expr)) else None
+        codes_found = re.findall(r'[A-Z]\d{3}[A-Z]', expr)
+        if codes_found:
+            return result
+        return result if result != 0 else None
 
     def summary_report(self, results: List[ValidationResult]) -> str:
         """Generate a text summary of validation results"""
