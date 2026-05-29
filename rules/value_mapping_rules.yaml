@@ -310,6 +310,36 @@ sina_to_rds:
 # 自动学习映射存储: 每次运行自动发现的映射写入此处
 # 格式: [source: stock_code, year, statement_type, source_name, target_name, value]
 # =============================================================================
+
+  # === Interim-period mappings (half/q1/q3) at 2026-05-29T14:23:46 ===
+    - sina: "其他应付款(合计)"
+      rds: "其他应付款"
+      type: suffix
+    - sina: "预计非流动负债"
+      rds: "预计负债"
+      type: alias
+    - sina: "专项应付款"
+      rds: "其他应付款"
+      type: alias
+    - sina: "长期递延收益"
+      rds: "递延收益-非流动负债"
+      type: alias
+    - sina: "其他综合收益(合计)"
+      rds: "其他综合收益"
+      type: suffix
+    - sina: "一年内到期的非流动负债(合计)"
+      rds: "一年内到期的非流动负债"
+      type: suffix
+    - sina: "应收票据(合计)"
+      rds: "其中：应收票据"
+      type: suffix
+    - sina: "应收账款(合计)"
+      rds: "其中：应收账款"
+      type: suffix
+    - sina: "预收账款"
+      rds: "预收款项"
+      type: alias
+
 auto_learned_mappings:
 
   # === Auto-learned at 2026-05-29T11:07:50 ===
