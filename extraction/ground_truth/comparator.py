@@ -241,7 +241,7 @@ def compare_stock(
         # Normalize gt_name for comparison
         norm_gt = normalize_name(gt_name)
 
-        # 1. Exact match (original name or normalized) with value validation
+        # 1. Exact match (original name first)
         if gt_name in exact_ext:
             orig_key = gt_name
             ext_val = exact_ext[gt_name]
@@ -249,30 +249,29 @@ def compare_stock(
             if match_check is not None and match_check < 10:
                 ext_name = orig_key
                 match_type = "exact"
-            else:
-                ext_val = None
-        if match_type == "missing" and norm_gt in norm_ext:
-            orig_key, ext_val = norm_ext[norm_gt]
-            # Validate that values are similar
-            value_error = _compare_values(gt_val, ext_val)
-            if value_error is not None and value_error < 10:  # <10% error
-                ext_name = orig_key
-                match_type = "exact"
-            else:
-                # Values don't match, skip this exact match
-                ext_val = None
-        else:
-            # 2. Check if norm_gt is a standard name with aliases in ext
-            if norm_gt in alias_map:
-                for variant in alias_map[norm_gt]:
-                    norm_v = normalize_name(variant)
-                    if norm_v in norm_ext:
-                        orig_key, ext_val = norm_ext[norm_v]
-                        ext_name = orig_key
-                        match_type = "alias"
-                        break
 
-            # 3. Check reverse aliases (variant -> standard)
+        if match_type == "missing":
+            # 2. Normalized exact match
+            if norm_gt in norm_ext:
+                orig_key, ext_val = norm_ext[norm_gt]
+                value_error = _compare_values(gt_val, ext_val)
+                if value_error is not None and value_error < 10:
+                    ext_name = orig_key
+                    match_type = "exact"
+                else:
+                    ext_val = None
+            else:
+                # 3. Alias match
+                if norm_gt in alias_map:
+                    for variant in alias_map[norm_gt]:
+                        norm_v = normalize_name(variant)
+                        if norm_v in norm_ext:
+                            orig_key, ext_val = norm_ext[norm_v]
+                            ext_name = orig_key
+                            match_type = "alias"
+                            break
+
+                # 4. Check reverse aliases (variant -> standard)
             if match_type == "missing":
                 standard = reverse_aliases.get(norm_gt)
                 if standard:
