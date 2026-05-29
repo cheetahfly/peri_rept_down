@@ -1,0 +1,327 @@
+# -*- coding: utf-8 -*-
+# =============================================================================
+# 财务报表逻辑关系校验规则
+#
+# 来源: 中国证监会《财务报告的一般规定(2023)》、《企业会计准则》、RDS字段编码
+# 用途: 对提取的财务数据进行加减逻辑关系审核 / 质量门控
+# 容差: 1% (部分科目可能因四舍五入/明细口径略有偏差)
+#
+# 格式:
+#   equation: 等式名称
+#   type: identity | soft_check | industry_specific
+#   left: RDS字段代码或表达式
+#   right: RDS字段代码或表达式
+#   tolerance: 容差百分比
+#   description: 中文说明
+#
+# 运算符: + - = (RDS字段代码直接引用)
+# =============================================================================
+
+# 容差配置
+default_tolerance: 0.01  # 1%
+strict_tolerance: 0.001  # 0.1%
+
+# =============================================================================
+# 一、资产负债表勾稽关系
+# =============================================================================
+balance_sheet:
+  # --- 资产方 (左边) ---
+
+  - equation: "流动资产合计 = 各流动资产之和"
+    type: identity
+    left: F019N   # 流动资产合计
+    right: "F006N + F007N + F008N + F009N + F010N + F011N + F012N + F013N + F014N + F015N + F016N + F017N + F018N"
+    tolerance: 0.01
+    description: "流动资产合计 = 货币资金 + 交易性金融资产 + 应收票据 + 应收账款 + 预付款项 + 其他应收款 + 应收利息 + 应收股利 + 存货 + 其他流动资产 + 一年内到期的非流动资产 + 其他流动资产(冗余)"
+    notes: "金融企业可能有特殊的流动资产科目(结算备付金、拆出资金等)"
+
+  - equation: "非流动资产合计 = 各非流动资产之和"
+    type: identity
+    left: F037N   # 非流动资产合计
+    right: "F020N + F021N + F022N + F023N + F024N + F025N + F026N + F027N + F028N + F029N + F030N + F031N + F032N + F033N + F034N + F035N + F036N"
+    tolerance: 0.02
+    description: "非流动资产合计 = 各非流动资产科目之和(包括长期股权投资、固定资产、在建工程等)"
+    notes: "金融企业有发放贷款及垫款(F079N/F086N)等特殊科目，需额外处理"
+
+  - equation: "资产总计 = 流动资产合计 + 非流动资产合计"
+    type: identity
+    left: F038N   # 资产总计
+    right: "F019N + F037N"
+    tolerance: 0.001
+    description: "资产总计 = 流动资产合计 + 非流动资产合计"
+    strict: true
+
+  # --- 负债方 (右边上半) ---
+
+  - equation: "流动负债合计 = 各流动负债之和"
+    type: identity
+    left: F052N   # 流动负债合计
+    right: "F039N + F040N + F041N + F042N + F043N + F044N + F045N + F046N + F047N + F048N + F049N + F050N + F051N"
+    tolerance: 0.01
+    description: "流动负债合计 = 各流动负债科目之和"
+
+  - equation: "非流动负债合计 = 各非流动负债之和"
+    type: identity
+    left: F060N   # 非流动负债合计
+    right: "F053N + F054N + F055N + F056N + F057N + F058N + F059N"
+    tolerance: 0.02
+    description: "非流动负债合计 = 各非流动负债科目之和"
+
+  - equation: "负债合计 = 流动负债合计 + 非流动负债合计"
+    type: identity
+    left: F061N   # 负债合计
+    right: "F052N + F060N"
+    tolerance: 0.001
+    description: "负债合计 = 流动负债合计 + 非流动负债合计"
+    strict: true
+
+  # --- 权益方 (右边下半) ---
+
+  - equation: "所有者权益合计 = 实收资本 + 资本公积 + 其他综合收益 + 盈余公积 + 未分配利润 + 少数股东权益"
+    type: identity
+    left: F070N   # 所有者权益合计
+    right: "F062N + F063N + F074N + F064N + F065N + F067N + F066N + F072N"
+    tolerance: 0.01
+    description: "所有者权益合计 = 主要权益科目之和"
+    notes: "F066N(库存股)为减项，使用时取负值; F072N(专项储备)部分企业有"
+
+  - equation: "归属于母公司所有者权益 = 所有者权益合计 - 少数股东权益"
+    type: identity
+    left: F073N   # 归属于母公司所有者权益
+    right: "F070N - F067N"
+    tolerance: 0.001
+    description: "归属于母公司所有者权益 = 所有者权益合计 - 少数股东权益"
+
+  # --- 平衡恒等式 (最核心) ---
+
+  - equation: "资产总计 = 负债合计 + 所有者权益合计"
+    type: identity
+    left: F038N   # 资产总计
+    right: "F061N + F070N"
+    tolerance: 0.001
+    description: "资产 = 负债 + 所有者权益 (会计恒等式)"
+    strict: true
+
+  - equation: "资产总计 = 负债和所有者权益总计"
+    type: identity
+    left: F038N   # 资产总计
+    right: F071N   # 负债和所有者权益总计
+    tolerance: 0.001
+    description: "报表自身的资产总计 = 负债和所有者权益总计"
+    strict: true
+
+
+# =============================================================================
+# 二、利润表勾稽关系
+# =============================================================================
+income_statement:
+  - equation: "营业总收入 = 营业收入 + 利息收入 + 已赚保费 + 手续费及佣金收入"
+    type: identity
+    left: F035N   # 一、营业总收入
+    right: "F006N + F033N + F034N + F042N"
+    tolerance: 0.01
+    description: "营业总收入 = 主营业收入 + 金融类收入"
+    notes: "非金融企业只有营业收入(F006N)，金融企业还有利息/保费/手续费收入"
+
+  - equation: "营业总成本 = 各成本费用之和"
+    type: identity
+    left: F036N   # 二、营业总成本
+    right: "F007N + F008N + F009N + F010N + F012N + F043N + F044N + F056N + F051N"
+    tolerance: 0.01
+    description: "营业总成本 = 营业成本 + 税金及附加 + 销售费用 + 管理费用 + 财务费用 + 利息支出 + 手续费及佣金支出 + 研发费用 + 其他"
+
+  - equation: "营业利润 = 营业总收入 - 营业总成本 + 公允价值变动收益 + 投资收益 + 其他收益 + 信用减值损失 + 资产减值损失"
+    type: identity
+    left: F018N   # 三、营业利润
+    right: "F035N - F036N + F014N + F015N + F019N + F064N + F013N"
+    tolerance: 0.02
+    description: "营业利润 = 收入 - 成本 + 其他收益"
+    notes: "F014N/F013N/F064N 可能为负值(损失)"
+
+  - equation: "利润总额 = 营业利润 + 营业外收入 - 营业外支出"
+    type: identity
+    left: F024N   # 四、利润总额
+    right: "F018N + F020N - F021N"
+    tolerance: 0.001
+    description: "利润总额 = 营业利润 + 营业外收支净额"
+
+  - equation: "净利润 = 利润总额 - 所得税费用"
+    type: identity
+    left: F027N   # 五、净利润
+    right: "F024N - F025N"
+    tolerance: 0.001
+    description: "净利润 = 利润总额 - 所得税"
+    strict: true
+
+  - equation: "净利润 = 归属于母公司净利润 + 少数股东损益"
+    type: identity
+    left: F027N   # 五、净利润
+    right: "F028N + F029N"
+    tolerance: 0.001
+    description: "净利润归属分解"
+
+  - equation: "持续经营净利润 + 终止经营净利润 = 净利润"
+    type: soft_check
+    left: F027N   # 五、净利润
+    right: "F060N + F061N"
+    tolerance: 0.01
+    description: "净利润 = 持续经营净利润 + 终止经营净利润"
+
+  - equation: "综合收益总额 = 净利润 + 其他综合收益"
+    type: identity
+    left: F039N   # 八、综合收益总额
+    right: "F027N + F038N"
+    tolerance: 0.001
+    description: "综合收益总额 = 净利润 + 其他综合收益"
+
+  - equation: "综合收益总额 = 归属于母公司 + 归属于少数股东"
+    type: identity
+    left: F039N   # 八、综合收益总额
+    right: "F040N + F041N"
+    tolerance: 0.001
+    description: "综合收益归属分解"
+
+
+# =============================================================================
+# 三、现金流量表勾稽关系
+# =============================================================================
+cash_flow:
+
+  # --- 经营活动 ---
+
+  - equation: "经营活动现金流入小计 = 销售商品提供劳务 + 税费返还 + 其他经营收入"
+    type: identity
+    left: F009N   # 经营活动现金流入小计
+    right: "F006N + F007N + F008N"
+    tolerance: 0.01
+    description: "经营活动现金流入 = 主营收入 + 税费返还 + 其他"
+
+  - equation: "经营活动现金流出小计 = 购买商品支付 + 职工支付 + 税费支付 + 其他经营支付"
+    type: identity
+    left: F014N   # 经营活动现金流出小计
+    right: "F010N + F011N + F012N + F013N"
+    tolerance: 0.01
+    description: "经营活动现金流出 = 采购 + 薪酬 + 税费 + 其他"
+
+  - equation: "经营活动现金流量净额 = 经营活动流入 - 经营活动流出"
+    type: identity
+    left: F015N   # 经营活动现金流量净额
+    right: "F009N - F014N"
+    tolerance: 0.001
+    description: "经营活动净现金流 = 流入 - 流出"
+    strict: true
+
+  # --- 投资活动 ---
+
+  - equation: "投资活动现金流入小计 = 收回投资 + 取得投资收益 + 处置资产 + 其他投资收入"
+    type: identity
+    left: F021N   # 投资活动现金流入小计
+    right: "F016N + F017N + F018N + F019N + F020N"
+    tolerance: 0.01
+    description: "投资活动现金流入 = 各项投资收回和收益"
+
+  - equation: "投资活动现金流出小计 = 购建资产 + 投资支付 + 其他投资支付"
+    type: identity
+    left: F026N   # 投资活动现金流出小计
+    right: "F022N + F023N + F024N + F025N"
+    tolerance: 0.01
+    description: "投资活动现金流出 = 各项投资支出"
+
+  - equation: "投资活动现金流量净额 = 投资活动流入 - 投资活动流出"
+    type: identity
+    left: F027N   # 投资活动现金流量净额
+    right: "F021N - F026N"
+    tolerance: 0.001
+    description: "投资活动净现金流 = 流入 - 流出"
+    strict: true
+
+  # --- 筹资活动 ---
+
+  - equation: "筹资活动现金流入小计 = 吸收投资 + 借款 + 其他筹资收入"
+    type: identity
+    left: F031N   # 筹资活动现金流入小计
+    right: "F028N + F029N + F030N"
+    tolerance: 0.01
+    description: "筹资活动现金流入 = 吸收投资 + 取得借款 + 其他"
+
+  - equation: "筹资活动现金流出小计 = 偿还债务 + 分配股利利息 + 其他筹资支付"
+    type: identity
+    left: F035N   # 筹资活动现金流出小计
+    right: "F032N + F033N + F034N"
+    tolerance: 0.01
+    description: "筹资活动现金流出 = 偿还债务 + 分配股利/利息 + 其他"
+
+  - equation: "筹资活动现金流量净额 = 筹资活动流入 - 筹资活动流出"
+    type: identity
+    left: F036N   # 筹资活动现金流量净额
+    right: "F031N - F035N"
+    tolerance: 0.001
+    description: "筹资活动净现金流 = 流入 - 流出"
+    strict: true
+
+  # --- 汇总 ---
+
+  - equation: "现金净增加额 = 经营净额 + 投资净额 + 筹资净额 + 汇率影响"
+    type: identity
+    left: F039N   # 五、现金及现金等价物净增加额
+    right: "F015N + F027N + F036N + F037N"
+    tolerance: 0.001
+    description: "现金净增加 = 三大活动净额 + 汇率变动"
+    strict: true
+
+  - equation: "期末现金余额 = 期初现金余额 + 现金净增加额"
+    type: identity
+    left: F041N   # 期末现金及现金等价物余额
+    right: "F040N + F039N"
+    tolerance: 0.001
+    description: "期末现金 = 期初现金 + 净增加额"
+    strict: true
+
+
+# =============================================================================
+# 四、跨表勾稽关系
+# =============================================================================
+cross_statement:
+  - equation: "BS货币资金 vs CF期末现金"
+    type: soft_check
+    left: "BS:F006N"   # 资产负债表:货币资金
+    right: "CF:F041N"   # 现金流量表:期末现金及现金等价物余额
+    tolerance: 0.05
+    description: "资产负债表货币资金应约等于现金流量表期末现金余额(含现金等价物差异)"
+
+  - equation: "IS净利润 vs CF净利润(间接法起点)"
+    type: identity
+    left: "IS:F027N"   # 利润表:净利润
+    right: "CF:F044N"   # 现金流量表:净利润
+    tolerance: 0.001
+    description: "利润表净利润 = 现金流量表(间接法)起点净利润"
+    strict: true
+
+  - equation: "BS未分配利润变动 vs IS净利润"
+    type: soft_check
+    left: "BS:F065N"   # 资产负债表:未分配利润(期末)
+    right: "BS:F065N_prev + IS:F027N - IS:F028N"  # 期初 + 净利润 - 归母净利
+    tolerance: 0.05
+    description: "未分配利润期末 - 期初 ≈ 净利润 - 少数股东 - 股利分配"
+    notes: "差值为本期股利分配"
+
+
+# =============================================================================
+# 五、辅助科目核对
+# =============================================================================
+auxiliary_checks:
+  - equation: "销售费用 >= 0 (费用类科目不应为负,除非冲减)"
+    type: soft_check
+    left: IS:F009N
+    right: "0"
+    tolerance: 0
+    description: "销售费用通常为正数"
+    allow_negative: true  # 特殊情况下可能因冲减而负
+
+  - equation: "营业收入 > 0 (正常经营企业)"
+    type: soft_check
+    left: IS:F006N
+    right: "0"
+    tolerance: 0
+    description: "正常经营企业营业收入应为正"
+    allow_zero: true  # 初创/壳公司可能为0
