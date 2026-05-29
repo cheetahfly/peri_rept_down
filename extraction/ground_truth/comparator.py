@@ -217,12 +217,15 @@ def compare_stock(
         for v in variants:
             reverse_aliases[v] = standard
 
-    # Build normalized extracted data
+    # Build normalized extracted data (first occurrence wins)
     norm_ext = {}
+    exact_ext = {}  # original-name index for exact matching
     for k, v in ext_data.items():
+        exact_ext[k] = v
         nk = normalize_name(k)
         if nk and nk not in ("", "行") and not re.match(r'^行\d+$', nk):
-            norm_ext[nk] = (k, v)
+            if nk not in norm_ext:  # Keep first occurrence to avoid overwrite
+                norm_ext[nk] = (k, v)
 
     # Match ground truth items to extracted items
     matched_ext_keys = set()
@@ -238,8 +241,17 @@ def compare_stock(
         # Normalize gt_name for comparison
         norm_gt = normalize_name(gt_name)
 
-        # 1. Exact match (normalized) with value validation
-        if norm_gt in norm_ext:
+        # 1. Exact match (original name or normalized) with value validation
+        if gt_name in exact_ext:
+            orig_key = gt_name
+            ext_val = exact_ext[gt_name]
+            match_check = _compare_values(gt_val, ext_val)
+            if match_check is not None and match_check < 10:
+                ext_name = orig_key
+                match_type = "exact"
+            else:
+                ext_val = None
+        if match_type == "missing" and norm_gt in norm_ext:
             orig_key, ext_val = norm_ext[norm_gt]
             # Validate that values are similar
             value_error = _compare_values(gt_val, ext_val)

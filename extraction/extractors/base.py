@@ -805,12 +805,28 @@ class BaseExtractor(ABC):
         return ratio < 0.3 and max_run < 4
 
     def _page_has_parent_header(self, parser: PdfParser, page_num: int) -> bool:
-        """检查页面是否包含母公司报表标题"""
+        """
+        检查页面是否包含独立的母公司报表标题（而非嵌入在"合并及母公司..."中的引用）。
+        通过逐行扫描确定标题是否在行首附近（section header特征）。
+        """
         headers = self._PARENT_HEADERS.get(self.STATEMENT_TYPE, [])
         if not headers:
             return False
         text = parser.extract_text(page_num)
-        return any(h in text for h in headers)
+        for h in headers:
+            for line in text.split('\n'):
+                line_clean = line.strip()
+                # 排除合并及母公司xxx的复合引用
+                if '合并及' + h in line_clean:
+                    continue
+                if line_clean == h or line_clean.startswith(h + ' '):
+                    return True
+                # 也匹配行首附近有少量前缀的情况（如编号"五、母公司资产负债表"）
+                import re as _re
+                if _re.match(r'^\s*[一二三四五六七八九十]+[、\.]\s*' +
+                              _re.escape(h) + r'\s*$', line_clean):
+                    return True
+        return False
 
     def _filter_parent_company_tables(
         self, parser: PdfParser, page_num: int,
@@ -825,8 +841,18 @@ class BaseExtractor(ABC):
         page_text = parser.extract_text(page_num)
         found_header = None
         for h in headers:
-            if h in page_text:
-                found_header = h
+            for line in page_text.split('\n'):
+                line_clean = line.strip()
+                if '合并及' + h in line_clean:
+                    continue
+                if line_clean == h or line_clean.startswith(h + ' '):
+                    found_header = h
+                    break
+                if re.match(r'^\s*[一二三四五六七八九十]+[、\.]\s*' +
+                              re.escape(h) + r'\s*$', line_clean):
+                    found_header = h
+                    break
+            if found_header:
                 break
         if not found_header:
             return tables, continuation_table, continuation_columns

@@ -155,7 +155,7 @@ class PdfParser:
                 rows_to_drop.append(idx)
                 continue
 
-            if len(first_cell_clean) <= 2 and idx > 0:
+            if len(first_cell_clean) <= 1 and idx > 0:
                 rows_to_drop.append(idx)
 
         if rows_to_drop:
@@ -293,6 +293,7 @@ class PdfParser:
         lines = text.split("\n")
         tables = []
         current_table = []
+        _parent_prefix = None  # "其我："前缀继承
 
         for line in lines:
             # 清理行
@@ -314,12 +315,23 @@ class PdfParser:
 
             # 至少要有项目名称和数值
             if len(parts) < 2:
+                if "其中：" in line:
+                    _parent_prefix = "其中："
+                    _parent_item = parts[0] if parts else ""
+                    pass
                 continue
-
             # 检查是否包含中文字符（项目名称应该有中文）
             has_chinese = any("\u4e00" <= c <= "\u9fff" for c in line)
 
             if has_chinese:
+                # 继承"其中："前缀：前一行非数据行含"其中："且当前行不含该前缀时自动补全
+                try:
+                    if _parent_prefix and not parts[0].startswith(_parent_prefix) and _parent_item:
+                        parts[0] = _parent_prefix + parts[0]
+                except NameError:
+                    pass
+                _parent_prefix = None
+                _parent_item = None
                 current_table.append(parts)
             elif len(parts) >= 2:
                 # CID\u5b57\u4f53\u56de\u9000\uff1a\u6587\u672c\u53ef\u80fd\u4e71\u7801\uff08\u65e0\u6709\u6548\u4e2d\u6587\u5b57\u7b26\uff09\uff0c\u4f46\u5305\u542b\u5927\u6570\u5b57\u548c
