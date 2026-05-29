@@ -26,10 +26,10 @@ class ValidationResult:
 
 
 class FinancialValidator:
-    def __init__(self):
+    def __init__(self, decode_maps: Dict[str, Dict[str, str]] = None):
         with open(RULES_FILE, "r", encoding="utf-8") as f:
             self.rules = yaml.safe_load(f)
-        self._decode_maps = None  # for cross-statement reference
+        self._decode_maps = decode_maps or {}  # {st: {code: name}}
 
     def validate(self, statement_type: str, data: Dict[str, float],
                  all_data: Dict[str, Dict[str, float]] = None) -> List[ValidationResult]:
@@ -50,8 +50,8 @@ class FinancialValidator:
 
         for rule in rules:
             try:
-                lt = self._eval_field(rule.get("left", ""), data, all_data)
-                rt = self._eval_field(rule.get("right", ""), data, all_data)
+                lt = self._eval_field(rule.get("left", ""), data, all_data, st=statement_type)
+                rt = self._eval_field(rule.get("right", ""), data, all_data, st=statement_type)
             except (KeyError, ValueError, ZeroDivisionError):
                 results.append(ValidationResult(
                     equation=rule.get("equation", "?"),
@@ -144,16 +144,22 @@ class FinancialValidator:
                 continue
         return results
 
+    def _code_to_name(self, code: str, st: str = "balance_sheet") -> str:
+        """Translate RDS field code (F038N) to Chinese name via decode map"""
+        st_map = self._decode_maps.get(st, {})
+        return st_map.get(code, code)
+
     def _eval_field(self, expr: str, data: Dict[str, float],
-                    all_data: Dict[str, Dict[str, float]] = None) -> Optional[float]:
+                    all_data: Dict[str, Dict[str, float]] = None, st: str = "balance_sheet") -> Optional[float]:
         """Evaluate a field expression (single code or arithmetic)"""
         if not expr or not data:
             return None
 
         expr = str(expr).strip()
-        # Simple single field code
+        # Simple single field code - translate to Chinese name
         if re.match(r'^[A-Z]\d{3}[A-Z]$', expr):
-            return data.get(expr)
+            name = self._code_to_name(expr, st)
+            return data.get(name) if name != expr else data.get(expr)
         # Cross-table reference like BS:F006N
         cross_match = re.match(r'^(BS|IS|CF):(.+)$', expr)
         if cross_match and all_data:
@@ -179,7 +185,8 @@ class FinancialValidator:
             # Try field code match
             val = None
             if re.match(r'^[A-Z]\d{3}[A-Z]$', part):
-                val = data.get(part)
+                name = self._code_to_name(part, st)
+                val = data.get(name) if name != part else data.get(part)
             elif part.startswith("BS:") or part.startswith("IS:") or part.startswith("CF:"):
                 if all_data:
                     st_map = {"BS": "balance_sheet", "IS": "income_statement", "CF": "cash_flow"}
