@@ -17,6 +17,29 @@ from typing import Dict, List, Optional, Tuple
 # 规则文件目录
 RULES_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))), "rules")
 
+# 值映射规则缓存
+_VALUE_MAP_CACHE = None
+
+
+def load_value_mapping_rules() -> dict:
+    """加载值映射规则（基于复杂金额全等匹配的数据源间科目名映射）"""
+    global _VALUE_MAP_CACHE
+    if _VALUE_MAP_CACHE is not None:
+        return _VALUE_MAP_CACHE
+    path = os.path.join(RULES_DIR, "value_mapping_rules.yaml")
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            rules = yaml.safe_load(f)
+            _VALUE_MAP_CACHE = rules or {}
+    except (FileNotFoundError, yaml.YAMLError):
+        _VALUE_MAP_CACHE = {}
+    return _VALUE_MAP_CACHE
+
+
+def _add_value_matched(self, gt_name, gt_val, ext_name, ext_val):
+    """记录值匹配映射（用于自动学习）"""
+    pass  # TODO: 记录到 auto_learned_mappings
+
 
 def load_yaml_rule(filename: str, default=None):
     """从 rules/ 目录加载 YAML 规则文件"""
@@ -370,6 +393,21 @@ def compare_stock(
                         ext_name = orig_k
                         ext_val = v
                         match_type = "redundant"
+                        break
+
+            if match_type == "missing":
+                # 8. 复杂金额全等匹配：值精确相等（小数点后2位一致）即认定为同一科目
+                # 适用于跨数据源比较（RDS vs AKShare/Pdf）时科目命名体系不同但值相同的场景。
+                # 搜索所有未匹配的提取项（包括已消费的），找到值完全一致的。
+                load_value_mapping_rules()
+                for ext_k, ext_v in ext_data.items():
+                    if ext_k in matched_ext_keys:
+                        continue
+                    val_error = _compare_values(gt_val, ext_v)
+                    if val_error is not None and val_error < 0.001:  # 值完全一致
+                        ext_name = ext_k
+                        ext_val = ext_v
+                        match_type = "value_exact"
                         break
 
         if ext_name:
