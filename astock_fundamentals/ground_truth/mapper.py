@@ -16,7 +16,7 @@ from typing import Dict, List, Optional, Set
 
 from astock_fundamentals.core.extraction_config import get_aliases
 from astock_fundamentals.ground_truth.comparator import normalize_name, load_extracted_json
-from astock_fundamentals.ground_truth.rds_loader import RdsLoader, META_COLS
+from astock_fundamentals.sources.rds.rds_loader import RdsLoader, META_COLS
 
 
 @dataclass

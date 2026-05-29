@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>财务数据提取 - 未识别/未匹配内容分析报告</title>
+<style>
+body { font-family: -apple-system, "Microsoft YaHei", sans-serif; margin: 20px; background: #f5f5f5; color: #333; }
+h1 { color: #1a1a2e; border-bottom: 3px solid #e94560; padding-bottom: 8px; }
+h2 { color: #16213e; margin-top: 30px; }
+h3 { margin-top: 20px; }
+.summary-card { background: #fff; border-radius: 8px; padding: 20px; margin: 16px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 12px 0; }
+.stat-box { text-align: center; padding: 16px; border-radius: 6px; }
+.stat-box .num { font-size: 28px; font-weight: bold; display: block; }
+.stat-box .label { font-size: 13px; margin-top: 4px; color: #666; }
+.stat-green { background: #e8f5e9; } .stat-green .num { color: #2e7d32; }
+.stat-red { background: #ffebee; } .stat-red .num { color: #c62828; }
+.stat-amber { background: #fff8e1; } .stat-amber .num { color: #f57f17; }
+.stat-blue { background: #e3f2fd; } .stat-blue .num { color: #1565c0; }
+.stock-card { background: #fff; border-radius: 8px; margin: 16px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden; }
+.stock-header { padding: 14px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: bold; }
+.stock-header:hover { opacity: 0.85; }
+.stock-content { display: none; padding: 0 20px 20px; }
+.stock-content.open { display: block; }
+.toggle-icon { font-size: 14px; }
+.statement-section { margin: 16px 0; border: 1px solid #e0e0e0; border-radius: 6px; overflow: hidden; }
+.statement-header { padding: 10px 14px; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; background: #fafafa; border-bottom: 1px solid #e0e0e0; }
+.statement-body { padding: 10px 14px; }
+table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 13px; }
+th, td { padding: 6px 10px; text-align: left; border-bottom: 1px solid #eee; }
+th { background: #f5f5f5; font-weight: 600; }
+tr:hover { background: #fafafa; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: bold; }
+.tag-missing { background: #ffcdd2; color: #c62828; }
+.tag-unmatched { background: #fff9c4; color: #f57f17; }
+.tag-value-diff { background: #ffe0b2; color: #e65100; }
+.tag-error { background: #f8bbd0; color: #880e4f; }
+.tag-ok { background: #c8e6c9; color: #2e7d32; }
+.error-banner { background: #ffebee; border: 1px solid #ef9a9a; border-radius: 6px; padding: 12px 16px; margin: 12px 0; font-size: 13px; }
+.value-diff-neg { color: #c62828; }
+.value-diff-pos { color: #2e7d32; }
+.money { text-align: right; font-family: "SF Mono", "Courier New", monospace; white-space: nowrap; }
+.suggestion-item { background: #f3e5f5; border-radius: 4px; padding: 8px 12px; margin: 4px 0; font-size: 13px; }
+.suggestion-item code { background: #e1bee7; padding: 1px 6px; border-radius: 3px; }
+.meta-info { font-size: 12px; color: #999; text-align: center; margin-top: 30px; }
+.stock-code { font-weight: bold; }
+.stock-name { color: #666; font-weight: normal; }
+.progress-bar { height: 8px; border-radius: 4px; background: #e0e0e0; margin: 4px 0; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+.progress-green { background: #4caf50; }
+.progress-amber { background: #ff9800; }
+.progress-red { background: #f44336; }
+@media (max-width: 600px) {
+  .summary-grid { grid-template-columns: repeat(2, 1fr); }
+  table { font-size: 12px; }
+  th, td { padding: 4px 6px; }
+}
+</style>
+</head>
+<body>
+
+<h1>财务数据提取 — 未识别/未匹配内容分析报告</h1>
+<p style="color:#666;">基于 batch_comparison_detailed.json | 报告日期: 2026-05-28</p>
+
+<div class="summary-card">
+  <h2>整体概览</h2>
+  <div class="summary-grid">
+    <div class="stat-box stat-green">
+      <span class="num">195</span>
+      <span class="label">已匹配项</span>
+    </div>
+    <div class="stat-box stat-red">
+      <span class="num">59</span>
+      <span class="label">缺失项（RDS有，提取无）</span>
+    </div>
+    <div class="stat-box stat-amber">
+      <span class="num">99</span>
+      <span class="label">未匹配项（提取有，RDS无）</span>
+    </div>
+    <div class="stat-box stat-blue">
+      <span class="num">76.8%</span>
+      <span class="label">整体覆盖率</span>
+    </div>
+  </div>
+
+  <h3>按报表类型</h3>
+  <table>
+    <tr><th>报表类型</th><th>比对次数</th><th>覆盖率</th><th>已匹配</th><th>缺失</th><th>未匹配</th></tr>
+    <tr><td>利润表 (Income Statement)</td><td>2</td><td>93.3%</td><td>56</td><td>4</td><td>46</td></tr>
+    <tr><td>资产负债表 (Balance Sheet)</td><td>2</td><td>92.2%</td><td>83</td><td>8</td><td>19</td></tr>
+    <tr><td>现金流量表 (Cash Flow)</td><td>2</td><td>54.8%</td><td>56</td><td>47</td><td>34</td></tr>
+  </table>
+</div>
+
+<div class="summary-card">
+  <h2>未能比对的公司（无RDS数据）</h2>
+  <div class="error-banner">000001 (平安银行) — IS / BS / CF 均无数据</div>
+  <div class="error-banner">600585 (海螺水泥) — IS / BS / CF 均无数据</div>
+  <p style="font-size:13px;color:#666;">→ 需检查 RDS 数据库 D:/Research/Quant/SETL/cninfo/data_backup 中是否存在对应数据</p>
+</div>
+
+<div class="summary-card">
+  <h2>alias 建议（给 aliases.yaml 添加以下变体）</h2>
+
+  <h4 style="margin-bottom:4px;">现金流量表 (Cash Flow) — 高优先级</h4>
+  <div class="suggestion-item"><code>现金及现金等价物净增加额2</code> ← <code>现金及现金等价物净增加/减少额</code>、<code>期初/年末/年初现金及现金等价物余额</code> (2条证据)</div>
+  <div class="suggestion-item"><code>经营活动产生的现金流量净额2</code> ← <code>经营活动产生/使用的现金流量净额</code>、<code>筹资/投资活动产生/使用的现金流量净额</code> (1条证据)</div>
+  <div class="suggestion-item"><code>收到其他与经营活动有关的现金</code> ← <code>收到的其他与筹资活动有关的现金</code>、<code>支付其他与投资/筹资活动有关的现金</code> (1条证据)</div>
+  <div class="suggestion-item"><code>支付其他与经营活动有关的现金</code> ← <code>支付的其他与筹资活动有关的现金</code>等 (1条证据)</div>
+  <div class="suggestion-item"><code>处置子公司及其他营业单位收到的现金净额</code> ← 对应的"取得"变体 (1条证据)</div>
+  <div class="suggestion-item"><code>四、汇率变动对现金的影响</code> ← <code>汇率变动对现金及现金等价物的影响</code> (1条证据)</div>
+  <div class="suggestion-item"><code>五、现金及现金等价物净增加额</code> ← <code>现金及现金等价物净增加/减少额</code> (1条证据)</div>
+
+  <h4 style="margin-bottom:4px;">利润表 (Income Statement)</h4>
+  <div class="suggestion-item"><code>其他综合收益</code> — 提取的"其他综合收益的税后净额"与 RDS 的"七、其他综合收益"需要映射 (1条证据)</div>
+
+  <h4 style="margin-bottom:4px;">其他 — "其他"项需要特别注意</h4>
+  <div class="suggestion-item"><code>其他</code> ← 9个可能变体（费用/收益子项中的"其他"）(1条证据)</div>
+</div>
+
+<h2>详细信息</h2>
+
+<div class="stock-card">
+  <div class="stock-header" style="background:#e8f5e9;" onclick="toggle(this)">
+    <span><span class="stock-code">600519</span> <span class="stock-name">贵州茅台</span></span>
+    <span style="font-size:13px;font-weight:normal;">IS: 90.0% | BS: 97.2% | CF: 65.3% <span class="toggle-icon">▶</span></span>
+  </div>
+  <div class="stock-content">
+
+    <div class="statement-section">
+      <div class="statement-header">
+        <span>利润表 (Income Statement)</span>
+        <span>覆盖率 90.0% | 准确率 100%</span>
+      </div>
+      <div class="statement-body">
+        <h4 style="color:#c62828;">缺失项 (RDS有, 提取无)</h4>
+        <table>
+          <tr><th>RDS科目名称</th><th>预期值(元)</th></tr>
+          <tr><td>利息收入</td><td class="money">3,077,859,584.49</td></tr>
+          <tr><td>其中：归属于母公司</td><td class="money">46,699,152,783.85</td></tr>
+          <tr><td>其中：归属于少数股东</td><td class="money">2,826,044,452.59</td></tr>
+        </table>
+        <p style="font-size:12px;color:#999;">分析: 茅台利润表中这三项可能与"营业收入"等合并列示，CDR 中无单独行项目</p>
+
+        <h4 style="color:#f57f17;">未匹配项 (提取有, RDS无)</h4>
+        <table>
+          <tr><th>提取科目名称</th><th>值(元)</th></tr>
+          <tr><td>营业总收入</td><td class="money">97,993,240,501.21</td></tr>
+          <tr><td>营业收入</td><td class="money">94,915,380,916.72</td></tr>
+          <tr><td>营业总成本</td><td class="money">31,305,130,587.56</td></tr>
+          <tr><td>营业成本</td><td class="money">8,154,001,476.28</td></tr>
+          <tr><td>手续费及佣金收入</td><td class="money">292,452.83</td></tr>
+          <tr><td>其他收益</td><td class="money">13,138,152.69</td></tr>
+          <tr><td>投资收益</td><td class="money">305,631.46</td></tr>
+          <tr><td>公允价值变动收益</td><td class="money">4,897,994.43</td></tr>
+          <tr><td>信用减值损失</td><td class="money">-71,371,809.85</td></tr>
+          <tr><td>资产处置收益</td><td class="money">-32,123.57</td></tr>
+          <tr><td>营业利润</td><td class="money">66,635,079,882.38</td></tr>
+          <tr><td>营业外收入</td><td class="money">11,051,136.15</td></tr>
+          <tr><td>营业外支出</td><td class="money">449,189,027.42</td></tr>
+          <tr><td>利润总额</td><td class="money">66,196,941,991.11</td></tr>
+          <tr><td>所得税费用</td><td class="money">16,673,612,108.71</td></tr>
+          <tr><td>净利润</td><td class="money">49,523,329,882.40</td></tr>
+          <tr><td>持续经营净利润</td><td class="money">49,523,329,882.40</td></tr>
+          <tr><td>归属于母公司股东的净利润</td><td class="money">46,697,285,429.81</td></tr>
+          <tr><td>少数股东损益</td><td class="money">2,826,044,452.59</td></tr>
+          <tr><td>其他综合收益的税后净额</td><td class="money">1,867,354.04</td></tr>
+          <tr><td>归属母公司所有者的其他</td><td class="money">1,867,354.04</td></tr>
+          <tr><td>2．将重分类进损益的其他综</td><td class="money">1,867,354.04</td></tr>
+          <tr><td colspan="2" style="font-size:12px;color:#999;">... 以及 资本公积、盈余公积、未分配利润、所有者权益、负债和所有者权益（这些是权益/负债类科目误入利润表提取）</td></tr>
+        </table>
+        <p style="font-size:12px;color:#999;">分析: 多数未匹配项的值恰好等于已匹配的RDS科目值（如 营业总收入=970亿≈营业收入+利息收入），说明PDF中同一行数据被拆分为多个名称，需要合并或别名映射。权益类科目（资本公积等）不应出现在利润表中，说明提取时跨页识别有误。</p>
+      </div>
+    </div>
+
+    <div class="statement-section">
+      <div class="statement-header">
+        <span>资产负债表 (Balance Sheet)</span>
+        <span>覆盖率 97.2% | 准确率 100%</span>
+      </div>
+      <div class="statement-body">
+        <h4 style="color:#c62828;">缺失项 (RDS有, 提取无)</h4>
+        <table>
+          <tr><th>RDS科目名称</th><th>预期值(元)</th></tr>
+          <tr><td>存货</td><td class="money">28,869,087,678.06</td></tr>
+        </table>
+        <p style="font-size:12px;color:#999;">分析: 茅台存货 288.7亿，可能是续页（page 50 后半部分）中提取遗漏。需要检查页面分割逻辑。</p>
+
+        <h4 style="color:#f57f17;">未匹配项 (提取有, RDS无)</h4>
+        <table>
+          <tr><th>提取科目名称</th><th>值(元)</th></tr>
+          <tr><td>应收账款</td><td class="money">4.00</td></tr>
+          <tr><td>预收款项</td><td class="money">13,740,329,698.82</td></tr>
+          <tr><td>应付利息</td><td class="money">11,081.87</td></tr>
+          <tr><td>应付股利</td><td class="money">446,880,000.00</td></tr>
+          <tr><td>资本公积</td><td class="money">1,374,964,415.72</td></tr>
+          <tr><td>盈余公积</td><td class="money">20,174,922,608.93</td></tr>
+          <tr><td>未分配利润</td><td class="money">137,594,403,807.99</td></tr>
+          <tr><td>应收利息</td><td class="money">131,917,083.59</td></tr>
+          <tr><td>应收股利</td><td class="money">465,120,000.00</td></tr>
+          <tr><td>长期股权投资</td><td class="money">1,624,535,587.55</td></tr>
+        </table>
+        <p style="font-size:12px;color:#999;">分析: RDS 中茅台使用 F 编码科目体系，科目颗粒度较粗。这些未匹配项可能在 RDS 中被合并到其他科目（如"预收款项"可能包含于合同负债）。需要核对 RDS 解码映射表 decode_mappings_by_type.json。</p>
+      </div>
+    </div>
+
+    <div class="statement-section">
+      <div class="statement-header">
+        <span>现金流量表 (Cash Flow)</span>
+        <span>覆盖率 65.3% | 准确率 96.9%</span>
+      </div>
+      <div class="statement-body">
+        <div class="progress-bar"><div class="progress-fill progress-amber" style="width:65%"></div></div>
+
+        <h4 style="color:#c62828;">缺失项 (RDS有, 提取无) — 共17项</h4>
+        <table>
+          <tr><th>#</th><th>RDS科目名称</th><th>预期值(元)</th></tr>
+          <tr><td>1</td><td>净利润</td><td class="money">49,523,329,882.40</td></tr>
+          <tr><td>2</td><td>固定资产折旧、油气资产折耗、生产性生物资产折旧</td><td class="money">1,195,956,468.60</td></tr>
+          <tr><td>3</td><td>无形资产摊销</td><td class="money">110,349,099.00</td></tr>
+          <tr><td>4</td><td>长期待摊费用摊销</td><td class="money">10,562,811.76</td></tr>
+          <tr><td>5</td><td>固定资产报废损失</td><td class="money">100,113.92</td></tr>
+          <tr><td>6</td><td>公允价值变动损失</td><td class="money">-4,897,994.43</td></tr>
+          <tr><td>7</td><td>投资损失</td><td class="money">-305,631.46</td></tr>
+          <tr><td>8</td><td>递延所得税资产减少</td><td class="money">-23,278,138.80</td></tr>
+          <tr><td>9</td><td>递延所得税负债增加</td><td class="money">-71,235,087.78</td></tr>
+          <tr><td>10</td><td>存货的减少</td><td class="money">-3,584,166,871.73</td></tr>
+          <tr><td>11</td><td>经营性应收项目的减少</td><td class="money">-504,008,375.44</td></tr>
+          <tr><td>12</td><td>经营性应付项目的增加</td><td class="money">4,945,290,607.14</td></tr>
+          <tr><td>13</td><td>经营活动产生的现金流量净额2</td><td class="money">51,669,068,693.03</td></tr>
+          <tr><td>14</td><td>现金的期末余额</td><td class="money">146,740,524,868.05</td></tr>
+          <tr><td>15</td><td>减：现金的期初余额</td><td class="money">121,003,839,599.64</td></tr>
+          <tr><td>16</td><td>现金及现金等价物净增加额2</td><td class="money">25,736,685,268.41</td></tr>
+          <tr><td>17</td><td>信用减值损失</td><td class="money">71,371,809.85</td></tr>
+        </table>
+        <p style="font-size:12px;color:#c62828;">→ 缺失的17项全部为间接法（附注部分）的调节项目！现金流量表的主表部分（直接法）已成功提取，但附注中的间接法调节过程未提取。第13-16项是主表中已有的汇总数，但科目名称不同（带"2"后缀）。</p>
+
+        <h4 style="color:#f57f17;">未匹配项 (提取有, RDS无) — 共13项</h4>
+        <table>
+          <tr><th>提取科目名称</th><th>值(元)</th></tr>
+          <tr><td>项目附注</td><td class="money">2,020.00</td></tr>
+          <tr><td>拆出资金净增加额</td><td class="money">200,000,000.00</td></tr>
+          <tr><td>吸收投资收到的现金</td><td class="money">833,000,000.00</td></tr>
+          <tr><td>子公司吸收少数股东投资收</td><td class="money">833,000,000.00</td></tr>
+          <tr><td>筹资活动现金流入小计</td><td class="money">833,000,000.00</td></tr>
+          <tr><td>子公司支付给少数股东的股</td><td class="money">2,704,262,179.11</td></tr>
+          <tr><td>汇率变动对现金及现金等价物的</td><td class="money">380,639.36</td></tr>
+          <tr><td>现金及现金等价物净增加额</td><td class="money">25,736,685,268.41</td></tr>
+          <tr><td>期初现金及现金等价物余额</td><td class="money">121,003,839,599.64</td></tr>
+          <tr><td>期末现金及现金等价物余额</td><td class="money">146,740,524,868.05</td></tr>
+          <tr><td>取得投资收益收到的现金</td><td class="money">34,940,030,979.52</td></tr>
+          <tr><td>处置固定资产、无形资产和其他</td><td class="money">37,800.00</td></tr>
+          <tr><td>购建固定资产、无形资产和其他</td><td class="money">2,081,844,620.34</td></tr>
+        </table>
+        <p style="font-size:12px;color:#999;">分析: 多数未匹配项的值与RDS对应科目值一致，只是科目名称后缀不同（如"子公司吸收少数股东投资收"截断）。需在 aliases.yaml 中添加变体映射。带截断的科目名可能是PDF提取时的字符长度限制。</p>
+
+        <h4 style="color:#e65100;">数值差异 (1项)</h4>
+        <table>
+          <tr><th>科目名称</th><th>RDS值</th><th>提取值</th><th>误差%</th></tr>
+          <tr>
+            <td>支付其他与经营活动有关的现金</td>
+            <td class="money">4,247,026,186.46</td>
+            <td class="money">4,047,026,186.46</td>
+            <td class="value-diff-pos">4.71%</td>
+          </tr>
+        </table>
+        <p style="font-size:12px;color:#999;">差异=2亿，可能有 200,000,000（拆出资金净增加额）被误从该项目中扣除。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="stock-card">
+  <div class="stock-header" style="background:#fff8e1;" onclick="toggle(this)">
+    <span><span class="stock-code">000002</span> <span class="stock-name">万科A</span></span>
+    <span style="font-size:13px;font-weight:normal;">IS: 96.7% | BS: 87.3% | CF: 44.4% <span class="toggle-icon">▶</span></span>
+  </div>
+  <div class="stock-content">
+
+    <div class="statement-section">
+      <div class="statement-header">
+        <span>利润表 (Income Statement)</span>
+        <span>覆盖率 96.7% | 准确率 93.1%</span>
+      </div>
+      <div class="statement-body">
+        <h4 style="color:#c62828;">缺失项 (RDS有, 提取无)</h4>
+        <table>
+          <tr><th>RDS科目名称</th><th>预期值(元)</th></tr>
+          <tr><td>七、其他综合收益</td><td class="money">-189,635,216.25</td></tr>
+        </table>
+
+        <h4 style="color:#f57f17;">未匹配项 (提取有, RDS无) — 共19项</h4>
+        <table>
+          <tr><th>提取科目名称</th><th>值(元)</th></tr>
+          <tr><td>营业总收入</td><td class="money">419,111,677,714.12</td></tr>
+          <tr><td>营业成本</td><td class="money">296,540,687,975.27</td></tr>
+          <tr><td>利息费用</td><td class="money">8,757,579,925.42</td></tr>
+          <tr><td>投资收益</td><td class="money">13,511,869,972.98</td></tr>
+          <tr><td>对联营企业和合营企业的投资收益</td><td class="money">9,739,656,204.22</td></tr>
+          <tr><td>营业利润</td><td class="money">79,958,642,103.88</td></tr>
+          <tr><td>营业外收入</td><td class="money">999,497,308.64</td></tr>
+          <tr><td>营业外支出</td><td class="money">1,282,386,489.13</td></tr>
+          <tr><td>利润总额</td><td class="money">79,675,752,923.39</td></tr>
+          <tr><td>所得税费用</td><td class="money">20,377,636,478.86</td></tr>
+          <tr><td>净利润</td><td class="money">59,298,116,444.53</td></tr>
+          <tr><td>其他综合收益的税后净额</td><td class="money">553,256,970.60</td></tr>
+          <tr><td>一归属于母公司股东的其他综合收益的税后净额</td><td class="money">262,053,610.76</td></tr>
+          <tr><td>二归属于少数股东的其他综合收益的税后净额</td><td class="money">-451,688,827.01</td></tr>
+          <tr><td>综合收益总额</td><td class="money">59,108,481,228.28</td></tr>
+          <tr><td>一基本每股收益</td><td class="money">53.00</td></tr>
+          <tr><td>二稀释每股收益</td><td class="money">53.00</td></tr>
+          <tr><td>公允价值变动收益-</td><td class="money">4,468,493.15</td></tr>
+          <tr><td>信用减值损失损失以"号填列</td><td class="money">107,558.10</td></tr>
+        </table>
+        <p style="font-size:12px;color:#999;">分析: 多数未匹配项的值与RDS对应科目一致，仅是名称前后缀差异（如"营业总收入"vs"一、营业总收入"）。"公允价值变动收益-"尾部的"-"和"信用减值损失损失以"号填列"可能是提取时格式解析残留。</p>
+
+        <h4 style="color:#e65100;">数值差异 (2项)</h4>
+        <table>
+          <tr><th>科目名称</th><th>RDS值</th><th>提取值</th><th>误差%</th></tr>
+          <tr>
+            <td>二、营业总成本</td>
+            <td class="money">350,513,340,623.53</td>
+            <td class="money">296,540,687,975.27</td>
+            <td class="value-diff-neg">15.40%</td>
+          </tr>
+          <tr>
+            <td>持续经营净利润</td>
+            <td class="money">59,298,116,444.53</td>
+            <td class="money">40,984,723,712.04</td>
+            <td class="value-diff-neg">30.88%</td>
+          </tr>
+        </table>
+        <p style="font-size:12px;color:#c62828;">→ 营业总成本误差15%: 提取值2965亿等于"营业成本"而非"营业总成本"，说明提取时将"营业总成本"误识别为"营业成本"。持续经营净利润误差30%: 提取值接近"归属于母公司股东的净利润"409.8亿，说明结构解析错位。</p>
+      </div>
+    </div>
+
+    <div class="statement-section">
+      <div class="statement-header">
+        <span>资产负债表 (Balance Sheet)</span>
+        <span>覆盖率 87.3% | 准确率 100%</span>
+      </div>
+      <div class="statement-body">
+        <h4 style="color:#c62828;">缺失项 (RDS有, 提取无)</h4>
+        <table>
+          <tr><th>RDS科目名称</th><th>预期值(元)</th></tr>
+          <tr><td>其中：应收利息</td><td class="money">26,555,602.32</td></tr>
+          <tr><td>其中：应收股利</td><td class="money">19,294,640.06</td></tr>
+          <tr><td>存货</td><td class="money">1,002,063,008,153.13</td></tr>
+          <tr><td>商誉</td><td class="money">206,342,883.92</td></tr>
+          <tr><td>其中：应付股利</td><td class="money">319,037,650.64</td></tr>
+          <tr><td>实收资本（或股本）</td><td class="money">11,617,732,201.00</td></tr>
+          <tr><td>其他综合收益</td><td class="money">-1,544,373,020.86</td></tr>
+        </table>
+        <p style="font-size:12px;color:#c62828;">→ 存货 1.002万亿是万科最大的资产项，未提取说明续页识别失败。商誉、股本、其他综合收益均在页153（续页）上。</p>
+
+        <h4 style="color:#f57f17;">未匹配项 (提取有, RDS无)</h4>
+        <table>
+          <tr><th>提取科目名称</th><th>值(元)</th></tr>
+          <tr><td>请参阅财务报表附注"三、公司重要会计政策、会计估计"注释</td><td class="money">10.00</td></tr>
+          <tr><td>货项目达到完工状态时将要发生的建造成本</td><td class="money">2,020.00</td></tr>
+          <tr><td>和未来净售价存在固有风险特别是考虑到</td><td class="money">12.00</td></tr>
+          <tr><td>当前的经济环境在各个城市推出的各种应对</td><td class="money">12.00</td></tr>
+          <tr><td>负债及股东权益附注五</td><td class="money">2,020.00</td></tr>
+          <tr><td>资本公积</td><td class="money">18,554,497,034.24</td></tr>
+          <tr><td>其他综合收益</td><td class="money">-1,806,426,631.62</td></tr>
+          <tr><td>盈余公积</td><td class="money">97,466,324,513.51</td></tr>
+          <tr><td>未分配利润</td><td class="money">98,416,772,021.20</td></tr>
+        </table>
+        <p style="font-size:12px;color:#999;">分析: 前五项明显是HTML/文本解析残留（附注说明、年度数字被误识别为科目名）。资本公积/盈余公积等权益科目值可能与RDS对应值一致但名称不对应。</p>
+      </div>
+    </div>
+
+    <div class="statement-section">
+      <div class="statement-header">
+        <span>现金流量表 (Cash Flow)</span>
+        <span>覆盖率 44.4% | 准确率 87.5%</span>
+      </div>
+      <div class="statement-body">
+        <div class="progress-bar"><div class="progress-fill progress-red" style="width:44%"></div></div>
+
+        <h4 style="color:#c62828;">缺失项 (RDS有, 提取无) — 共30项</h4>
+        <table>
+          <tr><th>#</th><th>RDS科目名称</th><th>预期值(元)</th></tr>
+          <tr><td>1-5</td><td colspan="2">经营活动直接法: 收到/支付其他与经营活动有关的现金、经营活动净额 (合计约530亿)</td></tr>
+          <tr><td>6-10</td><td colspan="2">投资活动直接法: 处置固定资产/子公司/收到其他投资现金、购建固定资产/取得子公司/支付其他投资现金、投资净额 57.9亿</td></tr>
+          <tr><td>11</td><td>支付其他与筹资活动有关的现金</td><td class="money">41,291,981,121.54</td></tr>
+          <tr><td>12-13</td><td>四、汇率变动对现金的影响 / 五、现金及现金等价物净增加额</td><td class="money">-5.57亿 / 259.2亿</td></tr>
+          <tr><td>14-30</td><td colspan="2"><strong>间接法全部17项</strong>: 净利润(593亿)、资产减值准备、折旧、摊销、处置损失、公允价值变动、财务费用、投资损失、递延税项、存货减少、应收应付、其他、净额2、现金期末/期初、净增加额2</td></tr>
+        </table>
+        <p style="font-size:12px;color:#c62828;">→ 万科CF覆盖率仅44.4%，30项缺失！同时缺失直接法子项和全部间接法附注。需要检查万科PDF现金流量表的结构，确认提取时是否因表格式复杂（多行合并、跨页）而漏提取。</p>
+
+        <h4 style="color:#f57f17;">未匹配项 (提取有, RDS无) — 共21项</h4>
+        <table>
+          <tr><th>提取科目名称</th><th>值(元)</th></tr>
+          <tr><td>收到其他与经营活动有关的现金</td><td class="money">-551.00</td></tr>
+          <tr><td>支付其他与经营活动有关的现金</td><td class="money">-552.00</td></tr>
+          <tr><td>经营活动产生的现金流量净额</td><td class="money">-561.00</td></tr>
+          <tr><td>处置子公司及其他营业单位收到的现金净额</td><td class="money">-563.00</td></tr>
+          <tr><td>收到其他与投资活动有关的现金</td><td class="money">-553.00</td></tr>
+          <tr><td>取得子公司及其他营业单位支付的现金净额</td><td class="money">-563.00</td></tr>
+          <tr><td>支付其他与投资活动有关的现金</td><td class="money">-554.00</td></tr>
+          <tr><td>投资活动产生/使用的现金流量净额</td><td class="money">5,797,067,128.05</td></tr>
+          <tr><td>子公司吸收少数股东投资收到的现金</td><td class="money">31,693,649,391.52</td></tr>
+          <tr><td>收到的其他与筹资活动有关的现金</td><td class="money">-555.00</td></tr>
+          <tr><td>归还投资支付的现金</td><td class="money">11,885,701,551.23</td></tr>
+          <tr><td>子公司支付给少数股东的股利、利润</td><td class="money">7,474,053,653.85</td></tr>
+          <tr><td>支付的其他与筹资活动有关的现金</td><td class="money">-555.00</td></tr>
+          <tr><td>汇率变动对现金及现金等价物的影响</td><td class="money">348,623,418.48</td></tr>
+          <tr><td>现金及现金等价物净增加/减少额</td><td class="money">-562.00</td></tr>
+          <tr><td>年初现金及现金等价物余额</td><td class="money">-562.00</td></tr>
+          <tr><td>年末现金及现金等价物余额</td><td class="money">-562.00</td></tr>
+          <tr><td>经营活动产生/使用的现金流量净额</td><td class="money">43,631,375,328.45</td></tr>
+          <tr><td>投资活动产生的现金流量净额</td><td class="money">14,029,452,340.28</td></tr>
+          <tr><td>收到的其他与筹资活动有关的现金-</td><td class="money">17,983,071,780.55</td></tr>
+          <tr><td>筹资活动使用/产生的现金流量净额</td><td class="money">6,794,491,880.24</td></tr>
+        </table>
+        <p style="font-size:12px;color:#c62828;">→ 负值（如-551, -552等）明显是行号/页码被错误解析为数值！"投资活动产生/使用的现金流量净额"等带"/"的科目名来自 PDF 中的"使用/产生"二选一格式。正值科目（如投资净额140亿）与RDS值相似但名称不对应。</p>
+
+        <h4 style="color:#e65100;">数值差异 (3项)</h4>
+        <table>
+          <tr><th>科目名称</th><th>RDS值</th><th>提取值</th><th>误差%</th></tr>
+          <tr>
+            <td>筹资活动产生的现金流量净额</td>
+            <td class="money">-32,504,259,938.83</td>
+            <td class="money">-33,338,210,446.40</td>
+            <td class="value-diff-pos">2.57%</td>
+          </tr>
+          <tr>
+            <td>期初现金及现金等价物余额</td>
+            <td class="money">159,738,651,471.96</td>
+            <td class="money">-562.00</td>
+            <td class="value-diff-neg">100%</td>
+          </tr>
+          <tr>
+            <td>期末现金及现金等价物余额</td>
+            <td class="money">185,662,379,706.96</td>
+            <td class="money">-562.00</td>
+            <td class="value-diff-neg">100%</td>
+          </tr>
+        </table>
+        <p style="font-size:12px;color:#c62828;">→ 期初/期末现金余额提取值为-562（行号误解析），数值完全错误。筹资活动净额误差2.6%尚可接受。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="summary-card">
+  <h2>总结与行动计划</h2>
+
+  <h3>优先级 P0 — Cash Flow 间接法提取</h3>
+  <p>两个公司的CF都缺失间接法附注（600519缺失17项、000002缺失30项）。间接法数据通常在PDF附注章节，不在主表内，需要扩展提取范围到附注章节。</p>
+
+  <h3>优先级 P1 — 完善 aliases.yaml</h3>
+  <p>建议添加以下变体映射（按数据库中的建议）：
+    <br>• <code>现金及现金等价物净增加额2</code> ← <code>现金及现金等价物净增加/减少额</code>
+    <br>• <code>经营活动产生的现金流量净额2</code> ← <code>经营活动产生/使用的现金流量净额</code>
+    <br>• <code>四、汇率变动对现金的影响</code> ← <code>汇率变动对现金及现金等价物的影响</code>
+    <br>• <code>五、现金及现金等价物净增加额</code> ← <code>现金及现金等价物净增加/减少额</code>
+  </p>
+
+  <h3>优先级 P2 — 000002 BS 续页问题</h3>
+  <p>存货(1.002T)、商誉、股本、其他综合收益等7项缺失，均应在资产负债表续页上。需检查<code>_find_bs_continuation_pages()</code>对万科PDF的识别效果。</p>
+
+  <h3>优先级 P3 — 000002 CF 子项提取</h3>
+  <p>直接法子项（收到/支付其他经营/投资/筹资活动现金）未提取。负数-551等说明表格结构解析有误，行号被当作数值。需检查<code>_table_has_financial_data()</code>的列检测逻辑。</p>
+
+  <h3>优先级 P4 — 数据清洗增强</h3>
+  <p>提取结果中出现明显错误：附注文字被当科目名（"货项目达到完工状态时将要发生的建造成本"）、行号被当数值（-551, -562）。需在提取后增加清洗步骤。</p>
+</div>
+
+<div class="meta-info">
+  数据来源: batch_comparison_detailed.json | RDS: D:/Research/Quant/SETL/cninfo/data_backup | 提取: data/extracted/by_code
+</div>
+
+<script>
+function toggle(el) {
+  var content = el.parentElement.querySelector('.stock-content');
+  content.classList.toggle('open');
+  var icon = el.querySelector('.toggle-icon');
+  icon.textContent = content.classList.contains('open') ? '▼' : '▶';
+}
+// Open first stock by default
+document.querySelector('.stock-content')?.classList.add('open');
+</script>
+</body>
+</html>

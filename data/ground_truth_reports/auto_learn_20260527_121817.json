@@ -1,0 +1,249 @@
+{
+  "timestamp": "2026-05-27T12:18:17.630321",
+  "stock_codes": [
+    "000001"
+  ],
+  "years": [
+    2021
+  ],
+  "rules": {
+    "income_statement": [
+      {
+        "standard_name": "财务费用",
+        "variants": [
+          "营业收入合计"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "加：影响利润总额的其他科目",
+        "variants": [
+          "五、利润总额"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "四、利润总额",
+        "variants": [
+          "四、营业利润"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "减：所得税",
+        "variants": [
+          "公允价值变动损益"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "已赚保费",
+        "variants": [
+          "手续费及佣金收入"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "单季财务指标",
+        "variants": [
+          "汇兑损益"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "利息支出",
+        "variants": [
+          "投资收益"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      }
+    ],
+    "balance_sheet": [
+      {
+        "standard_name": "投资收益",
+        "variants": [
+          "吸收存款"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "其中：对联营企业和合营企业的投资收益",
+        "variants": [
+          "债权投资"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "二、营业总成本",
+        "variants": [
+          "一般风险准备"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "退保金",
+        "variants": [
+          "负债合计"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "赔付支出净额",
+        "variants": [
+          "资产总计"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "流动负债合计",
+        "variants": [
+          "发放贷款和垫款"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "长期借款",
+        "variants": [
+          "负债及股东权益总计"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "非正常经营项目收益调整",
+        "variants": [
+          "股东权益合计"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "发放贷款及垫款-非流动资产",
+        "variants": [
+          "已发行债务证券"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "其中：优先股-非流动负债",
+        "variants": [
+          "其他债权投资"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "其他非流动金融资产",
+        "variants": [
+          "现金及存放中央银行款项"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      }
+    ],
+    "cash_flow": [
+      {
+        "standard_name": "财务费用",
+        "variants": [
+          "加：年初现金及现金等价物余额"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "其中：非流动资产处置损失",
+        "variants": [
+          "筹资活动现金流入小计"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "加：影响利润总额的其他科目",
+        "variants": [
+          "发行债务证券及其他权益工具收到的现金"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "归属于母公司所有者的净利润",
+        "variants": [
+          "收回投资收到的现金"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "八、综合收益总额",
+        "variants": [
+          "已发行债务证券利息支出"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "单季财务指标",
+        "variants": [
+          "经营性应收项目的增加"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "其中：非流动资产处置利得",
+        "variants": [
+          "收取利息、手续费及佣金的现金"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "基它收入",
+        "variants": [
+          "信用减值损失"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "应付债券",
+        "variants": [
+          "支付其他与经营活动有关的现金"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "盈余公积",
+        "variants": [
+          "经营活动现金流入小计"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "外币报表折算价差",
+        "variants": [
+          "存放中央银行和同业款项净减少额"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      }
+    ]
+  }
+}

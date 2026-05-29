@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>600519 2020 覆盖不足分析</title>
+<style>
+body { font-family: 'Segoe UI', Arial, sans-serif; margin: 30px; background: #f5f5f5; color: #333; }
+h1 { font-size: 22px; }
+.stats { display: flex; gap: 16px; margin: 20px 0; flex-wrap: wrap; }
+.card { background: white; border-radius: 8px; padding: 16px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); flex: 1; min-width: 180px; text-align: center; }
+.card .num { font-size: 28px; font-weight: bold; }
+.card .lbl { font-size: 13px; color: #666; margin-top: 4px; }
+.green { color: #2e7d32; }
+.amber { color: #e65100; }
+.red { color: #c62828; }
+table { border-collapse: collapse; width: 100%; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin: 20px 0; }
+th { background: #1565c0; color: white; padding: 10px 14px; text-align: left; font-weight: 600; }
+td { padding: 10px 14px; border-bottom: 1px solid #eee; }
+tr:hover { background: #e3f2fd; }
+.code { font-family: 'Consolas', monospace; color: #1565c0; }
+.num { font-family: 'Consolas', monospace; text-align: right; }
+.badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 12px; font-weight: 600; }
+.badge.missing { background: #ffebee; color: #c62828; }
+.badge.diff { background: #fff3e0; color: #e65100; }
+.analysis { background: white; border-radius: 8px; padding: 16px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin: 20px 0; line-height: 1.7; }
+.analysis li { margin: 8px 0; }
+</style>
+</head>
+<body>
+
+<h1>600519 贵州茅台 2020 — 未覆盖科目详情</h1>
+
+<div class="stats">
+<div class="card"><div class="num green">98.2%</div><div class="lbl">总覆盖率</div></div>
+<div class="card"><div class="num green">100%</div><div class="lbl">现金流量表</div></div>
+<div class="card"><div class="num amber">97.2%</div><div class="lbl">资产负债表</div></div>
+<div class="card"><div class="num amber">96.4%</div><div class="lbl">利润表</div></div>
+</div>
+
+<h2>缺失/未匹配的科目 (2 项)</h2>
+<table>
+<tr><th>报表</th><th>RDS 代码</th><th>科目名称</th><th>期望值</th><th>状态</th></tr>
+<tr>
+<td>利润表</td>
+<td class="code">F063N</td>
+<td>其中：利息收入</td>
+<td class="num">278,697,733.32</td>
+<td class="badge missing">缺失</td>
+</tr>
+<tr>
+<td>资产负债表</td>
+<td class="code">F015N</td>
+<td>存货</td>
+<td class="num">28,869,087,678.06</td>
+<td class="badge missing">缺失</td>
+</tr>
+
+</table>
+
+<div class="analysis">
+<h3>原因分析</h3>
+<ol>
+<li><strong>F063N 其中：利息收入 (278,697,733.32)</strong> — 这是"财务费用"下的利息收入子项。利润表第52页同时存在主表"利息收入"(30.77亿)和子项"利息收入"(2.79亿)。
+提取时同名保留较大值（30.77亿），子项被丢失。</li>
+<li><strong>F015N 存货 (28,869,087,678.06)</strong> — 可能来自资产负债表附注中的存货明细（原材料、在产品、库存商品等合计），
+而非主表直接列示的"存货"余额。需要检查是否在附注页上有不同的金额口径。</li>
+</ol>
+</div>
+
+</body>
+</html>

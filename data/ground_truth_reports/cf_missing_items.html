@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>600519 2020 现金流量表 - 未提取项分析</title>
+<style>
+body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+h1, h2 { color: #333; }
+table { border-collapse: collapse; width: 100%; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
+th { background: #d32f2f; color: white; padding: 10px 12px; text-align: left; }
+td { padding: 8px 12px; border-bottom: 1px solid #eee; }
+tr:hover { background: #fff3f0; }
+.code { font-family: monospace; color: #1976d2; }
+.value { font-family: monospace; text-align: right; }
+.summary { margin: 20px 0; padding: 15px; background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.match-ok { color: #2e7d32; font-weight: bold; }
+.match-missing { color: #c62828; font-weight: bold; }
+.status-cell { color: #c62828; }
+.notes { background: #e3f2fd; padding: 12px; border-radius: 4px; margin: 15px 0; }
+</style>
+</head>
+<body>
+
+<h1>600519 贵州茅台 2020 年现金流量表 — 未成功提取分析</h1>
+
+<div class="summary">
+<h3>概况</h3>
+<p>RDS 科目总数: 45 | 成功匹配: <span class="match-ok">30</span> | 未提取: <span class="match-missing">15</span> | 多余提取: 15</p>
+<p>覆盖率: 66.7% | 值准确率: 96.7%</p>
+</div>
+
+<div class="notes">
+<strong>说明：</strong>现金流量表的15个未提取科目主要是间接法调节项目（如折旧、摊销、存货变动、经营性应收应付变动等）。
+这些项目通常出现在现金流量表附注中，可能不在主表页面上，或者以不同格式呈现导致提取失败。
+</div>
+
+<h2>缺失的 RDS 科目（提取未找到）</h2>
+<table>
+<tr><th>RDS 代码</th><th>RDS 科目名称</th><th>期望值</th><th>状态</th></tr>
+<tr>
+<td class="code">F008N</td>
+<td>收到其他与经营活动有关的现金</td>
+<td class="value">221,421,226.63</td>
+<td class="status-cell">未提取</td>
+</tr>
+<tr>
+<td class="code">F021N</td>
+<td>投资活动现金流入小计</td>
+<td class="value">322,077,745.36</td>
+<td class="status-cell">未提取</td>
+</tr>
+<tr>
+<td class="code">F044N</td>
+<td>净利润</td>
+<td class="value">49,523,329,882.40</td>
+<td class="status-cell">未提取</td>
+</tr>
+<tr>
+<td class="code">F046N</td>
+<td>固定资产折旧、油气资产折耗、生产性生物资产折旧</td>
+<td class="value">1,195,956,468.60</td>
+<td class="status-cell">未提取</td>
+</tr>
+<tr>
+<td class="code">F047N</td>
+<td>无形资产摊销</td>
+<td class="value">110,349,099.00</td>
+<td class="status-cell">未提取</td>
+</tr>
+<tr>
+<td class="code">F048N</td>
+<td>长期待摊费用摊销</td>
+<td class="value">10,562,811.76</td>
+<td class="status-cell">未提取</td>
+</tr>
+<tr>
+<td class="code">F050N</td>
+<td>固定资产报废损失</td>
+<td class="value">100,113.92</td>
+<td class="status-cell">未提取</td>
+</tr>
+<tr>
+<td class="code">F051N</td>
+<td>公允价值变动损失</td>
+<td class="value">-4,897,994.43</td>
+<td class="status-cell">未提取</td>
+</tr>
+<tr>
+<td class="code">F053N</td>
+<td>投资损失</td>
+<td class="value">-305,631.46</td>
+<td class="status-cell">未提取</td>
+</tr>
+<tr>
+<td class="code">F054N</td>
+<td>递延所得税资产减少</td>
+<td class="value">-23,278,138.80</td>
+<td class="status-cell">未提取</td>
+</tr>
+<tr>
+<td class="code">F055N</td>
+<td>递延所得税负债增加</td>
+<td class="value">-71,235,087.78</td>
+<td class="status-cell">未提取</td>
+</tr>
+<tr>
+<td class="code">F056N</td>
+<td>存货的减少</td>
+<td class="value">-3,584,166,871.73</td>
+<td class="status-cell">未提取</td>
+</tr>
+<tr>
+<td class="code">F057N</td>
+<td>经营性应收项目的减少</td>
+<td class="value">-504,008,375.44</td>
+<td class="status-cell">未提取</td>
+</tr>
+<tr>
+<td class="code">F058N</td>
+<td>经营性应付项目的增加</td>
+<td class="value">4,945,290,607.14</td>
+<td class="status-cell">未提取</td>
+</tr>
+<tr>
+<td class="code">F096N</td>
+<td>信用减值损失</td>
+<td class="value">71,371,809.85</td>
+<td class="status-cell">未提取</td>
+</tr>
+
+</table>
+
+<h2>多余提取项（RDS 中无对应）</h2>
+<table>
+<tr><th>提取科目名称</th><th>提取值</th><th>备注</th></tr>
+<tr>
+<td>项目附注</td>
+<td class="value">2,020.00</td>
+<td>-</td>
+</tr>
+<tr>
+<td>收到其他与经营活动有关的现金</td>
+<td class="value">669,399,842.28</td>
+<td>-</td>
+</tr>
+<tr>
+<td>拆出资金净增加额</td>
+<td class="value">200,000,000.00</td>
+<td>-</td>
+</tr>
+<tr>
+<td>投资活动现金流入小计</td>
+<td class="value">35,261,612,820.03</td>
+<td>-</td>
+</tr>
+<tr>
+<td>吸收投资收到的现金</td>
+<td class="value">833,000,000.00</td>
+<td>-</td>
+</tr>
+<tr>
+<td>子公司吸收少数股东投资收</td>
+<td class="value">833,000,000.00</td>
+<td>-</td>
+</tr>
+<tr>
+<td>筹资活动现金流入小计</td>
+<td class="value">833,000,000.00</td>
+<td>-</td>
+</tr>
+<tr>
+<td>子公司支付给少数股东的股</td>
+<td class="value">2,704,262,179.11</td>
+<td>-</td>
+</tr>
+<tr>
+<td>汇率变动对现金及现金等价物的</td>
+<td class="value">380,639.36</td>
+<td>-</td>
+</tr>
+<tr>
+<td>现金及现金等价物净增加额</td>
+<td class="value">25,736,685,268.41</td>
+<td>-</td>
+</tr>
+<tr>
+<td>期初现金及现金等价物余额</td>
+<td class="value">121,003,839,599.64</td>
+<td>-</td>
+</tr>
+<tr>
+<td>期末现金及现金等价物余额</td>
+<td class="value">146,740,524,868.05</td>
+<td>-</td>
+</tr>
+<tr>
+<td>取得投资收益收到的现金</td>
+<td class="value">34,940,030,979.52</td>
+<td>-</td>
+</tr>
+<tr>
+<td>处置固定资产、无形资产和其他</td>
+<td class="value">37,800.00</td>
+<td>-</td>
+</tr>
+<tr>
+<td>购建固定资产、无形资产和其他</td>
+<td class="value">2,081,844,620.34</td>
+<td>-</td>
+</tr>
+
+</table>
+
+<h2>提取信息</h2>
+<table>
+<tr><th>属性</th><th>值</th></tr>
+<tr><td>提取页面</td><td>[55, 56, 57]</td></tr>
+<tr><td>提取时间</td><td>2026-05-28T17:53:28.430816</td></tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,87 @@
+{
+  "stock_code": "600519",
+  "year": 2020,
+  "statement_type": "balance_sheet",
+  "coverage": 0.9166666666666666,
+  "value_accuracy": 1.0,
+  "missing_items": [
+    {
+      "name": "货币资金",
+      "code": "F006N",
+      "expected_value": 36091090060.9
+    },
+    {
+      "name": "其他应收款",
+      "code": "F011N",
+      "expected_value": 34488582.19
+    },
+    {
+      "name": "存货",
+      "code": "F015N",
+      "expected_value": 28869087678.06
+    }
+  ],
+  "unmatched_items": [
+    {
+      "name": "货币资金",
+      "code": null,
+      "value": 50925698935.43
+    },
+    {
+      "name": "应收账款",
+      "code": null,
+      "value": 9203780107.14
+    },
+    {
+      "name": "其他应收款",
+      "code": null,
+      "value": 42323669.01
+    },
+    {
+      "name": "预收款项",
+      "code": null,
+      "value": 13740329698.82
+    },
+    {
+      "name": "应付利息",
+      "code": null,
+      "value": 11081.87
+    },
+    {
+      "name": "应付股利",
+      "code": null,
+      "value": 446880000.0
+    },
+    {
+      "name": "资本公积",
+      "code": null,
+      "value": 1374964415.72
+    },
+    {
+      "name": "盈余公积",
+      "code": null,
+      "value": 20174922608.93
+    },
+    {
+      "name": "未分配利润",
+      "code": null,
+      "value": 137594403807.99
+    },
+    {
+      "name": "应收利息",
+      "code": null,
+      "value": 131917083.59
+    },
+    {
+      "name": "应收股利",
+      "code": null,
+      "value": 465120000.0
+    },
+    {
+      "name": "长期股权投资",
+      "code": null,
+      "value": 1624535587.55
+    }
+  ],
+  "value_diffs": []
+}

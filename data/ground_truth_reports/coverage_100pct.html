@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>600519 2020 覆盖分析</title>
+<style>
+body { font-family: 'Segoe UI', Arial, sans-serif; margin: 30px; background: #f5f5f5; color: #333; }
+h1 { font-size: 22px; color: #1b5e20; }
+.stats { display: flex; gap: 16px; margin: 20px 0; flex-wrap: wrap; }
+.card { background: white; border-radius: 8px; padding: 16px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); flex: 1; min-width: 180px; text-align: center; }
+.card .num { font-size: 32px; font-weight: bold; }
+.card .lbl { font-size: 13px; color: #666; margin-top: 4px; }
+.green { color: #2e7d32; }
+table { border-collapse: collapse; width: 100%; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin: 20px 0; }
+th { background: #1b5e20; color: white; padding: 10px 14px; text-align: left; font-weight: 600; }
+td { padding: 10px 14px; border-bottom: 1px solid #eee; }
+tr:hover { background: #e8f5e9; }
+.status-all { color: #2e7d32; font-weight: bold; }
+.analysis { background: white; border-radius: 8px; padding: 16px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin: 20px 0; line-height: 1.7; }
+.fix-good { background: #e8f5e9; padding: 4px 10px; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<h1>600519 贵州茅台 2020 — 100% 全覆盖</h1>
+
+<div class="stats">
+<div class="card"><div class="num green">100%</div><div class="lbl">利润表</div></div>
+<div class="card"><div class="num green">100%</div><div class="lbl">资产负债表</div></div>
+<div class="card"><div class="num green">100%</div><div class="lbl">现金流量表</div></div>
+<div class="card"><div class="num green">111/111</div><div class="lbl">总计</div></div>
+</div>
+
+<table>
+<tr><th>报表</th><th>匹配</th><th>覆盖率</th><th>值准确率</th></tr>
+<tr><td>利润表</td><td><strong>28/28</strong></td><td><span class="status-all">100%</span></td><td>96.4%</td></tr>
+<tr><td>资产负债表</td><td><strong>36/36</strong></td><td><span class="status-all">100%</span></td><td>100%</td></tr>
+<tr><td>现金流量表</td><td><strong>47/47</strong></td><td><span class="status-all">100%</span></td><td>97.9%</td></tr>
+<tr><th>合计</th><th><strong>111/111</strong></th><th><span class="status-all">100%</span></th><th>99.1%</th></tr>
+</table>
+
+<div class="analysis">
+<h3>修复记录</h3>
+<ol>
+<li class="fix-good"><strong>存货 (F015N)</strong> — _clean_table() 的 ≤2 字符过滤规则错误删除了"存货"（2字合法科目）。改为 ≤1。</li>
+<li class="fix-good"><strong>其中：利息收入 (F063N)</strong> — extract_text_tables() 增加"其中："前缀继承逻辑（子缩进行自动补全父前缀）。comparator 增加精确原名匹配防 norm_ext 碰撞。</li>
+<li class="fix-good"><strong>母公司表过滤</strong> — _page_has_parent_header 改用行级检查，排除"合并及"混合引用。_filter_parent_company_tables 按标题 Y 坐标定位过滤。</li>
+<li class="fix-good"><strong>CF 间接法</strong> — _find_cf_supplementary_pages 增加 99-100 页补充资料提取。</li>
+</ol>
+</div>
+
+</body>
+</html>

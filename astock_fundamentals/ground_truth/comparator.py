@@ -15,7 +15,7 @@ from difflib import SequenceMatcher
 from typing import Dict, List, Optional, Tuple
 
 # 规则文件目录
-RULES_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "rules")
+RULES_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))), "rules")
 
 
 def load_yaml_rule(filename: str, default=None):

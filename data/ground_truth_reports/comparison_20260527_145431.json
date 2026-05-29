@@ -1,0 +1,1812 @@
+{
+  "stats": {
+    "income_statement": {
+      "matched": 24,
+      "missing": 4,
+      "unmatched": 27
+    },
+    "balance_sheet": {
+      "matched": 6,
+      "missing": 28,
+      "unmatched": 27
+    },
+    "cash_flow": {
+      "matched": 0,
+      "missing": 46,
+      "unmatched": 23
+    }
+  },
+  "suggestions_count": 106,
+  "suggestions": [
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "五、净利润",
+      "value": [
+        "未分配利润"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '未分配利润' likely maps to GT '五、净利润' (similarity=0.50)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "所有者权益（或股东权益）合计",
+      "value": [
+        "所有者权益"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '所有者权益' likely maps to GT '所有者权益（或股东权益）合计' (similarity=0.80)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "负债和所有者（或股东权益）合计",
+      "value": [
+        "所有者权益"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '所有者权益' likely maps to GT '负债和所有者（或股东权益）合计' (similarity=0.50)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "归属于母公司所有者权益",
+      "value": [
+        "所有者权益"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '所有者权益' likely maps to GT '归属于母公司所有者权益' (similarity=0.80)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "负债和所有者（或股东权益）合计",
+      "value": [
+        "负债和所有者权益"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '负债和所有者权益' likely maps to GT '负债和所有者（或股东权益）合计' (similarity=0.70)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "归属于母公司所有者权益",
+      "value": [
+        "负债和所有者权益"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '负债和所有者权益' likely maps to GT '归属于母公司所有者权益' (similarity=0.53)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其中：营业收入",
+      "value": [
+        "营业总收入"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业总收入' likely maps to GT '其中：营业收入' (similarity=0.89)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "一、营业总收入",
+      "value": [
+        "营业总收入"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业总收入' likely maps to GT '一、营业总收入' (similarity=1.00)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "营业外收入",
+      "value": [
+        "营业总收入"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业总收入' likely maps to GT '营业外收入' (similarity=0.80)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "二、营业总成本",
+      "value": [
+        "营业总收入"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业总收入' likely maps to GT '二、营业总成本' (similarity=0.60)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "利息收入",
+      "value": [
+        "营业收入"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业收入' likely maps to GT '利息收入' (similarity=0.50)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其中：营业收入",
+      "value": [
+        "营业收入"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业收入' likely maps to GT '其中：营业收入' (similarity=1.00)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "加：补贴收入",
+      "value": [
+        "营业收入"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业收入' likely maps to GT '加：补贴收入' (similarity=0.50)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "一、营业总收入",
+      "value": [
+        "营业收入"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业收入' likely maps to GT '一、营业总收入' (similarity=0.89)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "基它收入",
+      "value": [
+        "营业收入"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业收入' likely maps to GT '基它收入' (similarity=0.50)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其中：利息收入",
+      "value": [
+        "营业收入"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业收入' likely maps to GT '其中：利息收入' (similarity=0.50)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "营业外收入",
+      "value": [
+        "营业收入"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业收入' likely maps to GT '营业外收入' (similarity=0.89)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "手续费及佣金支出",
+      "value": [
+        "手续费及佣金收入"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '手续费及佣金收入' likely maps to GT '手续费及佣金支出' (similarity=0.75)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "一、营业总收入",
+      "value": [
+        "营业总成本"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业总成本' likely maps to GT '一、营业总收入' (similarity=0.60)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "二、营业总成本",
+      "value": [
+        "营业总成本"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业总成本' likely maps to GT '二、营业总成本' (similarity=1.00)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其中：营业收入",
+      "value": [
+        "营业成本"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业成本' likely maps to GT '其中：营业收入' (similarity=0.50)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "二、营业总成本",
+      "value": [
+        "营业成本"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业成本' likely maps to GT '二、营业总成本' (similarity=0.89)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "投资收益",
+      "value": [
+        "其他收益"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '其他收益' likely maps to GT '投资收益' (similarity=0.50)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "汇兑收益",
+      "value": [
+        "其他收益"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '其他收益' likely maps to GT '汇兑收益' (similarity=0.50)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "七、其他综合收益",
+      "value": [
+        "其他收益"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '其他收益' likely maps to GT '七、其他综合收益' (similarity=0.80)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其他综合收益",
+      "value": [
+        "其他收益"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '其他收益' likely maps to GT '其他综合收益' (similarity=0.80)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "投资收益",
+      "value": [
+        "投资收益"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '投资收益' likely maps to GT '投资收益' (similarity=1.00)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "汇兑收益",
+      "value": [
+        "投资收益"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '投资收益' likely maps to GT '汇兑收益' (similarity=0.50)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其中：对联营企业和合营企业的投资收益",
+      "value": [
+        "投资收益"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '投资收益' likely maps to GT '其中：对联营企业和合营企业的投资收益' (similarity=0.80)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "加：公允价值变动净收益",
+      "value": [
+        "公允价值变动收益"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '公允价值变动收益' likely maps to GT '加：公允价值变动净收益' (similarity=0.94)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "资产减值损失",
+      "value": [
+        "信用减值损失"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '信用减值损失' likely maps to GT '资产减值损失' (similarity=0.67)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "信用减值损失",
+      "value": [
+        "信用减值损失"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '信用减值损失' likely maps to GT '信用减值损失' (similarity=1.00)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "投资收益",
+      "value": [
+        "资产处置收益"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '资产处置收益' likely maps to GT '投资收益' (similarity=0.60)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其中：非流动资产处置损失",
+      "value": [
+        "资产处置收益"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '资产处置收益' likely maps to GT '其中：非流动资产处置损失' (similarity=0.53)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其中：非流动资产处置利得",
+      "value": [
+        "资产处置收益"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '资产处置收益' likely maps to GT '其中：非流动资产处置利得' (similarity=0.53)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其中：营业收入",
+      "value": [
+        "营业利润"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业利润' likely maps to GT '其中：营业收入' (similarity=0.50)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "持续经营净利润",
+      "value": [
+        "营业利润"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业利润' likely maps to GT '持续经营净利润' (similarity=0.55)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "终止经营净利润",
+      "value": [
+        "营业利润"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业利润' likely maps to GT '终止经营净利润' (similarity=0.55)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "五、净利润",
+      "value": [
+        "营业利润"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业利润' likely maps to GT '五、净利润' (similarity=0.57)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其中：营业收入",
+      "value": [
+        "营业外收入"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业外收入' likely maps to GT '其中：营业收入' (similarity=0.89)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "一、营业总收入",
+      "value": [
+        "营业外收入"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业外收入' likely maps to GT '一、营业总收入' (similarity=0.80)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "营业外收入",
+      "value": [
+        "营业外收入"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业外收入' likely maps to GT '营业外收入' (similarity=1.00)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "减：营业外支出",
+      "value": [
+        "营业外收入"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业外收入' likely maps to GT '减：营业外支出' (similarity=0.60)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "营业外收入",
+      "value": [
+        "营业外支出"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业外支出' likely maps to GT '营业外收入' (similarity=0.60)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "减：营业外支出",
+      "value": [
+        "营业外支出"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '营业外支出' likely maps to GT '减：营业外支出' (similarity=1.00)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "加：影响利润总额的其他科目",
+      "value": [
+        "利润总额"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '利润总额' likely maps to GT '加：影响利润总额的其他科目' (similarity=0.80)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "五、净利润",
+      "value": [
+        "利润总额"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '利润总额' likely maps to GT '五、净利润' (similarity=0.57)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "减：所得税",
+      "value": [
+        "所得税费用"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '所得税费用' likely maps to GT '减：所得税' (similarity=0.80)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "加：影响净利润的其他科目",
+      "value": [
+        "净利润"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '净利润' likely maps to GT '加：影响净利润的其他科目' (similarity=0.80)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "持续经营净利润",
+      "value": [
+        "净利润"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '净利润' likely maps to GT '持续经营净利润' (similarity=0.80)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "终止经营净利润",
+      "value": [
+        "净利润"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '净利润' likely maps to GT '终止经营净利润' (similarity=0.80)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "五、净利润",
+      "value": [
+        "净利润"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '净利润' likely maps to GT '五、净利润' (similarity=1.00)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "持续经营净利润",
+      "value": [
+        "持续经营净利润"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '持续经营净利润' likely maps to GT '持续经营净利润' (similarity=1.00)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "终止经营净利润",
+      "value": [
+        "持续经营净利润"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '持续经营净利润' likely maps to GT '终止经营净利润' (similarity=0.71)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "五、净利润",
+      "value": [
+        "持续经营净利润"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '持续经营净利润' likely maps to GT '五、净利润' (similarity=0.80)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其中：归属于母公司",
+      "value": [
+        "归属于母公司股东的净利润"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '归属于母公司股东的净利润' likely maps to GT '其中：归属于母公司' (similarity=0.80)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其中：归属于少数股东",
+      "value": [
+        "归属于母公司股东的净利润"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '归属于母公司股东的净利润' likely maps to GT '其中：归属于少数股东' (similarity=0.53)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "归属于母公司所有者权益",
+      "value": [
+        "归属于母公司股东的净利润"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '归属于母公司股东的净利润' likely maps to GT '归属于母公司所有者权益' (similarity=0.52)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "五、净利润",
+      "value": [
+        "归属于母公司股东的净利润"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '归属于母公司股东的净利润' likely maps to GT '五、净利润' (similarity=0.80)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其中：归属于少数股东",
+      "value": [
+        "少数股东损益"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '少数股东损益' likely maps to GT '其中：归属于少数股东' (similarity=0.62)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "八、综合收益总额",
+      "value": [
+        "其他综合收益的税后净额"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '其他综合收益的税后净额' likely maps to GT '八、综合收益总额' (similarity=0.59)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "七、其他综合收益",
+      "value": [
+        "其他综合收益的税后净额"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '其他综合收益的税后净额' likely maps to GT '七、其他综合收益' (similarity=0.80)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其他综合收益",
+      "value": [
+        "其他综合收益的税后净额"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '其他综合收益的税后净额' likely maps to GT '其他综合收益' (similarity=0.80)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其中：归属于母公司",
+      "value": [
+        "归属母公司所有者的其他"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '归属母公司所有者的其他' likely maps to GT '其中：归属于母公司' (similarity=0.59)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "归属于母公司所有者权益",
+      "value": [
+        "归属母公司所有者的其他"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '归属母公司所有者的其他' likely maps to GT '归属于母公司所有者权益' (similarity=0.73)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "应收保费",
+      "value": [
+        "应收票据"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '应收票据' likely maps to GT '应收保费' (similarity=0.50)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "应收保费",
+      "value": [
+        "应收账款"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '应收账款' likely maps to GT '应收保费' (similarity=0.50)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "七、其他综合收益",
+      "value": [
+        "其他应收款"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '其他应收款' likely maps to GT '七、其他综合收益' (similarity=0.55)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其他综合收益",
+      "value": [
+        "其他应收款"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '其他应收款' likely maps to GT '其他综合收益' (similarity=0.55)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其中：非流动资产处置损失",
+      "value": [
+        "其他流动资产"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '其他流动资产' likely maps to GT '其中：非流动资产处置损失' (similarity=0.53)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其中：非流动资产处置利得",
+      "value": [
+        "其他流动资产"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '其他流动资产' likely maps to GT '其中：非流动资产处置利得' (similarity=0.53)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其中：非流动资产处置损失",
+      "value": [
+        "流动资产合计"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '流动资产合计' likely maps to GT '其中：非流动资产处置损失' (similarity=0.53)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其中：非流动资产处置利得",
+      "value": [
+        "流动资产合计"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '流动资产合计' likely maps to GT '其中：非流动资产处置利得' (similarity=0.53)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "发放贷款及垫款-非流动资产",
+      "value": [
+        "发放贷款和垫款"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '发放贷款和垫款' likely maps to GT '发放贷款及垫款-非流动资产' (similarity=0.60)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "减：所得税",
+      "value": [
+        "递延所得税资产"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '递延所得税资产' likely maps to GT '减：所得税' (similarity=0.80)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "发放贷款及垫款-非流动资产",
+      "value": [
+        "非流动资产合计"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '非流动资产合计' likely maps to GT '发放贷款及垫款-非流动资产' (similarity=0.50)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其中：非流动资产处置损失",
+      "value": [
+        "非流动资产合计"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '非流动资产合计' likely maps to GT '其中：非流动资产处置损失' (similarity=0.62)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其中：非流动资产处置利得",
+      "value": [
+        "非流动资产合计"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '非流动资产合计' likely maps to GT '其中：非流动资产处置利得' (similarity=0.62)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "应付债券",
+      "value": [
+        "应付账款"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '应付账款' likely maps to GT '应付债券' (similarity=0.50)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "长期应付款",
+      "value": [
+        "应付账款"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '应付账款' likely maps to GT '长期应付款' (similarity=0.67)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "应收保费",
+      "value": [
+        "应交税费"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '应交税费' likely maps to GT '应收保费' (similarity=0.50)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "长期应付款",
+      "value": [
+        "其他应付款"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '其他应付款' likely maps to GT '长期应付款' (similarity=0.60)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "利息收入",
+      "value": [
+        "应付利息"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '应付利息' likely maps to GT '利息收入' (similarity=0.50)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其中：利息费用",
+      "value": [
+        "应付利息"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '应付利息' likely maps to GT '其中：利息费用' (similarity=0.50)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "其中：利息收入",
+      "value": [
+        "应付利息"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '应付利息' likely maps to GT '其中：利息收入' (similarity=0.50)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "应付债券",
+      "value": [
+        "应付利息"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '应付利息' likely maps to GT '应付债券' (similarity=0.50)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "应付债券",
+      "value": [
+        "应付股利"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '应付股利' likely maps to GT '应付债券' (similarity=0.50)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "减：所得税",
+      "value": [
+        "递延所得税负债"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '递延所得税负债' likely maps to GT '减：所得税' (similarity=0.80)"
+    },
+    {
+      "category": "alias",
+      "action": "add_alias",
+      "key": "投资收益",
+      "value": [
+        "取得投资收益收到的现金"
+      ],
+      "confidence": 1.0,
+      "evidence": [
+        "600519/2020"
+      ],
+      "description": "Extracted '取得投资收益收到的现金' likely maps to GT '投资收益' (similarity=0.80)"
+    },
+    {
+      "category": "standard_items",
+      "action": "add_standard_item",
+      "key": "利息收入",
+      "value": null,
+      "confidence": 0.667,
+      "evidence": [
+        "600519/2020",
+        "600519/2020"
+      ],
+      "description": "Item '利息收入' missing in 2 extractions"
+    },
+    {
+      "category": "standard_items",
+      "action": "add_standard_item",
+      "key": "八、综合收益总额",
+      "value": null,
+      "confidence": 0.667,
+      "evidence": [
+        "600519/2020",
+        "600519/2020"
+      ],
+      "description": "Item '八、综合收益总额' missing in 2 extractions"
+    },
+    {
+      "category": "standard_items",
+      "action": "add_standard_item",
+      "key": "其中：归属于母公司",
+      "value": null,
+      "confidence": 0.667,
+      "evidence": [
+        "600519/2020",
+        "600519/2020"
+      ],
+      "description": "Item '其中：归属于母公司' missing in 2 extractions"
+    },
+    {
+      "category": "standard_items",
+      "action": "add_standard_item",
+      "key": "其中：归属于少数股东",
+      "value": null,
+      "confidence": 0.667,
+      "evidence": [
+        "600519/2020",
+        "600519/2020"
+      ],
+      "description": "Item '其中：归属于少数股东' missing in 2 extractions"
+    },
+    {
+      "category": "standard_items",
+      "action": "add_standard_item",
+      "key": "营业税金及附加",
+      "value": null,
+      "confidence": 0.667,
+      "evidence": [
+        "600519/2020",
+        "600519/2020"
+      ],
+      "description": "Item '营业税金及附加' missing in 2 extractions"
+    },
+    {
+      "category": "standard_items",
+      "action": "add_standard_item",
+      "key": "堪探费用",
+      "value": null,
+      "confidence": 0.667,
+      "evidence": [
+        "600519/2020",
+        "600519/2020"
+      ],
+      "description": "Item '堪探费用' missing in 2 extractions"
+    },
+    {
+      "category": "standard_items",
+      "action": "add_standard_item",
+      "key": "减：所得税",
+      "value": null,
+      "confidence": 0.667,
+      "evidence": [
+        "600519/2020",
+        "600519/2020"
+      ],
+      "description": "Item '减：所得税' missing in 2 extractions"
+    },
+    {
+      "category": "standard_items",
+      "action": "add_standard_item",
+      "key": "加：影响净利润的其他科目",
+      "value": null,
+      "confidence": 0.667,
+      "evidence": [
+        "600519/2020",
+        "600519/2020"
+      ],
+      "description": "Item '加：影响净利润的其他科目' missing in 2 extractions"
+    },
+    {
+      "category": "standard_items",
+      "action": "add_standard_item",
+      "key": "已赚保费",
+      "value": null,
+      "confidence": 0.667,
+      "evidence": [
+        "600519/2020",
+        "600519/2020"
+      ],
+      "description": "Item '已赚保费' missing in 2 extractions"
+    },
+    {
+      "category": "standard_items",
+      "action": "add_standard_item",
+      "key": "一、营业总收入",
+      "value": null,
+      "confidence": 0.667,
+      "evidence": [
+        "600519/2020",
+        "600519/2020"
+      ],
+      "description": "Item '一、营业总收入' missing in 2 extractions"
+    },
+    {
+      "category": "standard_items",
+      "action": "add_standard_item",
+      "key": "汇兑收益",
+      "value": null,
+      "confidence": 0.667,
+      "evidence": [
+        "600519/2020",
+        "600519/2020"
+      ],
+      "description": "Item '汇兑收益' missing in 2 extractions"
+    },
+    {
+      "category": "standard_items",
+      "action": "add_standard_item",
+      "key": "手续费及佣金支出",
+      "value": null,
+      "confidence": 0.667,
+      "evidence": [
+        "600519/2020",
+        "600519/2020"
+      ],
+      "description": "Item '手续费及佣金支出' missing in 2 extractions"
+    },
+    {
+      "category": "standard_items",
+      "action": "add_standard_item",
+      "key": "保单红利支出",
+      "value": null,
+      "confidence": 0.667,
+      "evidence": [
+        "600519/2020",
+        "600519/2020"
+      ],
+      "description": "Item '保单红利支出' missing in 2 extractions"
+    },
+    {
+      "category": "standard_items",
+      "action": "add_standard_item",
+      "key": "基它收入",
+      "value": null,
+      "confidence": 0.667,
+      "evidence": [
+        "600519/2020",
+        "600519/2020"
+      ],
+      "description": "Item '基它收入' missing in 2 extractions"
+    },
+    {
+      "category": "standard_items",
+      "action": "add_standard_item",
+      "key": "净敞口套期收益",
+      "value": null,
+      "confidence": 0.667,
+      "evidence": [
+        "600519/2020",
+        "600519/2020"
+      ],
+      "description": "Item '净敞口套期收益' missing in 2 extractions"
+    },
+    {
+      "category": "standard_items",
+      "action": "add_standard_item",
+      "key": "持续经营净利润",
+      "value": null,
+      "confidence": 0.667,
+      "evidence": [
+        "600519/2020",
+        "600519/2020"
+      ],
+      "description": "Item '持续经营净利润' missing in 2 extractions"
+    },
+    {
+      "category": "standard_items",
+      "action": "add_standard_item",
+      "key": "负债和所有者（或股东权益）合计",
+      "value": null,
+      "confidence": 0.667,
+      "evidence": [
+        "600519/2020",
+        "600519/2020"
+      ],
+      "description": "Item '负债和所有者（或股东权益）合计' missing in 2 extractions"
+    }
+  ],
+  "missing_items": {
+    "利息收入": [
+      "600519/2020",
+      "600519/2020"
+    ],
+    "八、综合收益总额": [
+      "600519/2020",
+      "600519/2020"
+    ],
+    "其中：归属于母公司": [
+      "600519/2020",
+      "600519/2020"
+    ],
+    "其中：归属于少数股东": [
+      "600519/2020",
+      "600519/2020"
+    ],
+    "其中：营业收入": [
+      "600519/2020",
+      "600519/2020"
+    ],
+    "营业税金及附加": [
+      "600519/2020",
+      "600519/2020"
+    ],
+    "管理费用": [
+      "600519/2020",
+      "600519/2020"
+    ],
+    "堪探费用": [
+      "600519/2020",
+      "600519/2020"
+    ],
+    "投资收益": [
+      "600519/2020",
+      "600519/2020"
+    ],
+    "加：补贴收入": [
+      "600519/2020"
+    ],
+    "减：所得税": [
+      "600519/2020",
+      "600519/2020"
+    ],
+    "加：影响净利润的其他科目": [
+      "600519/2020",
+      "600519/2020"
+    ],
+    "已赚保费": [
+      "600519/2020",
+      "600519/2020"
+    ],
+    "一、营业总收入": [
+      "600519/2020",
+      "600519/2020"
+    ],
+    "汇兑收益": [
+      "600519/2020",
+      "600519/2020"
+    ],
+    "七、其他综合收益": [
+      "600519/2020"
+    ],
+    "单季财务指标": [
+      "600519/2020"
+    ],
+    "手续费及佣金支出": [
+      "600519/2020",
+      "600519/2020"
+    ],
+    "退保金": [
+      "600519/2020"
+    ],
+    "保单红利支出": [
+      "600519/2020",
+      "600519/2020"
+    ],
+    "基它收入": [
+      "600519/2020",
+      "600519/2020"
+    ],
+    "净敞口套期收益": [
+      "600519/2020",
+      "600519/2020"
+    ],
+    "持续经营净利润": [
+      "600519/2020",
+      "600519/2020"
+    ],
+    "终止经营净利润": [
+      "600519/2020"
+    ],
+    "其中：利息费用": [
+      "600519/2020"
+    ],
+    "其中：利息收入": [
+      "600519/2020"
+    ],
+    "所有者权益（或股东权益）合计": [
+      "600519/2020"
+    ],
+    "负债和所有者（或股东权益）合计": [
+      "600519/2020",
+      "600519/2020"
+    ],
+    "归属于母公司所有者权益": [
+      "600519/2020"
+    ],
+    "其他综合收益": [
+      "600519/2020"
+    ],
+    "一般风险准备": [
+      "600519/2020"
+    ],
+    "发放贷款及垫款-非流动资产": [
+      "600519/2020"
+    ],
+    "销售费用": [
+      "600519/2020"
+    ],
+    "财务费用": [
+      "600519/2020"
+    ],
+    "资产减值损失": [
+      "600519/2020"
+    ],
+    "加：公允价值变动净收益": [
+      "600519/2020"
+    ],
+    "其中：对联营企业和合营企业的投资收益": [
+      "600519/2020"
+    ],
+    "营业外收入": [
+      "600519/2020"
+    ],
+    "减：营业外支出": [
+      "600519/2020"
+    ],
+    "其中：非流动资产处置损失": [
+      "600519/2020"
+    ],
+    "加：影响利润总额的其他科目": [
+      "600519/2020"
+    ],
+    "五、净利润": [
+      "600519/2020"
+    ],
+    "二、营业总成本": [
+      "600519/2020"
+    ],
+    "赔付支出净额": [
+      "600519/2020"
+    ],
+    "提取保险合同准备金净额": [
+      "600519/2020"
+    ],
+    "其中：非流动资产处置利得": [
+      "600519/2020"
+    ],
+    "长期借款": [
+      "600519/2020"
+    ],
+    "应付债券": [
+      "600519/2020"
+    ],
+    "长期应付款": [
+      "600519/2020"
+    ],
+    "研发费用": [
+      "600519/2020"
+    ],
+    "信用减值损失": [
+      "600519/2020"
+    ],
+    "专项储备": [
+      "600519/2020"
+    ],
+    "应收保费": [
+      "600519/2020"
+    ],
+    "买入返售金融资产": [
+      "600519/2020"
+    ],
+    "划分为持有待售的资产": [
+      "600519/2020"
+    ],
+    "向中央银行借款": [
+      "600519/2020"
+    ],
+    "衍生金融负债": [
+      "600519/2020"
+    ],
+    "基本资料": [
+      "600519/2020"
+    ]
+  },
+  "unmatched_items": {
+    "资本公积": [
+      "600519/2020"
+    ],
+    "盈余公积": [
+      "600519/2020"
+    ],
+    "未分配利润": [
+      "600519/2020"
+    ],
+    "所有者权益": [
+      "600519/2020"
+    ],
+    "负债和所有者权益": [
+      "600519/2020"
+    ],
+    "营业总收入": [
+      "600519/2020"
+    ],
+    "营业收入": [
+      "600519/2020"
+    ],
+    "手续费及佣金收入": [
+      "600519/2020"
+    ],
+    "营业总成本": [
+      "600519/2020"
+    ],
+    "营业成本": [
+      "600519/2020"
+    ],
+    "其他收益": [
+      "600519/2020"
+    ],
+    "投资收益": [
+      "600519/2020"
+    ],
+    "公允价值变动收益": [
+      "600519/2020"
+    ],
+    "信用减值损失": [
+      "600519/2020"
+    ],
+    "资产处置收益": [
+      "600519/2020"
+    ],
+    "营业利润": [
+      "600519/2020"
+    ],
+    "营业外收入": [
+      "600519/2020"
+    ],
+    "营业外支出": [
+      "600519/2020"
+    ],
+    "利润总额": [
+      "600519/2020"
+    ],
+    "所得税费用": [
+      "600519/2020"
+    ],
+    "净利润": [
+      "600519/2020"
+    ],
+    "持续经营净利润": [
+      "600519/2020"
+    ],
+    "归属于母公司股东的净利润": [
+      "600519/2020"
+    ],
+    "少数股东损益": [
+      "600519/2020"
+    ],
+    "其他综合收益的税后净额": [
+      "600519/2020"
+    ],
+    "归属母公司所有者的其他": [
+      "600519/2020"
+    ],
+    "2．将重分类进损益的其他综": [
+      "600519/2020"
+    ],
+    "货币资金": [
+      "600519/2020"
+    ],
+    "应收票据": [
+      "600519/2020"
+    ],
+    "应收账款": [
+      "600519/2020"
+    ],
+    "预付款项": [
+      "600519/2020"
+    ],
+    "其他应收款": [
+      "600519/2020"
+    ],
+    "其他流动资产": [
+      "600519/2020"
+    ],
+    "流动资产合计": [
+      "600519/2020"
+    ],
+    "发放贷款和垫款": [
+      "600519/2020"
+    ],
+    "固定资产": [
+      "600519/2020"
+    ],
+    "在建工程": [
+      "600519/2020"
+    ],
+    "无形资产": [
+      "600519/2020"
+    ],
+    "长期待摊费用": [
+      "600519/2020"
+    ],
+    "递延所得税资产": [
+      "600519/2020"
+    ],
+    "非流动资产合计": [
+      "600519/2020"
+    ],
+    "资产总计": [
+      "600519/2020"
+    ],
+    "应付账款": [
+      "600519/2020"
+    ],
+    "预收款项": [
+      "600519/2020"
+    ],
+    "应付职工薪酬": [
+      "600519/2020"
+    ],
+    "应交税费": [
+      "600519/2020"
+    ],
+    "其他应付款": [
+      "600519/2020"
+    ],
+    "应付利息": [
+      "600519/2020"
+    ],
+    "应付股利": [
+      "600519/2020"
+    ],
+    "其他流动负债": [
+      "600519/2020"
+    ],
+    "递延所得税负债": [
+      "600519/2020"
+    ],
+    "非流动负债合计": [
+      "600519/2020"
+    ],
+    "负债合计": [
+      "600519/2020"
+    ],
+    "实收资本（或股本）": [
+      "600519/2020"
+    ],
+    "经营活动产生的现金流量净额": [
+      "600519/2020"
+    ],
+    "取得投资收益收到的现金": [
+      "600519/2020"
+    ],
+    "处置固定资产、无形资产收回的现金净额": [
+      "600519/2020"
+    ],
+    "处置子公司收到的现金净额": [
+      "600519/2020"
+    ],
+    "收到其他与经营活动有关的现金": [
+      "600519/2020"
+    ],
+    "经营活动现金流出小计": [
+      "600519/2020"
+    ],
+    "投资活动产生的现金流量净额": [
+      "600519/2020"
+    ],
+    "收回投资收到的现金": [
+      "600519/2020"
+    ],
+    "处置固定资产、无形资产支付的现金": [
+      "600519/2020"
+    ],
+    "购建固定资产、无形资产支付的现金": [
+      "600519/2020"
+    ],
+    "投资支付的现金": [
+      "600519/2020"
+    ],
+    "投资活动现金流出小计": [
+      "600519/2020"
+    ],
+    "筹资活动产生的现金流量净额": [
+      "600519/2020"
+    ],
+    "吸收投资收到的现金": [
+      "600519/2020"
+    ],
+    "取得借款收到的现金": [
+      "600519/2020"
+    ],
+    "发行债券收到的现金": [
+      "600519/2020"
+    ],
+    "筹资活动现金流入小计": [
+      "600519/2020"
+    ],
+    "分配股利、利润或偿付利息支付的现金": [
+      "600519/2020"
+    ],
+    "筹资活动现金流出小计": [
+      "600519/2020"
+    ],
+    "汇率变动对现金的影响": [
+      "600519/2020"
+    ],
+    "现金及现金等价物净增加额": [
+      "600519/2020"
+    ],
+    "期初现金及现金等价物余额": [
+      "600519/2020"
+    ],
+    "偿还债务支付的现金": [
+      "600519/2020"
+    ]
+  }
+}

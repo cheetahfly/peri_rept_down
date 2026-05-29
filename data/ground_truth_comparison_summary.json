@@ -1,0 +1,57 @@
+{
+  "timestamp": "2026-05-27",
+  "year": 2020,
+  "statement_type": "income_statement",
+  "total_stocks": 6,
+  "results": [
+    {
+      "code": "600519",
+      "name": "贵州茅台",
+      "matched": 24,
+      "missing": 4,
+      "unmatched": 27,
+      "coverage": 0.857
+    },
+    {
+      "code": "000858",
+      "name": "五粮液",
+      "matched": 14,
+      "missing": 11,
+      "unmatched": 17,
+      "coverage": 0.56
+    },
+    {
+      "code": "002415",
+      "name": "海康威视",
+      "matched": 25,
+      "missing": 3,
+      "unmatched": 22,
+      "coverage": 0.893
+    },
+    {
+      "code": "300750",
+      "name": "宁德时代",
+      "matched": 17,
+      "missing": 11,
+      "unmatched": 21,
+      "coverage": 0.607
+    },
+    {
+      "code": "000002",
+      "name": "万科A",
+      "matched": 25,
+      "missing": 2,
+      "unmatched": 22,
+      "coverage": 0.926
+    },
+    {
+      "code": "600887",
+      "name": "伊利股份",
+      "matched": 22,
+      "missing": 7,
+      "unmatched": 32,
+      "coverage": 0.759
+    }
+  ],
+  "overall_coverage": 0.7696969696969697
+}

@@ -108,7 +108,7 @@ class ParallelDownloader:
         results = []
         
         # 导入下载器
-        from astock_fundamentals.sources.pdf.crawlers.downloader import ReportDownloader
+        from crawlers.downloader import ReportDownloader
         
         def download_single(task: DownloadTask) -> DownloadResult:
             start_time = time.time()

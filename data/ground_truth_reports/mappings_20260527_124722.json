@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-05-27T12:47:22.154104",
+  "stock_codes": [
+    "000001",
+    "601318"
+  ],
+  "years": [
+    2021
+  ],
+  "mappings_count": 1,
+  "mappings": [
+    {
+      "extracted_name": "信用减值损失",
+      "rds_name": "信用减值损失",
+      "confidence": 0.0,
+      "evidence": [
+        "000001/2021",
+        "000001/2021"
+      ]
+    }
+  ],
+  "alias_map": {}
+}

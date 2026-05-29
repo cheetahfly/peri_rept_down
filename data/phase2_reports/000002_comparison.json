@@ -1,0 +1,517 @@
+{
+  "stock_code": "000002",
+  "reports": [
+    {
+      "stock_code": "000002",
+      "year": 2020,
+      "statement_type": "income_statement",
+      "coverage": 0.9666666666666667,
+      "value_accuracy": 0.9310344827586207,
+      "missing_items": [
+        {
+          "name": "七、其他综合收益",
+          "code": null,
+          "expected_value": -189635216.25
+        }
+      ],
+      "unmatched_items": [
+        {
+          "name": "营业总收入",
+          "code": null,
+          "value": 419111677714.12
+        },
+        {
+          "name": "营业成本",
+          "code": null,
+          "value": 296540687975.27
+        },
+        {
+          "name": "利息费用",
+          "code": null,
+          "value": 8757579925.42
+        },
+        {
+          "name": "投资收益",
+          "code": null,
+          "value": 13511869972.98
+        },
+        {
+          "name": "对联营企业和合营企业的投资收益",
+          "code": null,
+          "value": 9739656204.22
+        },
+        {
+          "name": "营业利润",
+          "code": null,
+          "value": 79958642103.88
+        },
+        {
+          "name": "营业外收入",
+          "code": null,
+          "value": 999497308.64
+        },
+        {
+          "name": "营业外支出",
+          "code": null,
+          "value": 1282386489.13
+        },
+        {
+          "name": "利润总额",
+          "code": null,
+          "value": 79675752923.39
+        },
+        {
+          "name": "所得税费用",
+          "code": null,
+          "value": 20377636478.86
+        },
+        {
+          "name": "净利润",
+          "code": null,
+          "value": 59298116444.53
+        },
+        {
+          "name": "其他综合收益的税后净额",
+          "code": null,
+          "value": 553256970.6
+        },
+        {
+          "name": "一归属于母公司股东的其他综合收益的税后净额",
+          "code": null,
+          "value": 262053610.76
+        },
+        {
+          "name": "二归属于少数股东的其他综合收益的税后净额",
+          "code": null,
+          "value": -451688827.01
+        },
+        {
+          "name": "综合收益总额",
+          "code": null,
+          "value": 59108481228.28
+        },
+        {
+          "name": "一基本每股收益",
+          "code": null,
+          "value": 53.0
+        },
+        {
+          "name": "二稀释每股收益",
+          "code": null,
+          "value": 53.0
+        },
+        {
+          "name": "公允价值变动收益-",
+          "code": null,
+          "value": 4468493.15
+        },
+        {
+          "name": "信用减值损失损失以“”号填列",
+          "code": null,
+          "value": 107558.1
+        }
+      ],
+      "value_diffs": [
+        {
+          "name": "二、营业总成本",
+          "code": null,
+          "ground_truth_value": 350513340623.53,
+          "extracted_value": 296540687975.27,
+          "error_pct": 15.398173590839018
+        },
+        {
+          "name": "持续经营净利润",
+          "code": null,
+          "ground_truth_value": 59298116444.53,
+          "extracted_value": 40984723712.04,
+          "error_pct": 30.883599396653906
+        }
+      ]
+    },
+    {
+      "stock_code": "000002",
+      "year": 2020,
+      "statement_type": "balance_sheet",
+      "coverage": 0.8727272727272727,
+      "value_accuracy": 1.0,
+      "missing_items": [
+        {
+          "name": "其中：应收利息",
+          "code": null,
+          "expected_value": 26555602.32
+        },
+        {
+          "name": "其中：应收股利",
+          "code": null,
+          "expected_value": 19294640.06
+        },
+        {
+          "name": "存货",
+          "code": null,
+          "expected_value": 1002063008153.13
+        },
+        {
+          "name": "商誉",
+          "code": null,
+          "expected_value": 206342883.92
+        },
+        {
+          "name": "其中：应付股利",
+          "code": null,
+          "expected_value": 319037650.64
+        },
+        {
+          "name": "实收资本（或股本）",
+          "code": null,
+          "expected_value": 11617732201.0
+        },
+        {
+          "name": "其他综合收益",
+          "code": null,
+          "expected_value": -1544373020.86
+        }
+      ],
+      "unmatched_items": [
+        {
+          "name": "请参阅财务报表附注“三、公司重要会计政策、会计估计”注释",
+          "code": null,
+          "value": 10.0
+        },
+        {
+          "name": "货项目达到完工状态时将要发生的建造成本",
+          "code": null,
+          "value": 2020.0
+        },
+        {
+          "name": "和未来净售价存在固有风险特别是考虑到",
+          "code": null,
+          "value": 12.0
+        },
+        {
+          "name": "当前的经济环境在各个城市推出的各种应对",
+          "code": null,
+          "value": 12.0
+        },
+        {
+          "name": "负债及股东权益附注五",
+          "code": null,
+          "value": 2020.0
+        },
+        {
+          "name": "资本公积",
+          "code": null,
+          "value": 18554497034.24
+        },
+        {
+          "name": "其他综合收益",
+          "code": null,
+          "value": -1806426631.62
+        },
+        {
+          "name": "盈余公积",
+          "code": null,
+          "value": 97466324513.51
+        },
+        {
+          "name": "未分配利润",
+          "code": null,
+          "value": 98416772021.2
+        }
+      ],
+      "value_diffs": []
+    },
+    {
+      "stock_code": "000002",
+      "year": 2020,
+      "statement_type": "cash_flow",
+      "coverage": 0.4444444444444444,
+      "value_accuracy": 0.875,
+      "missing_items": [
+        {
+          "name": "收到其他与经营活动有关的现金",
+          "code": null,
+          "expected_value": 36078780855.97
+        },
+        {
+          "name": "支付其他与经营活动有关的现金",
+          "code": null,
+          "expected_value": 61744698064.91
+        },
+        {
+          "name": "经营活动产生的现金流量净额",
+          "code": null,
+          "expected_value": 53188022243.81
+        },
+        {
+          "name": "处置固定资产、无形资产和其他长期资产收回的现金净额",
+          "code": null,
+          "expected_value": 62313156.81
+        },
+        {
+          "name": "处置子公司及其他营业单位收到的现金净额",
+          "code": null,
+          "expected_value": 4704049890.99
+        },
+        {
+          "name": "收到其他与投资活动有关的现金",
+          "code": null,
+          "expected_value": 17257903571.86
+        },
+        {
+          "name": "购建固定资产、无形资产和其他长期资产支付的现金",
+          "code": null,
+          "expected_value": 7208297858.47
+        },
+        {
+          "name": "取得子公司及其他营业单位支付的现金净额",
+          "code": null,
+          "expected_value": 4143334783.53
+        },
+        {
+          "name": "支付其他与投资活动有关的现金",
+          "code": null,
+          "expected_value": 478332102.3
+        },
+        {
+          "name": "投资活动产生的现金流量净额",
+          "code": null,
+          "expected_value": 5797067128.05
+        },
+        {
+          "name": "支付其他与筹资活动有关的现金",
+          "code": null,
+          "expected_value": 41291981121.54
+        },
+        {
+          "name": "四、汇率变动对现金的影响",
+          "code": null,
+          "expected_value": -557101198.03
+        },
+        {
+          "name": "五、现金及现金等价物净增加额",
+          "code": null,
+          "expected_value": 25923728235.0
+        },
+        {
+          "name": "净利润",
+          "code": null,
+          "expected_value": 59298116444.53
+        },
+        {
+          "name": "加：资产减值准备",
+          "code": null,
+          "expected_value": 2205279757.12
+        },
+        {
+          "name": "固定资产折旧、油气资产折耗、生产性生物资产折旧",
+          "code": null,
+          "expected_value": 2650922637.73
+        },
+        {
+          "name": "无形资产摊销",
+          "code": null,
+          "expected_value": 2209843443.13
+        },
+        {
+          "name": "处置固定资产、无形资产和其他长期资产的损失",
+          "code": null,
+          "expected_value": -48381265.04
+        },
+        {
+          "name": "公允价值变动损失",
+          "code": null,
+          "expected_value": -5333532.39
+        },
+        {
+          "name": "财务费用",
+          "code": null,
+          "expected_value": 5145102736.17
+        },
+        {
+          "name": "投资损失",
+          "code": null,
+          "expected_value": -13511869972.98
+        },
+        {
+          "name": "递延所得税资产减少",
+          "code": null,
+          "expected_value": -4116268905.2
+        },
+        {
+          "name": "递延所得税负债增加",
+          "code": null,
+          "expected_value": -50857427.98
+        },
+        {
+          "name": "存货的减少",
+          "code": null,
+          "expected_value": -38165029254.17
+        },
+        {
+          "name": "经营性应收项目的减少",
+          "code": null,
+          "expected_value": 3636963382.13
+        },
+        {
+          "name": "其他",
+          "code": null,
+          "expected_value": 2124140058.26
+        },
+        {
+          "name": "经营活动产生的现金流量净额2",
+          "code": null,
+          "expected_value": 53188022243.81
+        },
+        {
+          "name": "现金的期末余额",
+          "code": null,
+          "expected_value": 185662379706.96
+        },
+        {
+          "name": "减：现金的期初余额",
+          "code": null,
+          "expected_value": 159738651471.96
+        },
+        {
+          "name": "现金及现金等价物净增加额2",
+          "code": null,
+          "expected_value": 25923728235.0
+        }
+      ],
+      "unmatched_items": [
+        {
+          "name": "收到其他与经营活动有关的现金",
+          "code": null,
+          "value": -551.0
+        },
+        {
+          "name": "支付其他与经营活动有关的现金",
+          "code": null,
+          "value": -552.0
+        },
+        {
+          "name": "经营活动产生的现金流量净额",
+          "code": null,
+          "value": -561.0
+        },
+        {
+          "name": "处置子公司及其他营业单位收到的现金净额",
+          "code": null,
+          "value": -563.0
+        },
+        {
+          "name": "收到其他与投资活动有关的现金",
+          "code": null,
+          "value": -553.0
+        },
+        {
+          "name": "取得子公司及其他营业单位支付的现金净额",
+          "code": null,
+          "value": -563.0
+        },
+        {
+          "name": "支付其他与投资活动有关的现金",
+          "code": null,
+          "value": -554.0
+        },
+        {
+          "name": "投资活动产生/使用的现金流量净额",
+          "code": null,
+          "value": 5797067128.05
+        },
+        {
+          "name": "子公司吸收少数股东投资收到的现金",
+          "code": null,
+          "value": 31693649391.52
+        },
+        {
+          "name": "收到的其他与筹资活动有关的现金",
+          "code": null,
+          "value": -555.0
+        },
+        {
+          "name": "归还投资支付的现金",
+          "code": null,
+          "value": 11885701551.23
+        },
+        {
+          "name": "子公司支付给少数股东的股利、利润",
+          "code": null,
+          "value": 7474053653.85
+        },
+        {
+          "name": "支付的其他与筹资活动有关的现金",
+          "code": null,
+          "value": -555.0
+        },
+        {
+          "name": "汇率变动对现金及现金等价物的影响",
+          "code": null,
+          "value": 348623418.48
+        },
+        {
+          "name": "现金及现金等价物净增加/减少额",
+          "code": null,
+          "value": -562.0
+        },
+        {
+          "name": "年初现金及现金等价物余额",
+          "code": null,
+          "value": -562.0
+        },
+        {
+          "name": "年末现金及现金等价物余额",
+          "code": null,
+          "value": -562.0
+        },
+        {
+          "name": "经营活动产生/使用的现金流量净额",
+          "code": null,
+          "value": 43631375328.45
+        },
+        {
+          "name": "投资活动产生的现金流量净额",
+          "code": null,
+          "value": 14029452340.28
+        },
+        {
+          "name": "收到的其他与筹资活动有关的现金-",
+          "code": null,
+          "value": 17983071780.55
+        },
+        {
+          "name": "筹资活动使用/产生的现金流量净额",
+          "code": null,
+          "value": 6794491880.24
+        }
+      ],
+      "value_diffs": [
+        {
+          "name": "筹资活动产生的现金流量净额",
+          "code": null,
+          "ground_truth_value": -32504259938.83,
+          "extracted_value": -33338210446.4,
+          "error_pct": 2.5656652670739684
+        },
+        {
+          "name": "期初现金及现金等价物余额",
+          "code": null,
+          "ground_truth_value": 159738651471.96,
+          "extracted_value": -562.0,
+          "error_pct": 100.00000035182468
+        },
+        {
+          "name": "期末现金及现金等价物余额",
+          "code": null,
+          "ground_truth_value": 185662379706.96,
+          "extracted_value": -562.0,
+          "error_pct": 100.0000003027
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_compared": 3,
+    "avg_coverage": 0.7612794612794612
+  }
+}

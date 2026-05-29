@@ -19,27 +19,21 @@ import pyreadr
 import yaml
 
 
-# Field display order from rules/field_order.yaml
 FIELD_ORDER_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))),
     "rules", "field_order.yaml"
 )
 
 def _load_field_order() -> Dict[str, Dict[str, int]]:
-    """Load field display order for each statement type."""
     try:
-        with open(FIELD_ORDER_PATH, 'r', encoding='utf-8') as f:
+        with open(FIELD_ORDER_PATH, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
     except FileNotFoundError:
         return {}
 
 
-# Financial company stock codes (use _f tables)
-FINANCIAL_CODES = {
-    "000001", "601318", "600036",  # Banks and insurance
-}
+FINANCIAL_CODES = {"000001", "601318", "600036"}
 
-# Table mapping: (is_financial, statement_type) -> filename
 TABLE_MAP = {
     (True, "income_statement"): "pl_f.rds",
     (True, "balance_sheet"): "b_f.rds",
@@ -49,10 +43,8 @@ TABLE_MAP = {
     (False, "cash_flow"): "cf_o.rds",
 }
 
-# Meta columns (not financial data)
 META_COLS = {"SECCODE", "SECNAME", "ORGNAME", "DECLAREDATE", "STARTDATE", "ENDDATE", "MEMO"}
 
-# Map statement type to report_type for period filtering
 PERIOD_TO_REPORT_TYPE = {
     "12-31": "annual",
     "06-30": "half_year",
@@ -62,14 +54,6 @@ PERIOD_TO_REPORT_TYPE = {
 
 
 class RdsLoader:
-    """Load and parse CNINFO RDS ground truth data.
-
-    IMPORTANT: Each statement type has its own field code mapping!
-    - F006N in income_statement = "其中：营业收入"
-    - F006N in balance_sheet = "货币资金"
-    - F006N in cash_flow = "销售商品、提供劳务收到的现金"
-    """
-
     def __init__(self, data_dir: str, decode_map_path: str = None):
         self.data_dir = data_dir
         self._decode_maps = self._load_decode_maps(decode_map_path)
@@ -77,24 +61,18 @@ class RdsLoader:
         self._cache: Dict[str, object] = {}
 
     def _load_decode_maps(self, path: str = None) -> Dict[str, Dict[str, str]]:
-        """Load decode mappings by statement type from decode_mappings_by_type.json."""
         if path is None:
-            base = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            base = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
             path = os.path.join(base, "data", "decode_mappings_by_type.json")
         try:
             with open(path, "r", encoding="utf-8") as f:
                 return json.load(f)
         except FileNotFoundError:
-            # Fallback to old single mapping
-            base = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            base = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
             fallback_path = os.path.join(base, "data", "decode_mappings.json")
             with open(fallback_path, "r", encoding="utf-8") as f:
                 single_map = json.load(f)
-                return {
-                    "income_statement": single_map,
-                    "balance_sheet": single_map,
-                    "cash_flow": single_map,
-                }
+                return {"income_statement": single_map, "balance_sheet": single_map, "cash_flow": single_map}
 
     def _load_rds(self, filename: str):
         if filename not in self._cache:
@@ -106,51 +84,26 @@ class RdsLoader:
     def _is_financial(self, stock_code: str) -> bool:
         return stock_code in FINANCIAL_CODES
 
-    def _field_to_name(self, field_code: str, statement_type: str) -> Optional[str]:
-        """Get Chinese name for a field code based on statement type."""
-        decode_map = self._decode_maps.get(statement_type, {})
-        return decode_map.get(field_code)
-
-    def load_stock_data(
-        self,
-        stock_code: str,
-        year: int,
-        statement_type: str,
-    ) -> Dict[str, float]:
-        """
-        Load ground truth data for a specific stock/year/statement.
-
-        Returns: {item_name: value} where item_name is Chinese and value is in yuan.
-        """
+    def load_stock_data(self, stock_code: str, year: int, statement_type: str) -> Dict[str, float]:
         is_fin = self._is_financial(stock_code)
         filename = TABLE_MAP.get((is_fin, statement_type))
         if filename is None:
             return {}
-
         df = self._load_rds(filename)
         subset = df[df["SECCODE"] == stock_code]
-
-        # Filter by year - find the row closest to year-end
         target_date = f"{year}-12-31"
         row = subset[subset["ENDDATE"] == target_date]
         if len(row) == 0:
-            # Try Q1 of next year as proxy for annual
             target_date = f"{year + 1}-03-31"
             row = subset[subset["ENDDATE"] == target_date]
         if len(row) == 0:
             return {}
-
         row = row.iloc[0]
-
-        # Get the decode map for this statement type
         decode_map = self._decode_maps.get(statement_type, {})
-
-        # Extract data columns (F-fields) and map to Chinese names
         data = {}
         for col in df.columns:
             if col in META_COLS:
                 continue
-            # Only load fields that have a mapping in this statement type's decode map
             if col not in decode_map:
                 continue
             val = row[col]
@@ -160,13 +113,9 @@ class RdsLoader:
                     data[name] = float(val)
                 except (ValueError, TypeError):
                     pass
-
         return data
 
-    def load_stock_all_types(
-        self, stock_code: str, year: int
-    ) -> Dict[str, Dict[str, float]]:
-        """Load all statement types for a stock/year."""
+    def load_stock_all_types(self, stock_code: str, year: int) -> Dict[str, Dict[str, float]]:
         result = {}
         for st in ["income_statement", "balance_sheet", "cash_flow"]:
             data = self.load_stock_data(stock_code, year, st)
@@ -174,28 +123,13 @@ class RdsLoader:
                 result[st] = data
         return result
 
-    def load_stock_data_tidy(
-        self,
-        stock_code: str,
-        year: int,
-        statement_type: str,
-    ) -> List[Dict]:
-        """
-        Return Ground Truth data in Tidy Data format.
-
-        Returns: List[Dict] with fields:
-            stock_code, report_year, report_type, statement_type,
-            item_code, item_name, value, display_order
-        """
+    def load_stock_data_tidy(self, stock_code: str, year: int, statement_type: str) -> List[Dict]:
         is_fin = self._is_financial(stock_code)
         filename = TABLE_MAP.get((is_fin, statement_type))
         if filename is None:
             return []
-
         df = self._load_rds(filename)
         subset = df[df["SECCODE"] == stock_code]
-
-        # Filter by year
         target_date = f"{year}-12-31"
         row = subset[subset["ENDDATE"] == target_date]
         if len(row) == 0:
@@ -203,18 +137,11 @@ class RdsLoader:
             row = subset[subset["ENDDATE"] == target_date]
         if len(row) == 0:
             return []
-
         row = row.iloc[0]
-
-        # Determine report_type from date
         month = int(target_date.split('-')[1])
         report_type = self._date_to_report_type(month)
-
-        # Get decode map and field order for this statement type
         decode_map = self._decode_maps.get(statement_type, {})
         field_order_map = self._field_order.get(statement_type, {})
-
-        # Extract data
         result = []
         for col in df.columns:
             if col in META_COLS:
@@ -226,48 +153,26 @@ class RdsLoader:
                 item_name = decode_map[col]
                 display_order = field_order_map.get(col, 999)
                 try:
-                    result.append({
-                        "stock_code": stock_code,
-                        "report_year": year,
-                        "report_type": report_type,
-                        "statement_type": statement_type,
-                        "item_code": col,
-                        "item_name": item_name,
-                        "value": float(val),
-                        "display_order": display_order,
-                    })
+                    result.append({"stock_code": stock_code, "report_year": year, "report_type": report_type, "statement_type": statement_type, "item_code": col, "item_name": item_name, "value": float(val), "display_order": display_order})
                 except (ValueError, TypeError):
                     pass
-
-        # Sort by display_order
         result.sort(key=lambda x: x["display_order"])
         return result
 
     def _date_to_report_type(self, month: int) -> str:
-        """Determine report type from month."""
-        if month == 12:
-            return "annual"
-        elif month == 6:
-            return "half_year"
-        elif month == 3:
-            return "quarter_q1"
-        elif month == 9:
-            return "quarter_q3"
-        return "annual"
+        m = {12: "annual", 6: "half_year", 3: "quarter_q1", 9: "quarter_q3"}
+        return m.get(month, "annual")
 
     def list_periods(self, stock_code: str) -> List[str]:
-        """List all available periods for a stock in the RDS."""
         is_fin = self._is_financial(stock_code)
         filename = TABLE_MAP.get((is_fin, "income_statement"))
         if filename is None:
             return []
-
         df = self._load_rds(filename)
         subset = df[df["SECCODE"] == stock_code]
         return sorted(subset["ENDDATE"].unique().tolist())
 
     def list_available_years(self, stock_code: str) -> List[int]:
-        """List years with annual data available."""
         periods = self.list_periods(stock_code)
         years = set()
         for p in periods:

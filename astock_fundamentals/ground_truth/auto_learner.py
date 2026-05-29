@@ -14,7 +14,7 @@ from dataclasses import dataclass, field
 from difflib import SequenceMatcher
 from typing import Dict, List, Optional, Set, Tuple
 
-from astock_fundamentals.ground_truth.rds_loader import RdsLoader, META_COLS
+from astock_fundamentals.sources.rds.rds_loader import RdsLoader, META_COLS
 
 
 @dataclass

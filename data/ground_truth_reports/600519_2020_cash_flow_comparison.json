@@ -1,0 +1,180 @@
+{
+  "stock_code": "600519",
+  "year": 2020,
+  "statement_type": "cash_flow",
+  "coverage": 0.9574468085106383,
+  "value_accuracy": 0.9777777777777777,
+  "missing_items": [
+    {
+      "name": "收到其他与经营活动有关的现金",
+      "code": "F008N",
+      "expected_value": 221421226.63
+    },
+    {
+      "name": "投资活动现金流入小计",
+      "code": "F021N",
+      "expected_value": 322077745.36
+    }
+  ],
+  "unmatched_items": [
+    {
+      "name": "项目附注",
+      "code": null,
+      "value": 2020.0
+    },
+    {
+      "name": "收到其他与经营活动有关的现金",
+      "code": null,
+      "value": 669399842.28
+    },
+    {
+      "name": "拆出资金净增加额",
+      "code": null,
+      "value": 200000000.0
+    },
+    {
+      "name": "投资活动现金流入小计",
+      "code": null,
+      "value": 35261612820.03
+    },
+    {
+      "name": "吸收投资收到的现金",
+      "code": null,
+      "value": 833000000.0
+    },
+    {
+      "name": "子公司吸收少数股东投资收",
+      "code": null,
+      "value": 833000000.0
+    },
+    {
+      "name": "筹资活动现金流入小计",
+      "code": null,
+      "value": 833000000.0
+    },
+    {
+      "name": "子公司支付给少数股东的股",
+      "code": null,
+      "value": 2704262179.11
+    },
+    {
+      "name": "汇率变动对现金及现金等价物的",
+      "code": null,
+      "value": 380639.36
+    },
+    {
+      "name": "期初现金及现金等价物余额",
+      "code": null,
+      "value": 121003839599.64
+    },
+    {
+      "name": "期末现金及现金等价物余额",
+      "code": null,
+      "value": 146740524868.05
+    },
+    {
+      "name": "取得投资收益收到的现金",
+      "code": null,
+      "value": 34940030979.52
+    },
+    {
+      "name": "处置固定资产、无形资产和其他",
+      "code": null,
+      "value": 37800.0
+    },
+    {
+      "name": "购建固定资产、无形资产和其他",
+      "code": null,
+      "value": 2081844620.34
+    },
+    {
+      "name": "支付的广告宣传费",
+      "code": null,
+      "value": 1192070830.64
+    },
+    {
+      "name": "支付的运输费及运输保险费用",
+      "code": null,
+      "value": 363860058.26
+    },
+    {
+      "name": "支付的财产保险费",
+      "code": null,
+      "value": 74790069.53
+    },
+    {
+      "name": "支付的其他费用",
+      "code": null,
+      "value": 2416305228.03
+    },
+    {
+      "name": "收到基本建设工程履约保证金",
+      "code": null,
+      "value": 6675319.03
+    },
+    {
+      "name": "退还的基本建设工程履约保证金",
+      "code": null,
+      "value": 17535402.3
+    },
+    {
+      "name": "处置三级子公司股权",
+      "code": null,
+      "value": 32000000.0
+    },
+    {
+      "name": "收购子公司少数股东的股权",
+      "code": null,
+      "value": 4507157.75
+    },
+    {
+      "name": "资产减值准备",
+      "code": null,
+      "value": 5313489.8
+    },
+    {
+      "name": "处置固定资产、无形资产和其他长期资产的损",
+      "code": null,
+      "value": 32123.57
+    },
+    {
+      "name": "现金的期初余额",
+      "code": null,
+      "value": 121003839599.64
+    },
+    {
+      "name": "现金",
+      "code": null,
+      "value": 146740524868.05
+    },
+    {
+      "name": "库存现金",
+      "code": null,
+      "value": 9554.0
+    },
+    {
+      "name": "可随时用于支付的银行存款",
+      "code": null,
+      "value": 27989073619.13
+    },
+    {
+      "name": "可用于支付的存放中央银行款项",
+      "code": null,
+      "value": 1054398626.03
+    },
+    {
+      "name": "存放同业款项",
+      "code": null,
+      "value": 117697043068.89
+    }
+  ],
+  "value_diffs": [
+    {
+      "name": "支付其他与经营活动有关的现金",
+      "code": "F013N",
+      "ground_truth_value": 4247026186.46,
+      "extracted_value": 4047026186.46,
+      "error_pct": 4.709177462517717
+    }
+  ]
+}

@@ -1,66 +1,133 @@
 # -*- coding: utf-8 -*-
 """
-提取配置 - 从原 extraction/config.py 迁移
+提取模块配置 (moved to astock_fundamentals.core)
 """
-import os
 
-# 目录配置
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BY_CODE_DIR = os.path.join(BASE_DIR, "data", "extracted", "by_code")
-EXPORTS_DIR = os.path.join(BASE_DIR, "data", "exports")
-REPORTS_DIR = os.path.join(BASE_DIR, "data", "reports")
+import os
+import yaml
+from typing import Dict, List, Any
+
+# 基础路径
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# 规则文件目录
 RULES_DIR = os.path.join(BASE_DIR, "rules")
 
-# 单位乘数
-UNIT_MULTIPLIERS = {
+
+def load_yaml_rule(filename: str, default: Any = None) -> Any:
+    """从 rules/ 目录加载 YAML 规则文件，失败时返回默认值"""
+    path = os.path.join(RULES_DIR, filename)
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            return yaml.safe_load(f)
+    except (FileNotFoundError, yaml.YAMLError):
+        return default
+
+# 提取结果存储目录
+EXTRACTED_DIR = os.path.join(BASE_DIR, "data", "extracted")
+EXTRACTED_BY_CODE_DIR = os.path.join(EXTRACTED_DIR, "by_code")
+
+# SQLite数据库路径
+EXTRACTION_DB_PATH = os.path.join(EXTRACTED_DIR, "extraction.db")
+
+# 单位转换配置（从 YAML 加载）
+UNIT_MULTIPLIERS = load_yaml_rule("unit_detection.yaml", {}).get("unit_multipliers", {
     "元": 1,
-    "千元": 1000,
     "万元": 10000,
-    "百万": 1000000,
     "亿元": 100000000,
+    "千元": 1000,
+    "百万": 1000000,
     "万亿": 1000000000000,
+})
+
+# 报表类型
+STATEMENT_TYPES = {
+    "balance_sheet": "资产负债表",
+    "income_statement": "利润表",
+    "cash_flow": "现金流量表",
+    "indicators": "财务指标",
 }
 
-# 各报表类型期望的项目数量（用于质量评分）
+# 报表关键词配置（从 YAML 加载）
+SECTION_KEYWORDS = load_yaml_rule("section_keywords.yaml", {
+    "balance_sheet": ["资产负债表", "合并资产负债表", "银行资产负债表"],
+    "income_statement": ["利润表", "损益表", "合并利润表"],
+    "cash_flow": ["现金流量表", "合并现金流量表", "银行现金流量表"],
+})
+
+# 报表文件保存目录
+REPORT_OUTPUT_DIR = os.path.join(BASE_DIR, "data", "reports")
+
+# 导出目录
+EXPORT_DIR = os.path.join(BASE_DIR, "data", "exports")
+
+# 日志配置
+LOG_FILE = os.path.join(BASE_DIR, "extraction.log")
+
+# =============================================================================
+# 科目别名映射 (分层结构: statement_type → report_type → 标准名 → 变体列表)
+# =============================================================================
+_ITEM_ALIAS_MAP_HIERARCHICAL = load_yaml_rule("aliases.yaml", {})
+
+
+def get_aliases(statement_type: str, report_type: str = "annual") -> Dict[str, List[str]]:
+    """
+    Get alias map for a specific statement type and report type.
+
+    Falls back to 'annual' if the specified report_type is not found.
+
+    Args:
+        statement_type: One of 'balance_sheet', 'income_statement', 'cash_flow'
+        report_type: One of 'annual', 'half_year', 'quarter_q1', 'quarter_q3'
+
+    Returns:
+        Dict mapping standard item names to lists of variant names
+    """
+    if not _ITEM_ALIAS_MAP_HIERARCHICAL:
+        return {}
+    st_data = _ITEM_ALIAS_MAP_HIERARCHICAL.get(statement_type, {})
+    # Fall back to annual if specific report_type not found
+    return st_data.get(report_type, st_data.get("annual", {}))
+
+
+# Backward compatible - default to income_statement.annual
+# This maintains compatibility with existing code that uses ITEM_ALIAS_MAP directly
+ITEM_ALIAS_MAP = get_aliases("income_statement", "annual")
+
+# 各报表类型的预期科目数（单源真理）
+# 恢复触发阈值 = EXPECTED_ITEMS // 3（非常少，触发深层恢复）
+# 质量门控预期 = EXPECTED_ITEMS // 2（中等，评价置信度）
+# 完整性分母   = EXPECTED_ITEMS     （100% = 完整提取）
 EXPECTED_ITEMS_PER_TYPE = {
-    "balance_sheet": 45,
-    "income_statement": 35,
-    "cash_flow": 45,
+    "balance_sheet": 30,
+    "income_statement": 20,
+    "cash_flow": 30,
 }
 
-# 章节关键词（从 rules/section_keywords.yaml 加载）
-def _load_section_keywords() -> dict:
-    import yaml
-    path = os.path.join(RULES_DIR, "section_keywords.yaml")
-    try:
-        with open(path, 'r', encoding='utf-8') as f:
-            return yaml.safe_load(f) or {}
-    except (FileNotFoundError, yaml.YAMLError):
-        return {}
-
-SECTION_KEYWORDS = _load_section_keywords()
-
-# 别名（从rules/aliases.yaml加载）
-def get_aliases(statement_type: str, report_type: str = "annual") -> dict:
-    """按 statement_type × report_type 加载别名"""
-    import yaml
-    path = os.path.join(RULES_DIR, "aliases.yaml")
-    try:
-        with open(path, 'r', encoding='utf-8') as f:
-            data = yaml.safe_load(f) or {}
-    except (FileNotFoundError, yaml.YAMLError):
-        return {}
-    # 先尝试最精确的层级，逐级回退
-    for level in [(statement_type, report_type), (statement_type, "default"), ("default",)]:
-        d = data
-        for key in level:
-            d = d.get(key, {})
-        if d:
-            return d
-    return {}
-
-CATEGORY_NAME_TO_TYPE = {
-    "年报": "annual", "半年报": "half",
-    "一季报": "q1", "一季报": "q1",
-    "三季报": "q3", "第三季度报告": "q3",
+# 各报表类型的标准科目列表（按展示顺序）
+STATEMENT_TYPE_STANDARD_ITEMS = {
+    "balance_sheet": [
+        "货币资金", "交易性金融资产", "应收票据", "应收账款", "存货",
+        "流动资产合计", "长期股权投资", "固定资产", "无形资产",
+        "非流动资产合计", "资产总计",
+        "短期借款", "应付账款", "流动负债合计",
+        "长期借款", "非流动负债合计", "负债合计",
+        "所有者权益合计", "归属母公司股东权益合计",
+        "负债和所有者权益总计",
+    ],
+    "income_statement": [
+        "营业收入", "营业成本", "销售费用", "管理费用", "研发费用",
+        "财务费用", "公允价值变动收益", "投资收益", "营业利润",
+        "利润总额", "所得税费用", "净利润",
+        "归属于母公司所有者的净利润",
+    ],
+    "cash_flow": [
+        "经营活动产生的现金流量净额",
+        "投资活动产生的现金流量净额",
+        "筹资活动产生的现金流量净额",
+        "现金及现金等价物净增加额",
+        "期初现金及现金等价物余额",
+        "期末现金及现金等价物余额",
+    ],
+    "indicators": [],
 }

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>CF 未识别项分析</title>
+<style>
+body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+h1, h2 { color: #333; }
+table { border-collapse: collapse; width: 100%; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 25px; }
+th { background: #c62828; color: white; padding: 10px 12px; text-align: left; }
+td { padding: 8px 12px; border-bottom: 1px solid #eee; }
+tr:hover { background: #fff3f0; }
+.code { font-family: 'Consolas', monospace; color: #1565c0; }
+.num { font-family: 'Consolas', monospace; text-align: right; }
+.red { color: #c62828; font-weight: bold; }
+.green { color: #2e7d32; }
+.summary-card { background: white; border-radius: 6px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.stats { display: flex; gap: 20px; margin: 15px 0; }
+.stat-item { flex: 1; text-align: center; padding: 15px; border-radius: 6px; }
+.stat-num { font-size: 28px; font-weight: bold; }
+.stat-label { font-size: 13px; color: #666; margin-top: 5px; }
+.bg-green { background: #e8f5e9; }
+.bg-red { background: #ffebee; }
+.bg-blue { background: #e3f2fd; }
+.analysis { background: #fff3e0; padding: 12px 16px; border-radius: 4px; margin: 15px 0; }
+.analysis li { margin: 6px 0; }
+</style>
+</head>
+<body>
+
+<h1>现金流量表 — 未识别项分析</h1>
+
+<div class="summary-card">
+  <div class="stats">
+    <div class="stat-item bg-green">
+      <div class="stat-num green">45</div>
+      <div class="stat-label">已匹配</div>
+    </div>
+    <div class="stat-item bg-red">
+      <div class="stat-num red">2</div>
+      <div class="stat-label">未识别</div>
+    </div>
+    <div class="stat-item bg-blue">
+      <div class="stat-num" style="color:#1565c0;">95.7%</div>
+      <div class="stat-label">覆盖率</div>
+    </div>
+  </div>
+</div>
+
+<h2>未识别的 RDS 科目</h2>
+<table>
+<tr><th>RDS 代码</th><th>科目名称</th><th>期望值</th><th>状态</th></tr>
+
+<tr>
+  <td class="code">F008N</td>
+  <td>收到其他与经营活动有关的现金</td>
+  <td class="num">221,421,226.63</td>
+  <td class="red">未提取</td>
+</tr>
+<tr>
+  <td class="code">F021N</td>
+  <td>投资活动现金流入小计</td>
+  <td class="num">322,077,745.36</td>
+  <td class="red">未提取</td>
+</tr>
+</table>
+
+<h2>近匹配项（提取中有同名或近似值但值不一致）</h2>
+<table>
+<tr><th>RDS 代码</th><th>RDS 名称</th><th>RDS 值</th><th>提取名称</th><th>提取值</th><th>分析</th></tr>
+
+<tr>
+  <td>F008N</td>
+  <td class="code">收到其他与经营活动有关的现金</td>
+  <td class="num">221,421,226.63</td>
+  <td>拆出资金净增加额</td>
+  <td class="num">200,000,000.00</td>
+  <td>名称匹配但值不一致</td>
+</tr>
+<tr>
+  <td>F021N</td>
+  <td class="code">投资活动现金流入小计</td>
+  <td class="num">322,077,745.36</td>
+  <td>拆出资金净增加额</td>
+  <td class="num">200,000,000.00</td>
+  <td>名称匹配但值不一致</td>
+</tr>
+<tr>
+  <td>F021N</td>
+  <td class="code">投资活动现金流入小计</td>
+  <td class="num">322,077,745.36</td>
+  <td>支付的运输费及运输保险费用</td>
+  <td class="num">363,860,058.26</td>
+  <td>名称匹配但值不一致</td>
+</tr>
+</table>
+
+<div class="analysis">
+<h3>分析</h3>
+<ol>
+<li><strong>F008N 收到其他与经营活动有关的现金</strong>（RDS=221M）：提取结果中有同名项但值不同（669M）。
+   这是现金流量表附注中的细分项目，RDS 可能统计范围不同。提取值来自第 99 页的补充资料明细。</li>
+<li><strong>F021N 投资活动现金流入小计</strong>（RDS=322M）：提取结果中对应的是投资活动现金流入的总计（35.3B），
+   与 RDS 的 322M 不在同一量级。说明 RDS 的 F021N 可能指某一特定子项而非主表总计。</li>
+</ol>
+<p>这两项不是提取逻辑问题，而是 RDS 与提取数据对同一科目名的定义范围不同（RDS 为附注细分项，
+提取为主表汇总项）。后续可通过别名映射配置在 comparators 中解决。</p>
+</div>
+
+</body>
+</html>

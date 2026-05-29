@@ -1,0 +1,229 @@
+{
+  "summary": {
+    "total_compared": 6,
+    "total_matched": 195,
+    "total_missing": 59,
+    "total_unmatched": 99,
+    "total_coverage": 0.768,
+    "by_statement_type": {
+      "income_statement": {
+        "compared": 2,
+        "coverage": 0.933,
+        "matched": 56,
+        "missing": 4,
+        "unmatched": 46
+      },
+      "balance_sheet": {
+        "compared": 2,
+        "coverage": 0.922,
+        "matched": 83,
+        "missing": 8,
+        "unmatched": 19
+      },
+      "cash_flow": {
+        "compared": 2,
+        "coverage": 0.548,
+        "matched": 56,
+        "missing": 47,
+        "unmatched": 34
+      }
+    },
+    "errors": 6
+  },
+  "suggestions": [
+    {
+      "standard_name": "现金及现金等价物净增加额2",
+      "suggested_variants": [
+        "现金及现金等价物净增加额",
+        "期末现金及现金等价物余额",
+        "年初现金及现金等价物余额",
+        "现金及现金等价物净增加/减少额",
+        "年末现金及现金等价物余额",
+        "期初现金及现金等价物余额"
+      ],
+      "evidence_count": 2,
+      "reason": "unmatched_item_similar_to_missing"
+    },
+    {
+      "standard_name": "其他综合收益",
+      "suggested_variants": [
+        "其他综合收益"
+      ],
+      "evidence_count": 1,
+      "reason": "unmatched_item_similar_to_missing"
+    },
+    {
+      "standard_name": "收到其他与经营活动有关的现金",
+      "suggested_variants": [
+        "收到的其他与筹资活动有关的现金",
+        "支付其他与投资活动有关的现金",
+        "支付其他与经营活动有关的现金",
+        "收到其他与投资活动有关的现金",
+        "收到的其他与筹资活动有关的现金-",
+        "收到其他与经营活动有关的现金"
+      ],
+      "evidence_count": 1,
+      "reason": "unmatched_item_similar_to_missing"
+    },
+    {
+      "standard_name": "支付其他与经营活动有关的现金",
+      "suggested_variants": [
+        "支付其他与投资活动有关的现金",
+        "支付其他与经营活动有关的现金",
+        "收到其他与投资活动有关的现金",
+        "收到其他与经营活动有关的现金",
+        "支付的其他与筹资活动有关的现金"
+      ],
+      "evidence_count": 1,
+      "reason": "unmatched_item_similar_to_missing"
+    },
+    {
+      "standard_name": "经营活动产生的现金流量净额",
+      "suggested_variants": [
+        "筹资活动使用/产生的现金流量净额",
+        "投资活动产生的现金流量净额",
+        "经营活动产生的现金流量净额",
+        "经营活动产生/使用的现金流量净额",
+        "投资活动产生/使用的现金流量净额"
+      ],
+      "evidence_count": 1,
+      "reason": "unmatched_item_similar_to_missing"
+    },
+    {
+      "standard_name": "处置子公司及其他营业单位收到的现金净额",
+      "suggested_variants": [
+        "取得子公司及其他营业单位支付的现金净额",
+        "处置子公司及其他营业单位收到的现金净额"
+      ],
+      "evidence_count": 1,
+      "reason": "unmatched_item_similar_to_missing"
+    },
+    {
+      "standard_name": "收到其他与投资活动有关的现金",
+      "suggested_variants": [
+        "收到的其他与筹资活动有关的现金",
+        "支付其他与投资活动有关的现金",
+        "支付其他与经营活动有关的现金",
+        "收到其他与投资活动有关的现金",
+        "收到的其他与筹资活动有关的现金-",
+        "收到其他与经营活动有关的现金",
+        "支付的其他与筹资活动有关的现金"
+      ],
+      "evidence_count": 1,
+      "reason": "unmatched_item_similar_to_missing"
+    },
+    {
+      "standard_name": "取得子公司及其他营业单位支付的现金净额",
+      "suggested_variants": [
+        "取得子公司及其他营业单位支付的现金净额",
+        "处置子公司及其他营业单位收到的现金净额"
+      ],
+      "evidence_count": 1,
+      "reason": "unmatched_item_similar_to_missing"
+    },
+    {
+      "standard_name": "支付其他与投资活动有关的现金",
+      "suggested_variants": [
+        "收到的其他与筹资活动有关的现金",
+        "支付其他与投资活动有关的现金",
+        "支付其他与经营活动有关的现金",
+        "收到其他与投资活动有关的现金",
+        "收到的其他与筹资活动有关的现金-",
+        "收到其他与经营活动有关的现金",
+        "支付的其他与筹资活动有关的现金"
+      ],
+      "evidence_count": 1,
+      "reason": "unmatched_item_similar_to_missing"
+    },
+    {
+      "standard_name": "投资活动产生的现金流量净额",
+      "suggested_variants": [
+        "筹资活动使用/产生的现金流量净额",
+        "投资活动产生的现金流量净额",
+        "经营活动产生的现金流量净额",
+        "经营活动产生/使用的现金流量净额",
+        "投资活动产生/使用的现金流量净额"
+      ],
+      "evidence_count": 1,
+      "reason": "unmatched_item_similar_to_missing"
+    },
+    {
+      "standard_name": "支付其他与筹资活动有关的现金",
+      "suggested_variants": [
+        "收到的其他与筹资活动有关的现金",
+        "支付其他与投资活动有关的现金",
+        "支付其他与经营活动有关的现金",
+        "收到其他与投资活动有关的现金",
+        "收到的其他与筹资活动有关的现金-",
+        "收到其他与经营活动有关的现金",
+        "支付的其他与筹资活动有关的现金"
+      ],
+      "evidence_count": 1,
+      "reason": "unmatched_item_similar_to_missing"
+    },
+    {
+      "standard_name": "四、汇率变动对现金的影响",
+      "suggested_variants": [
+        "汇率变动对现金及现金等价物的影响"
+      ],
+      "evidence_count": 1,
+      "reason": "unmatched_item_similar_to_missing"
+    },
+    {
+      "standard_name": "五、现金及现金等价物净增加额",
+      "suggested_variants": [
+        "现金及现金等价物净增加/减少额"
+      ],
+      "evidence_count": 1,
+      "reason": "unmatched_item_similar_to_missing"
+    },
+    {
+      "standard_name": "其他",
+      "suggested_variants": [
+        "取得子公司及其他营业单位支付的现金净额",
+        "收到的其他与筹资活动有关的现金",
+        "支付其他与投资活动有关的现金",
+        "支付其他与经营活动有关的现金",
+        "处置子公司及其他营业单位收到的现金净额",
+        "收到其他与投资活动有关的现金",
+        "收到的其他与筹资活动有关的现金-",
+        "收到其他与经营活动有关的现金",
+        "支付的其他与筹资活动有关的现金"
+      ],
+      "evidence_count": 1,
+      "reason": "unmatched_item_similar_to_missing"
+    },
+    {
+      "standard_name": "经营活动产生的现金流量净额2",
+      "suggested_variants": [
+        "筹资活动使用/产生的现金流量净额",
+        "投资活动产生的现金流量净额",
+        "经营活动产生的现金流量净额",
+        "经营活动产生/使用的现金流量净额",
+        "投资活动产生/使用的现金流量净额"
+      ],
+      "evidence_count": 1,
+      "reason": "unmatched_item_similar_to_missing"
+    }
+  ],
+  "metadata": {
+    "stock_codes": [
+      "600519",
+      "000001",
+      "000002",
+      "600585"
+    ],
+    "years": [
+      2020
+    ],
+    "statement_types": [
+      "income_statement",
+      "balance_sheet",
+      "cash_flow"
+    ],
+    "report_type": "annual",
+    "rds_dir": "D:/Research/Quant/SETL/cninfo/data_backup",
+    "extracted_dir": "F:\\ai_fin_proj\\peri_rept_down\\data\\extracted\\by_code",
+    "timestamp": "2026-05-28T12:32:26.325368"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "generated_at": "2026-05-27T11:36:33.753320",
+  "total_records": 2,
+  "success": 1,
+  "rejected": 1,
+  "failed": 0,
+  "results": [
+    {
+      "stock_code": "000001",
+      "stock_name": "平安银行",
+      "year": 2021,
+      "report_type": "annual",
+      "status": "success",
+      "file_path": "F:\\ai_fin_proj\\peri_rept_down\\data\\by_code\\000001\\000001_平安银行_2021_年报.PDF",
+      "file_size_mb": 1.4,
+      "title": "平安银行：2022年半年度报告"
+    },
+    {
+      "stock_code": "000858",
+      "stock_name": "五粮液",
+      "year": 2021,
+      "report_type": "annual",
+      "status": "rejected",
+      "reason": "文本乱码且无报表关键词",
+      "file_path": "F:\\ai_fin_proj\\peri_rept_down\\data\\by_code\\000858\\000858_五粮液_2021_年报.PDF.rejected"
+    }
+  ]
+}

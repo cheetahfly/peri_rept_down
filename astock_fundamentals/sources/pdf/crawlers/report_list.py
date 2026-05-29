@@ -7,7 +7,7 @@ import requests
 import time
 import random
 from typing import List, Dict, Optional
-from config import CNINFO_BASE_URL, HEADERS, REQUEST_DELAY, USER_AGENTS, REPORT_CATEGORIES
+from astock_fundamentals.core.config import CNINFO_BASE_URL, HEADERS, REQUEST_DELAY, USER_AGENTS, REPORT_CATEGORIES
 
 
 class ReportListCrawler:

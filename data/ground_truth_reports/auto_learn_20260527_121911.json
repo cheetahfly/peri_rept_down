@@ -1,0 +1,217 @@
+{
+  "timestamp": "2026-05-27T12:19:11.925739",
+  "stock_codes": [
+    "000001"
+  ],
+  "years": [
+    2021
+  ],
+  "rules": {
+    "income_statement": [
+      {
+        "standard_name": "其中：营业收入",
+        "variants": [
+          "营业收入合计"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "其中：营业成本",
+        "variants": [
+          "四、营业利润"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "营业税金及附加",
+        "variants": [
+          "税金及附加"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "管理费用",
+        "variants": [
+          "业务及管理费"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "加：影响利润总额的其他科目",
+        "variants": [
+          "五、利润总额"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "减：所得税",
+        "variants": [
+          "减：所得税费用"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "加：影响净利润的其他科目",
+        "variants": [
+          "六、净利润"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "七、其他综合收益",
+        "variants": [
+          "其他收益"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "保单红利支出",
+        "variants": [
+          "利息支出"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "其中：利息费用",
+        "variants": [
+          "利息收入"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      }
+    ],
+    "balance_sheet": [
+      {
+        "standard_name": "投资收益",
+        "variants": [
+          "债权投资"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "五、净利润",
+        "variants": [
+          "未分配利润"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "流动负债合计",
+        "variants": [
+          "负债合计"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "应收保费",
+        "variants": [
+          "应交税费"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "发放贷款及垫款-非流动资产",
+        "variants": [
+          "发放贷款和垫款"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "吸收存款及同业存放",
+        "variants": [
+          "吸收存款"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "预计负债-流动负债",
+        "variants": [
+          "预计负债"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "递延收益-流动负债",
+        "variants": [
+          "递延所得税负债"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "其中：优先股-非流动负债",
+        "variants": [
+          "其中：优先股"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "永续债-非流动负债",
+        "variants": [
+          "永续债"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "其他非流动金融资产",
+        "variants": [
+          "其他资产"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "合同负债",
+        "variants": [
+          "租赁负债"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      }
+    ],
+    "cash_flow": [
+      {
+        "standard_name": "归属于母公司所有者的净利润",
+        "variants": [
+          "净利润"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "利息收入",
+        "variants": [
+          "投资利息收入及投资收益"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      },
+      {
+        "standard_name": "终止经营净利润",
+        "variants": [
+          "净利润"
+        ],
+        "confidence": 1.0,
+        "evidence_count": 1
+      }
+    ]
+  }
+}

@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>600519 2020 匹配分析报告</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 20px; }
+h1 { color: #333; }
+h2 { color: #666; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+.statement { margin: 20px 0; }
+.coverage { display: inline-block; padding: 5px 15px; border-radius: 5px; }
+.high { background: #4CAF50; color: white; }
+.medium { background: #FF9800; color: white; }
+.low { background: #f44336; color: white; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+th { background: #4CAF50; color: white; }
+.missing { background: #ffeb3b; }
+.unmatched { background: #ff9800; color: white; }
+.matched { background: #4CAF50; color: white; }
+.value-issue { color: #f44336; font-weight: bold; }
+</style>
+</head>
+<body>
+<h1>600519 贵州茅台 2020年报 匹配分析报告</h1>
+
+<div class="statement">
+<h2>利润表 <span class="coverage high">86.7%</span></h2>
+<p>匹配: 26 | 缺失: 4 | 未匹配: 27</p>
+
+<h3>缺失项 (RDS有但提取无)</h3>
+<table>
+<tr><th>字段名</th><th>预期值</th><th>建议</th></tr>
+<tr class="missing"><td>F033N 利息收入</td><td>3,077,859,584.49</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F039N 八、综合收益总额</td><td>49,525,197,236.44</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F040N 其中：归属于母公司</td><td>46,699,152,783.85</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F041N 其中：归属于少数股东</td><td>2,826,044,452.59</td><td>检查PDF提取或补充别名</td></tr></table>
+<h3>未匹配项 (提取有但RDS无)</h3>
+<table>
+<tr><th>提取字段名</th><th>提取值</th><th>可能对应</th></tr>
+<tr class="unmatched"><td>资本公积</td><td>1,374,303,082.72</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>盈余公积</td><td>20,174,922,608.93</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>未分配利润</td><td>81,396,490,905.14</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>所有者权益</td><td>104,201,914,396.79</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>负债和所有者权益</td><td>114,644,087,360.56</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>营业总收入</td><td>97,993,240,501.21</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>营业收入</td><td>94,915,380,916.72</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>手续费及佣金收入</td><td>292,452.83</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>营业总成本</td><td>31,305,130,587.56</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>营业成本</td><td>8,154,001,476.28</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>其他收益</td><td>13,138,152.69</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>投资收益</td><td>305,631.46</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>公允价值变动收益</td><td>4,897,994.43</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>信用减值损失</td><td>-71,371,809.85</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>资产处置收益</td><td>-32,123.57</td><td>需确认对应RDS字段</td></tr></table></div>
+<div class="statement">
+<h2>资产负债表 <span class="coverage medium">77.8%</span></h2>
+<p>匹配: 28 | 缺失: 8 | 未匹配: 5</p>
+
+<h3>缺失项 (RDS有但提取无)</h3>
+<table>
+<tr><th>字段名</th><th>预期值</th><th>建议</th></tr>
+<tr class="missing"><td>F015N 存货</td><td>28,869,087,678.06</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F086N 发放贷款及垫款-非流动资产</td><td>2,953,036,834.80</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F074N 其他综合收益</td><td>-5,331,367.75</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F076N 一般风险准备</td><td>927,577,822.67</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F073N 归属于母公司所有者权益</td><td>161,322,735,087.56</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F067N 少数股东权益</td><td>6,397,948,013.72</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F070N 所有者权益（或股东权益）合计</td><td>167,720,683,101.28</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F071N 负债和所有者（或股东权益）合计</td><td>213,395,810,527.46</td><td>检查PDF提取或补充别名</td></tr></table>
+<h3>未匹配项 (提取有但RDS无)</h3>
+<table>
+<tr><th>提取字段名</th><th>提取值</th><th>可能对应</th></tr>
+<tr class="unmatched"><td>应收账款</td><td>4.00</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>发放贷款和垫款</td><td>2,953,036,834.80</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>预收款项</td><td>13,740,329,698.82</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>应付利息</td><td>11,081.87</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>应付股利</td><td>446,880,000.00</td><td>需确认对应RDS字段</td></tr></table></div>
+<div class="statement">
+<h2>现金流量表 <span class="coverage low">0.0%</span></h2>
+<p>匹配: 0 | 缺失: 49 | 未匹配: 23</p>
+
+<h3>缺失项 (RDS有但提取无)</h3>
+<table>
+<tr><th>字段名</th><th>预期值</th><th>建议</th></tr>
+<tr class="missing"><td>F006N 销售商品、提供劳务收到的现金</td><td>107,024,384,560.17</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F072N 客户存款和同业存放款项净增加额</td><td>3,189,100,199.87</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F081N 收取利息、手续费及佣金的现金</td><td>3,075,945,383.34</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F008N 收到其他与经营活动有关的现金</td><td>221,421,226.63</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F009N 经营活动现金流入小计</td><td>113,510,851,370.01</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F010N 购买商品、接受劳务支付的现金</td><td>7,230,646,129.19</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F084N 客户贷款及垫款净增加额</td><td>2,978,755,728.00</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F085N 存放中央银行和同业款项净增加额</td><td>-2,506,406,682.56</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F087N 支付利息、手续费及佣金的现金</td><td>107,241,768.26</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F011N 支付给职工以及为职工支付的现金</td><td>8,161,813,197.26</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F012N 支付的各项税费</td><td>41,622,706,350.37</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F013N 支付其他与经营活动有关的现金</td><td>4,247,026,186.46</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F014N 经营活动现金流出小计</td><td>61,841,782,676.98</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F015N 经营活动产生的现金流量净额</td><td>51,669,068,693.03</td><td>检查PDF提取或补充别名</td></tr><tr class="missing"><td>F016N 收回投资收到的现金</td><td>314,906,521.48</td><td>检查PDF提取或补充别名</td></tr></table>
+<h3>未匹配项 (提取有但RDS无)</h3>
+<table>
+<tr><th>提取字段名</th><th>提取值</th><th>可能对应</th></tr>
+<tr class="unmatched"><td>经营活动产生的现金流量净额</td><td>-23,644,387,206.06</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>取得投资收益收到的现金</td><td>-23,644,387,206.06</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>处置固定资产、无形资产收回的现金净额</td><td>25,844,302,872.63</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>处置子公司收到的现金净额</td><td>117,637,795,261.45</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>收到其他与经营活动有关的现金</td><td>24,238,584,967.20</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>经营活动现金流出小计</td><td>43,969,867,796.42</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>投资活动产生的现金流量净额</td><td>104,201,914,396.79</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>收回投资收到的现金</td><td>76,545,528,141.36</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>处置固定资产、无形资产支付的现金</td><td>76,774,835,045.28</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>购建固定资产、无形资产支付的现金</td><td>13,021,611,203.80</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>投资支付的现金</td><td>-132,996.09</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>投资活动现金流出小计</td><td>72,692,601.01</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>筹资活动产生的现金流量净额</td><td>6,167,982,844.22</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>吸收投资收到的现金</td><td>48,688,841.05</td><td>需确认对应RDS字段</td></tr><tr class="unmatched"><td>取得借款收到的现金</td><td>7,458,015.66</td><td>需确认对应RDS字段</td></tr></table></div>
+</body>
+</html>

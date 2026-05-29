@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>600519 2020 现金流量表 - 提取结果</title>
+<style>
+body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+h1, h2 { color: #333; }
+table { border-collapse: collapse; width: 100%; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
+th { background: #1565c0; color: white; padding: 8px 10px; text-align: left; }
+td { padding: 6px 10px; border-bottom: 1px solid #eee; font-size: 13px; }
+tr:hover { background: #e3f2fd; }
+.code { font-family: monospace; color: #1565c0; }
+.value { font-family: monospace; text-align: right; }
+.diff { font-family: monospace; text-align: right; color: #e65100; font-weight: bold; }
+.summary { margin: 20px 0; padding: 15px; background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.match-ok { color: #2e7d32; font-weight: bold; }
+.match-missing { color: #c62828; font-weight: bold; }
+.before-after { display: flex; gap: 20px; }
+.before-after > div { flex: 1; padding: 10px; border-radius: 4px; }
+.before { background: #ffebee; }
+.after { background: #e8f5e9; }
+</style>
+</head>
+<body>
+
+<h1>600519 贵州茅台 2020 年现金流量表 — 提取结果</h1>
+
+<div class="summary">
+<div class="before-after">
+<div class="before">
+<h3>修复前</h3>
+<p>页面: 55-57</p>
+<p>匹配: 30/45 = <strong>66.7%</strong></p>
+<p>缺失: 15 项（间接法全部丢失）</p>
+</div>
+<div class="after">
+<h3>修复后</h3>
+<p>页面: 55-57 + <strong>99-100（补充资料）</strong></p>
+<p>匹配: 45/47 = <strong>95.7%</strong></p>
+<p>缺失: 2 项</p>
+</div>
+</div>
+<p>值准确率: 97.8%</p>
+</div>
+
+<h2>已成功匹配的科目 (45)</h2>
+<table>
+<tr><th>代码</th><th>科目名称</th><th>RDS 值</th><th>提取值</th><th>匹配方式</th><th>误差</th></tr>
+<tr>
+<td class="code">F006N</td>
+<td>销售商品、提供劳务收到的现金</td>
+<td class="value">107,024,384,560.17</td>
+<td class="value">107,024,384,560.17</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F009N</td>
+<td>经营活动现金流入小计</td>
+<td class="value">113,510,851,370.01</td>
+<td class="value">113,510,851,370.01</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F010N</td>
+<td>购买商品、接受劳务支付的现金</td>
+<td class="value">7,230,646,129.19</td>
+<td class="value">7,230,646,129.19</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F011N</td>
+<td>支付给职工以及为职工支付的现金</td>
+<td class="value">8,161,813,197.26</td>
+<td class="value">8,161,813,197.26</td>
+<td>fuzzy</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F012N</td>
+<td>支付的各项税费</td>
+<td class="value">41,622,706,350.37</td>
+<td class="value">41,622,706,350.37</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F013N</td>
+<td>支付其他与经营活动有关的现金</td>
+<td class="value">4,247,026,186.46</td>
+<td class="value">4,047,026,186.46</td>
+<td>exact</td>
+<td class="diff">4.7%</td>
+</tr>
+<tr>
+<td class="code">F014N</td>
+<td>经营活动现金流出小计</td>
+<td class="value">61,841,782,676.98</td>
+<td class="value">61,841,782,676.98</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F015N</td>
+<td>经营活动产生的现金流量净额</td>
+<td class="value">51,669,068,693.03</td>
+<td class="value">51,669,068,693.03</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F016N</td>
+<td>收回投资收到的现金</td>
+<td class="value">314,906,521.48</td>
+<td class="value">314,906,521.48</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F018N</td>
+<td>处置固定资产、无形资产和其他长期资产收回的现金净额</td>
+<td class="value">495,904.85</td>
+<td class="value">495,904.85</td>
+<td>fuzzy</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F020N</td>
+<td>收到其他与投资活动有关的现金</td>
+<td class="value">6,675,319.03</td>
+<td class="value">6,675,319.03</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F022N</td>
+<td>购建固定资产、无形资产和其他长期资产支付的现金</td>
+<td class="value">2,089,769,498.78</td>
+<td class="value">2,089,769,498.78</td>
+<td>fuzzy</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F023N</td>
+<td>投资支付的现金</td>
+<td class="value">20,000,000.00</td>
+<td class="value">20,000,000.00</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F025N</td>
+<td>支付其他与投资活动有关的现金</td>
+<td class="value">17,535,402.30</td>
+<td class="value">17,535,402.30</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F026N</td>
+<td>投资活动现金流出小计</td>
+<td class="value">2,127,304,901.08</td>
+<td class="value">2,127,304,901.08</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F027N</td>
+<td>投资活动产生的现金流量净额</td>
+<td class="value">-1,805,227,155.72</td>
+<td class="value">-1,805,227,155.72</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F033N</td>
+<td>分配股利、利润或偿付利息支付的现金</td>
+<td class="value">24,091,029,750.51</td>
+<td class="value">24,091,029,750.51</td>
+<td>fuzzy</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F034N</td>
+<td>支付其他与筹资活动有关的现金</td>
+<td class="value">36,507,157.75</td>
+<td class="value">36,507,157.75</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F035N</td>
+<td>筹资活动现金流出小计</td>
+<td class="value">24,127,536,908.26</td>
+<td class="value">24,127,536,908.26</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F036N</td>
+<td>筹资活动产生的现金流量净额</td>
+<td class="value">-24,127,536,908.26</td>
+<td class="value">-24,127,536,908.26</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F037N</td>
+<td>四、汇率变动对现金的影响</td>
+<td class="value">380,639.36</td>
+<td class="value">380,639.36</td>
+<td>cid_value</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F039N</td>
+<td>五、现金及现金等价物净增加额</td>
+<td class="value">25,736,685,268.41</td>
+<td class="value">25,736,685,268.41</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F040N</td>
+<td>期初现金及现金等价物余额</td>
+<td class="value">121,003,839,599.64</td>
+<td class="value">121,003,839,599.64</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F041N</td>
+<td>期末现金及现金等价物余额</td>
+<td class="value">146,740,524,868.05</td>
+<td class="value">146,740,524,868.05</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F044N</td>
+<td>净利润</td>
+<td class="value">49,523,329,882.40</td>
+<td class="value">49,523,329,882.40</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F046N</td>
+<td>固定资产折旧、油气资产折耗、生产性生物资产折旧</td>
+<td class="value">1,195,956,468.60</td>
+<td class="value">1,195,956,468.60</td>
+<td>fuzzy</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F047N</td>
+<td>无形资产摊销</td>
+<td class="value">110,349,099.00</td>
+<td class="value">110,349,099.00</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F048N</td>
+<td>长期待摊费用摊销</td>
+<td class="value">10,562,811.76</td>
+<td class="value">10,562,811.76</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F050N</td>
+<td>固定资产报废损失</td>
+<td class="value">100,113.92</td>
+<td class="value">100,113.92</td>
+<td>fuzzy</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F051N</td>
+<td>公允价值变动损失</td>
+<td class="value">-4,897,994.43</td>
+<td class="value">-4,897,994.43</td>
+<td>fuzzy</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F053N</td>
+<td>投资损失</td>
+<td class="value">-305,631.46</td>
+<td class="value">-305,631.46</td>
+<td>cid_value</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F054N</td>
+<td>递延所得税资产减少</td>
+<td class="value">-23,278,138.80</td>
+<td class="value">-23,278,138.80</td>
+<td>fuzzy</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F055N</td>
+<td>递延所得税负债增加</td>
+<td class="value">-71,235,087.78</td>
+<td class="value">-71,235,087.78</td>
+<td>fuzzy</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F056N</td>
+<td>存货的减少</td>
+<td class="value">-3,584,166,871.73</td>
+<td class="value">-3,584,166,871.73</td>
+<td>cid_value</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F057N</td>
+<td>经营性应收项目的减少</td>
+<td class="value">-504,008,375.44</td>
+<td class="value">-504,008,375.44</td>
+<td>fuzzy</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F058N</td>
+<td>经营性应付项目的增加</td>
+<td class="value">4,945,290,607.14</td>
+<td class="value">4,945,290,607.14</td>
+<td>fuzzy</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F066N</td>
+<td>现金的期末余额</td>
+<td class="value">146,740,524,868.05</td>
+<td class="value">146,740,524,868.05</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F067N</td>
+<td>减：现金的期初余额</td>
+<td class="value">121,003,839,599.64</td>
+<td class="value">121,003,839,599.64</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F072N</td>
+<td>客户存款和同业存放款项净增加额</td>
+<td class="value">3,189,100,199.87</td>
+<td class="value">3,189,100,199.87</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F081N</td>
+<td>收取利息、手续费及佣金的现金</td>
+<td class="value">3,075,945,383.34</td>
+<td class="value">3,075,945,383.34</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F084N</td>
+<td>客户贷款及垫款净增加额</td>
+<td class="value">2,978,755,728.00</td>
+<td class="value">2,978,755,728.00</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F085N</td>
+<td>存放中央银行和同业款项净增加额</td>
+<td class="value">-2,506,406,682.56</td>
+<td class="value">-2,506,406,682.56</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F087N</td>
+<td>支付利息、手续费及佣金的现金</td>
+<td class="value">107,241,768.26</td>
+<td class="value">107,241,768.26</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F090N</td>
+<td>其中：子公司支付给少数股东的股利、利润</td>
+<td class="value">2,704,262,179.11</td>
+<td class="value">2,704,262,179.11</td>
+<td>fuzzy</td>
+<td class="value">0.0%</td>
+</tr>
+<tr>
+<td class="code">F096N</td>
+<td>信用减值损失</td>
+<td class="value">71,371,809.85</td>
+<td class="value">71,371,809.85</td>
+<td>exact</td>
+<td class="value">0.0%</td>
+</tr>
+
+</table>
+
+<h2>仍缺失的科目 (2)</h2>
+<table>
+<tr><th>RDS 代码</th><th>科目名称</th><th>期望值</th><th>状态</th></tr>
+<tr>
+<td class="code">F008N</td>
+<td>收到其他与经营活动有关的现金</td>
+<td class="value">221,421,226.63</td>
+<td class="status-cell">未提取</td>
+</tr>
+<tr>
+<td class="code">F021N</td>
+<td>投资活动现金流入小计</td>
+<td class="value">322,077,745.36</td>
+<td class="status-cell">未提取</td>
+</tr>
+
+</table>
+
+<h2>修复说明</h2>
+<div style="background:#fff8e1;padding:12px;border-radius:4px;">
+<p><strong>根因：</strong>现金流量表的间接法调节项目（将净利润调节为经营活动现金流量）在第 99-100 页，
+与原提取的 CF 主表（55-57 页）距离远，被 MAX_SPREAD=8 和 CID 字体去重逻辑过滤掉。</p>
+<p><strong>修复：</strong></p>
+<ol>
+<li>新增 <code>_find_cf_supplementary_pages()</code> 方法，通过标题关键词搜索间接法页面</li>
+<li>在去重逻辑<strong>之后</strong>追加补充资料页面（避免被非连续块过滤）</li>
+</ol>
+<p><strong>效果：</strong>覆盖率从 66.7% (30/45) 提升至 95.7% (45/47)，
+间接法调节项目全部成功提取。</p>
+</div>
+
+</body>
+</html>
