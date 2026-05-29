@@ -1,29 +1,27 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-批量下载AKShare(新浪财经)财务数据 - 全覆盖版
+批量下载AKShare(新浪财经)财务数据 - 多报告期版
 
-策略:
-  1. 先快速探测: 若股票不在新浪数据库中则标记并跳过 (不重试)
-  2. 有数据的股票: 下载全部3张报表
-  3. 支持断点续传
+保存RAW API数据（全部报告期），支持后续提取任意年份/报告期。
+每次运行会增量补充新股票，已有数据自动跳过。
+
+下载的数据包含每只股票完整的多年多期数据（年报+半年报+季报）。
 """
 import sys, os, json, warnings, time
 warnings.filterwarnings('ignore')
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 import pandas as pd
 from astock_fundamentals.sources.api.akshare_provider import AKShareProvider
 
 CACHE_DIR = os.path.join("data", "akshare_bulk")
-STOCK_LIST_FILE = os.path.join(CACHE_DIR, "stock_list.csv")
+STOCK_LIST = os.path.join(CACHE_DIR, "stock_list.csv")
 PROGRESS_FILE = os.path.join(CACHE_DIR, "download_progress.json")
 os.makedirs(CACHE_DIR, exist_ok=True)
 
-stocks = pd.read_csv(STOCK_LIST_FILE)
+stocks = pd.read_csv(STOCK_LIST)
 provider = AKShareProvider()
 
-# Load progress
 progress = {}
 if os.path.exists(PROGRESS_FILE):
     with open(PROGRESS_FILE, "r") as f:
@@ -31,71 +29,71 @@ if os.path.exists(PROGRESS_FILE):
 
 STATEMENTS = ["balance_sheet", "income_statement", "cash_flow"]
 total = len(stocks)
-done_count = sum(1 for k, v in progress.items() if v.get("status") == "done")
-skip_count = sum(1 for k, v in progress.items() if v.get("status") == "no_data")
-print(f"Total: {total} stocks | Already done: {done_count} | No data: {skip_count}")
+done_count = sum(1 for v in progress.values() if v.get("status") == "done")
+print(f"Total: {total} stocks | Done: {done_count}")
 
-processed = 0
+processed = sum(1 for v in progress.values() if v.get("status") in ("done", "no_data"))
 for idx, row in stocks.iterrows():
     code = str(row['SECCODE']).zfill(6)
-    name = str(row['SECNAME'])
+    name = str(row['SECNAME'][:8])
 
-    # Check if any statement already done -> skip stock entirely
     all_done = all(progress.get(f"{code}_{st}", {}).get("status") == "done" for st in STATEMENTS)
-    any_no_data = any(progress.get(f"{code}_{st}", {}).get("status") == "no_data" for st in STATEMENTS)
-    if all_done or any_no_data:
-        processed += 1
+    if all_done:
         continue
 
-    # Try BS as probe (fast: 1 attempt, no retry)
-    bs_data = None
+    # Probe with BS
     try:
-        bs_data = provider._get_data_sina(code, 2020, "balance_sheet", "annual")
+        raw_df = provider._fetch_sina(code, "资产负债表")
     except:
-        pass
+        raw_df = None
 
-    if not bs_data or len(bs_data) <= 2:
-        # Stock not on Sina
+    if raw_df is None or raw_df.empty or len(raw_df) < 5:
         for st in STATEMENTS:
             progress[f"{code}_{st}"] = {"status": "no_data"}
         processed += 1
-        print(f"[{processed}/{total}] {code} {name}: NOT on Sina")
+        print(f"[{processed}/{total}] {code} {name}: no data")
         with open(PROGRESS_FILE, "w") as f:
             json.dump(progress, f)
         continue
 
-    # Stock has data - download all 3 statements
-    time.sleep(1.5)  # Rate limit between stocks (not between statements - use cached session)
-    for st in STATEMENTS:
+    # Save RAW dataframe as CSV (preserves ALL periods)
+    csv_path = os.path.join(CACHE_DIR, f"{code}_raw.csv")
+    raw_df.to_csv(csv_path, index=False, encoding="utf-8-sig")
+
+    for st, st_label, st_cn in zip(STATEMENTS, ["BS","IS","CF"], ["BS","IS","CF"]):
         key = f"{code}_{st}"
-        if progress.get(key, {}).get("status") == "done":
-            continue
-
-        data = None
         try:
-            if st == "balance_sheet":
-                data = bs_data  # Already fetched
+            df = raw_df if st == "balance_sheet" else provider._fetch_sina(code, {"balance_sheet":"资产负债表","income_statement":"利润表","cash_flow":"现金流量表"}[st])
+            if df is not None and len(df) > 5:
+                df.to_csv(os.path.join(CACHE_DIR, f"{code}_{st}.csv"), index=False, encoding="utf-8-sig")
+                # Also save JSON summary for quick access: {period: {item: value}}
+                periods = df.iloc[:, 0].tolist()
+                summary = {}
+                for i, period in enumerate(periods):
+                    row_data = df.iloc[i]
+                    items = {}
+                    for j in range(1, len(df.columns)):
+                        val = row_data.iloc[j]
+                        if pd.notna(val):
+                            try:
+                                items[str(df.columns[j])] = float(val)
+                            except (ValueError, TypeError):
+                                pass
+                    summary[str(period)] = items
+                with open(os.path.join(CACHE_DIR, f"{code}_{st}.json"), "w", encoding="utf-8") as f:
+                    json.dump(summary, f, ensure_ascii=False)
+                progress[key] = {"status": "done", "periods": len(periods)}
             else:
-                data = provider._get_data_sina(code, 2020, st, "annual")
+                progress[key] = {"status": "no_data"}
         except:
-            pass
-
-        if data and len(data) > 2:
-            out_path = os.path.join(CACHE_DIR, f"{code}_{st}.json")
-            with open(out_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, ensure_ascii=False, indent=2)
-            progress[key] = {"status": "done", "items": len(data)}
-        else:
             progress[key] = {"status": "no_data"}
 
         processed += 1
-        print(f"[{processed}/{total}] {code} {name} {st}: {len(data) if data else 0} items")
-        time.sleep(1.5)
+        print(f"[{processed}/{total}] {code} {name} {st_label}")
+        time.sleep(2)
 
     with open(PROGRESS_FILE, "w") as f:
         json.dump(progress, f)
 
-# Summary
 done = sum(1 for v in progress.values() if v.get("status") == "done")
-no_data = sum(1 for v in progress.values() if v.get("status") == "no_data")
-print(f"\nFinal: {done} done, {no_data} no_data, {len(progress)} total")
+print(f"\nFinal: {done} done, {total} total")
