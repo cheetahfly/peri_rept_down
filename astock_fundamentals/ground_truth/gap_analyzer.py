@@ -14,6 +14,17 @@ from astock_fundamentals.ground_truth.comparator import ComparisonResult, normal
 
 
 @dataclass
+class GapSummary:
+    """单次比较的 GAP 分析结果"""
+    stock_code: str
+    year: int
+    statement_type: str
+    missing_count: int = 0
+    unmatched_count: int = 0
+    value_match_suggestions: List[Tuple[str, str, float]] = field(default_factory=list)
+
+
+@dataclass
 class RuleSuggestion:
     category: str  # alias, normalize_pattern, standard_items
     action: str    # add_alias, add_pattern, add_standard_item
