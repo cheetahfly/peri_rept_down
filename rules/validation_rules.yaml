@@ -31,6 +31,48 @@ default_tolerance: 0.01  # 1%
 strict_tolerance: 0.001  # 0.1%
 
 # =============================================================================
+# 基于对比分析的匹配策略 (2026-05-30)
+# =============================================================================
+matching_strategies:
+  # 优先级1: 精确名称匹配 (最高置信度)
+  exact_name:
+    description: "归一化后完全相同的科目名"
+    confidence: 1.0
+    threshold: 0
+
+  # 优先级2: 别名匹配 (使用 aliases.yaml)
+  alias_match:
+    description: "通过别名映射表匹配"
+    confidence: 0.95
+    threshold: 0
+
+  # 优先级3: 值精确匹配 (中置信度)
+  value_exact:
+    description: "值完全相等（误差<0.001%）"
+    confidence: 0.9
+    threshold: 0.001
+    note: "适用于名称差异大但值相同的情况"
+
+  # 优先级4: 值近似匹配 (低置信度)
+  value_near:
+    description: "值近似相等（误差<1%）"
+    confidence: 0.7
+    threshold: 0.01
+    note: "需人工验证，可能存在科目混用"
+
+  # 优先级5: 模糊匹配 (最低置信度)
+  fuzzy_match:
+    description: "名称相似度>80%"
+    confidence: 0.5
+    threshold: 0.05
+
+# 行业特定匹配阈值
+industry_thresholds:
+  financial_sector: 0.005  # 银行/保险/证券
+  non_financial: 0.01     # 一般企业
+  special_industry: 0.02  # 特殊行业（如房地产）
+
+# =============================================================================
 # 一、资产负债表勾稽关系
 # =============================================================================
 balance_sheet:

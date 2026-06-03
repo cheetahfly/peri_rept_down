@@ -226,6 +226,7 @@ def compare_stock(
     year: int = 0,
     statement_type: str = "",
     decode_map: Dict[str, str] = None,
+    industry: str = None,  # 行业标识，用于行业特定规则
 ) -> ComparisonResult:
     result = ComparisonResult(stock_code, year, statement_type)
 
@@ -315,7 +316,63 @@ def compare_stock(
                 match_type="unmatched",
             ))
 
+    # 添加行业特定匹配 (如果前8步未完全覆盖)
+    if len(result.matched) < len(gt_data) * 0.8:  # 覆盖率低于80%时触发
+        _apply_industry_rules(result, gt_data, ext_data, industry)
+
     return result
+
+
+def _apply_industry_rules(result: ComparisonResult, gt_data: Dict[str, float],
+                          ext_data: Dict[str, float], industry: str = None):
+    """
+    应用行业特定规则进行匹配。
+
+    基于2026-05-30对比分析发现：
+    - 金融行业（银行/保险/证券）有特有科目，需要专门匹配
+    - 非金融行业科目相对标准，但也有特定差异
+    """
+    if not industry:
+        return
+
+    # 加载金融行业规则
+    try:
+        import yaml
+        rules_path = os.path.join(os.path.dirname(__file__), "..", "..", "rules",
+                                  "value_mapping_rules.yaml")
+        with open(rules_path, "r", encoding="utf-8") as f:
+            rules = yaml.safe_load(f)
+
+        financial_rules = rules.get("financial_sector_rules", {}).get(industry, {})
+        if not financial_rules:
+            return
+
+        # 获取已匹配的提取项
+        matched_ext_keys = set(item.extracted_name for item in result.matched)
+
+        # 对未匹配的RDS项尝试行业特定匹配
+        for item in result.missing:
+            gt_name = item.ground_truth_name
+            for sina_name, rds_name in financial_rules.items():
+                if rds_name in gt_name or gt_name in rds_name:
+                    # 尝试在ext_data中找到对应的值
+                    if sina_name in ext_data:
+                        ext_val = ext_data[sina_name]
+                        value_error = _compare_values(item.ground_truth_value, ext_val)
+                        if value_error is not None and value_error < 0.005:
+                            # 找到行业特定匹配
+                            result.matched.append(ItemComparison(
+                                ground_truth_name=gt_name,
+                                ground_truth_value=item.ground_truth_value,
+                                extracted_name=sina_name,
+                                extracted_value=ext_val,
+                                match_type="industry",
+                                value_error_pct=value_error,
+                            ))
+                            matched_ext_keys.add(sina_name)
+                            break
+    except Exception:
+        pass
 
 
 def load_extracted_json(json_path: str) -> Dict[str, float]:
