@@ -19,17 +19,17 @@
     },
     "income_statement": {
       "comparisons": 18,
-      "rds_items": 478,
-      "matched": 419,
-      "match_rate": 0.8766,
-      "avg_value_accuracy": 0.5539
+      "rds_items": 475,
+      "matched": 422,
+      "match_rate": 0.8884,
+      "avg_value_accuracy": 0.5283
     },
     "cash_flow": {
       "comparisons": 15,
-      "rds_items": 584,
-      "matched": 381,
-      "match_rate": 0.6524,
-      "avg_value_accuracy": 0.5633
+      "rds_items": 366,
+      "matched": 333,
+      "match_rate": 0.9098,
+      "avg_value_accuracy": 0.4777
     }
   }
 }

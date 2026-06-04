@@ -1,11 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Baseline: compare Sina 2019-2022 annual vs RDS ground truth."""
+"""Baseline: compare Sina 2019-2022 annual vs RDS ground truth.
+
+For cash_flow, filters RDS gt_data to only direct-method items
+(those that exist in Sina CF or IS), excluding indirect-method
+adjustments that Sina does not provide.
+"""
 
 import json
 import os
 import sys
-from typing import Dict, List
+from typing import Dict, List, Set
+
+import yaml
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -18,12 +25,29 @@ BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CACHE_DIR = os.path.join(BASE, "data", "akshare_bulk")
 RDS_DIR = "D:/Research/Quant/SETL/cninfo/data_backup"
 DECODE_PATH = os.path.join(BASE, "data", "decode_mappings_by_type.json")
+CF_DIRECT_PATH = os.path.join(BASE, "rules", "cf_direct_items.yaml")
 OUTPUT = os.path.join(BASE, "data", "ground_truth_reports", "baseline_2019_2022.json")
 
 YEARS = [2019, 2020, 2021, 2022]
 SAMPLE_STOCKS = ["000001", "600000", "600036", "600519", "000002", "000858"]
 STATEMENT_TYPES = ["balance_sheet", "income_statement", "cash_flow"]
 META_COLS = {"报告日", "数据源", "是否审计", "公告日期", "币种", "类型", "更新日期"}
+
+
+def _load_cf_direct_sets() -> (Set[str], Set[str]):
+    """Return (direct_items, is_cross_items) for CF filtering."""
+    direct: Set[str] = set()
+    cross: Set[str] = set()
+    try:
+        with open(CF_DIRECT_PATH, "r", encoding="utf-8") as f:
+            doc = yaml.safe_load(f) or {}
+        items = doc.get("cf_direct_items", {}).get("cash_flow", []) or []
+        direct = set(items)
+        cross_items = doc.get("cf_direct_items", {}).get("cf_is_cross_items", []) or []
+        cross = set(cross_items)
+    except Exception:
+        pass
+    return direct, cross
 
 
 def _load_decode_map(path: str) -> Dict[str, Dict[str, str]]:
@@ -57,6 +81,31 @@ def main():
     decode_maps = _load_decode_map(DECODE_PATH)
     sina = SinaLoader(CACHE_DIR)
     rds = RdsLoader(RDS_DIR, decode_map_path=DECODE_PATH)
+    cf_direct, cf_is_cross = _load_cf_direct_sets()
+
+    # Pre-load Sina IS data for CF cross-item injection
+    sina_is_cache: Dict[str, Dict[int, Dict[str, float]]] = {}
+    for code in SAMPLE_STOCKS:
+        try:
+            is_df = sina.get_annual(code, YEARS, "income_statement")
+        except FileNotFoundError:
+            continue
+        sina_is_cache[code] = {}
+        for _, row in is_df.iterrows():
+            period = str(row.get("报告日", ""))
+            if not period.endswith("1231"):
+                continue
+            year = int(period[:4])
+            ext_is = {}
+            for k, v in row.items():
+                if k in META_COLS or v is None:
+                    continue
+                try:
+                    ext_is[k] = float(v)
+                except (TypeError, ValueError):
+                    continue
+            sina_is_cache[code][year] = ext_is
+
     results: List[dict] = []
     for code in SAMPLE_STOCKS:
         for st in STATEMENT_TYPES:
@@ -77,7 +126,17 @@ def main():
                 if not gt_data:
                     continue
                 ext_data = _sina_row_to_ext_dict(row)
-                if not ext_data:
+
+                # CF: filter to direct-method items only + inject IS-cross items
+                if st == "cash_flow" and cf_direct:
+                    gt_data = {k: v for k, v in gt_data.items() if k in cf_direct}
+                    # Inject Sina IS values for IS-cross items (净利润, 财务费用, etc.)
+                    is_cache = sina_is_cache.get(code, {}).get(year, {})
+                    for cross_item in cf_is_cross:
+                        if cross_item not in ext_data and cross_item in is_cache:
+                            ext_data[cross_item] = is_cache[cross_item]
+
+                if not gt_data or not ext_data:
                     continue
                 comp = compare_stock(
                     gt_data=gt_data,
