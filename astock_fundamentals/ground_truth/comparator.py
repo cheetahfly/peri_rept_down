@@ -48,8 +48,8 @@ def get_tolerance_for_year(year: int) -> float:
     tier = _YEAR_TIERS.classify(year)
     return getattr(_YEAR_TIERS, tier)
 
-# 规则文件目录
-RULES_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))), "rules")
+# 规则文件目录 (3 levels up from ground_truth/comparator.py = project root)
+RULES_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "rules")
 
 # 值映射规则缓存
 _VALUE_MAP_CACHE = None

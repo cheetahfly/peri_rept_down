@@ -19,10 +19,10 @@
     },
     "income_statement": {
       "comparisons": 18,
-      "rds_items": 475,
-      "matched": 422,
-      "match_rate": 0.8884,
-      "avg_value_accuracy": 0.5283
+      "rds_items": 446,
+      "matched": 415,
+      "match_rate": 0.9305,
+      "avg_value_accuracy": 0.4801
     },
     "cash_flow": {
       "comparisons": 15,
