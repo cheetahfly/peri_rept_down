@@ -2,6 +2,8 @@ import os
 import subprocess
 import sys
 
+import pandas as pd
+
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -24,3 +26,24 @@ def test_pipeline_runs_on_two_stocks():
     assert os.path.exists(os.path.join(out_dir, "sina_cleaned_balance_sheet.csv"))
     assert os.path.exists(os.path.join(out_dir, "sina_cleaned_income_statement.csv"))
     assert os.path.exists(os.path.join(out_dir, "sina_cleaned_cash_flow.csv"))
+
+
+def test_pipeline_tidy_output_has_rows():
+    """Round 1: Tidy output should not be empty headers only."""
+    out_dir = os.path.join(PROJECT_ROOT, "data", "exports_v2")
+    for st in ("balance_sheet", "income_statement", "cash_flow"):
+        path = os.path.join(out_dir, f"sina_cleaned_{st}.csv")
+        df = pd.read_csv(path, encoding="utf-8-sig")
+        assert len(df) > 0, f"{st} Tidy output is empty"
+        for col in ("stock_code", "year", "field_code", "field_name", "value", "display_order"):
+            assert col in df.columns, f"{st} missing column {col}"
+
+
+def test_pipeline_tidy_uses_field_codes():
+    """Round 1: Tidy output field_code should be F006N-style codes from field_order."""
+    out_dir = os.path.join(PROJECT_ROOT, "data", "exports_v2")
+    df = pd.read_csv(os.path.join(out_dir, "sina_cleaned_balance_sheet.csv"), encoding="utf-8-sig")
+    assert len(df) > 0
+    sample = df["field_code"].iloc[0]
+    assert sample.startswith("F") and sample.endswith("N"), f"unexpected code: {sample}"
+    assert df["display_order"].between(0, 110).all()
