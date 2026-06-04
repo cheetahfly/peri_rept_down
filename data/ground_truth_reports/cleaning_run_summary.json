@@ -1,0 +1,14 @@
+{
+  "balance_sheet": {
+    "stocks": 4,
+    "rows": 16
+  },
+  "income_statement": {
+    "stocks": 4,
+    "rows": 16
+  },
+  "cash_flow": {
+    "stocks": 4,
+    "rows": 16
+  }
+}
