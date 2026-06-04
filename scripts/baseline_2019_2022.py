@@ -1,0 +1,127 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""Baseline: compare Sina 2019-2022 annual vs RDS ground truth."""
+
+import json
+import os
+import sys
+from typing import Dict, List
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from astock_fundamentals.sources.rds.rds_loader import RdsLoader
+from astock_fundamentals.ground_truth.sina_loader import SinaLoader
+from astock_fundamentals.ground_truth.comparator import compare_stock
+from astock_fundamentals.core.extraction_config import get_aliases
+
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CACHE_DIR = os.path.join(BASE, "data", "akshare_bulk")
+RDS_DIR = "D:/Research/Quant/SETL/cninfo/data_backup"
+DECODE_PATH = os.path.join(BASE, "data", "decode_mappings_by_type.json")
+OUTPUT = os.path.join(BASE, "data", "ground_truth_reports", "baseline_2019_2022.json")
+
+YEARS = [2019, 2020, 2021, 2022]
+SAMPLE_STOCKS = ["000001", "600000", "600036", "600519", "000002", "000858"]
+STATEMENT_TYPES = ["balance_sheet", "income_statement", "cash_flow"]
+META_COLS = {"报告日", "数据源", "是否审计", "公告日期", "币种", "类型", "更新日期"}
+
+
+def _load_decode_map(path: str) -> Dict[str, Dict[str, str]]:
+    """Load the by-type decode map; tolerate encoding issues."""
+    for enc in ("utf-8", "gbk"):
+        try:
+            with open(path, "r", encoding=enc) as f:
+                return json.load(f)
+        except UnicodeDecodeError:
+            continue
+    with open(path, "rb") as f:
+        return json.loads(f.read().decode("utf-8", errors="replace"))
+
+
+def _sina_row_to_ext_dict(row) -> Dict[str, float]:
+    """Convert a Sina DataFrame row to a numeric dict for compare_stock."""
+    out = {}
+    for k, v in row.items():
+        if k in META_COLS:
+            continue
+        if v is None:
+            continue
+        try:
+            out[k] = float(v)
+        except (TypeError, ValueError):
+            continue
+    return out
+
+
+def main():
+    decode_maps = _load_decode_map(DECODE_PATH)
+    sina = SinaLoader(CACHE_DIR)
+    rds = RdsLoader(RDS_DIR, decode_map_path=DECODE_PATH)
+    results: List[dict] = []
+    for code in SAMPLE_STOCKS:
+        for st in STATEMENT_TYPES:
+            try:
+                sina_df = sina.get_annual(code, YEARS, st)
+            except FileNotFoundError:
+                continue
+            if sina_df.empty:
+                continue
+            alias_map = get_aliases(st, "annual") or {}
+            decode_for_st = decode_maps.get(st, {})
+            for _, row in sina_df.iterrows():
+                period = str(row.get("报告日", ""))
+                if not period.endswith("1231"):
+                    continue
+                year = int(period[:4])
+                gt_data = rds.load_stock_data(code, year, st)
+                if not gt_data:
+                    continue
+                ext_data = _sina_row_to_ext_dict(row)
+                if not ext_data:
+                    continue
+                comp = compare_stock(
+                    gt_data=gt_data,
+                    ext_data=ext_data,
+                    alias_map=alias_map,
+                    stock_code=code,
+                    year=year,
+                    statement_type=st,
+                    decode_map=decode_for_st,
+                )
+                s = comp.summary()
+                results.append(s)
+
+    by_stmt: Dict[str, dict] = {}
+    for r in results:
+        k = r["statement_type"]
+        by_stmt.setdefault(k, {"comparisons": 0, "gt_items": 0, "matched": 0,
+                                "value_acc_sum": 0.0, "value_acc_n": 0})
+        by_stmt[k]["comparisons"] += 1
+        by_stmt[k]["gt_items"] += r["gt_items"]
+        by_stmt[k]["matched"] += r["matched"]
+        by_stmt[k]["value_acc_sum"] += r["value_accuracy"]
+        by_stmt[k]["value_acc_n"] += 1
+
+    summary = {
+        "scope": f"{len(SAMPLE_STOCKS)} stocks x {YEARS} x {len(STATEMENT_TYPES)}",
+        "stocks_sampled": SAMPLE_STOCKS,
+        "total_comparisons": len(results),
+        "by_statement": {
+            k: {
+                "comparisons": v["comparisons"],
+                "rds_items": v["gt_items"],
+                "matched": v["matched"],
+                "match_rate": round(v["matched"] / v["gt_items"], 4) if v["gt_items"] else 0,
+                "avg_value_accuracy": round(v["value_acc_sum"] / v["value_acc_n"], 4) if v["value_acc_n"] else 0,
+            } for k, v in by_stmt.items()
+        },
+    }
+    os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)
+    with open(OUTPUT, "w", encoding="utf-8") as f:
+        json.dump(summary, f, ensure_ascii=False, indent=2)
+    print(json.dumps(summary, ensure_ascii=False, indent=2))
+    print(f"\nSaved to {OUTPUT}")
+
+
+if __name__ == "__main__":
+    main()

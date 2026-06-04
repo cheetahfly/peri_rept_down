@@ -1,0 +1,35 @@
+{
+  "scope": "6 stocks x [2019, 2020, 2021, 2022] x 3",
+  "stocks_sampled": [
+    "000001",
+    "600000",
+    "600036",
+    "600519",
+    "000002",
+    "000858"
+  ],
+  "total_comparisons": 48,
+  "by_statement": {
+    "balance_sheet": {
+      "comparisons": 15,
+      "rds_items": 636,
+      "matched": 632,
+      "match_rate": 0.9937,
+      "avg_value_accuracy": 0.8111
+    },
+    "income_statement": {
+      "comparisons": 18,
+      "rds_items": 480,
+      "matched": 410,
+      "match_rate": 0.8542,
+      "avg_value_accuracy": 0.5762
+    },
+    "cash_flow": {
+      "comparisons": 15,
+      "rds_items": 569,
+      "matched": 335,
+      "match_rate": 0.5888,
+      "avg_value_accuracy": 0.67
+    }
+  }
+}
