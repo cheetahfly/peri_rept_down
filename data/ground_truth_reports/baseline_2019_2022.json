@@ -126,10 +126,10 @@
   "by_statement": {
     "balance_sheet": {
       "comparisons": 357,
-      "rds_items": 15714,
-      "matched": 15649,
-      "match_rate": 0.9959,
-      "avg_value_accuracy": 0.9638
+      "rds_items": 15726,
+      "matched": 15663,
+      "match_rate": 0.996,
+      "avg_value_accuracy": 0.9637
     },
     "income_statement": {
       "comparisons": 357,

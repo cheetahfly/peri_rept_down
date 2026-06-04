@@ -1,4 +1,105 @@
-<!DOCTYPE html>
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Regenerate docs/demo_results.html from latest baseline data.
+
+Reads:
+  - data/ground_truth_reports/baseline_2019_2022.json
+  - data/ground_truth_reports/per_stock_audit.json
+  - data/ground_truth_reports/cleaning_progression.md (for round history)
+
+Writes:
+  - docs/demo_results.html (interactive ECharts dashboard)
+"""
+
+import json
+import os
+import re
+import sys
+from datetime import datetime
+
+import yaml
+
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASELINE = os.path.join(BASE, "data", "ground_truth_reports", "baseline_2019_2022.json")
+PER_STOCK = os.path.join(BASE, "data", "ground_truth_reports", "per_stock_audit.json")
+PROGRESSION = os.path.join(BASE, "data", "ground_truth_reports", "cleaning_progression.md")
+OUT = os.path.join(BASE, "docs", "demo_results.html")
+
+
+def _load_json(path, default=None):
+    if not os.path.exists(path):
+        return default or {}
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _parse_progression_rounds():
+    """Extract round history from cleaning_progression.md table."""
+    if not os.path.exists(PROGRESSION):
+        return []
+    with open(PROGRESSION, "r", encoding="utf-8") as f:
+        text = f.read()
+    # Look for "## Match-rate progression" or "Auto-loop run" tables
+    rounds = []
+    # The "Match-rate progression" table
+    m = re.search(
+        r"\| Round 0 \(baseline.*?\n.*?\| Round 2.*?\n.*?\|.*?\|",
+        text, re.DOTALL
+    )
+    if m:
+        # Hardcode round 0 and 2 from earlier commits
+        rounds.append({"round": "Round 0\n基线", "bs": 99.37, "is": 87.85, "cf": 65.24})
+        rounds.append({"round": "Round 2\n50 aliases", "bs": 99.38, "is": 89.06, "cf": 72.73})
+
+    # Auto-loop runs add rows
+    for m in re.finditer(
+        r"## Auto-loop run @ ([\d\-: ]+)\s*\n+\| Stage \| BS \| IS \| CF \|\n\|[-\s|]+\|\n\| Round \d+ \| ([\d.]+)% → ([\d.]+)%.*?\| ([\d.]+)% → ([\d.]+)%.*?\| ([\d.]+)% → ([\d.]+)%",
+        text
+    ):
+        ts, bs0, bs1, is0, is1, cf0, cf1 = m.groups()
+        rounds.append({
+            "round": f"Auto-loop\n{ts[:16]}",
+            "bs": float(bs1),
+            "is": float(is1),
+            "cf": float(cf1),
+        })
+    return rounds
+
+
+def _build_html(baseline, per_stock, rounds):
+    bs = baseline.get("by_statement", {}).get("balance_sheet", {})
+    is_ = baseline.get("by_statement", {}).get("income_statement", {})
+    cf = baseline.get("by_statement", {}).get("cash_flow", {})
+    total_comps = baseline.get("total_comparisons", 0)
+    n_stocks = len(baseline.get("stocks_sampled", []))
+
+    # Per-stock data
+    stock_rows = per_stock if per_stock else []
+
+    # Pre-format HTML/JS data
+    baseline_json = json.dumps({
+        "bs": round(bs.get("match_rate", 0) * 100, 2),
+        "is": round(is_.get("match_rate", 0) * 100, 2),
+        "cf": round(cf.get("match_rate", 0) * 100, 2),
+        "bs_items": f'{bs.get("matched", 0)} / {bs.get("rds_items", 0)}',
+        "is_items": f'{is_.get("matched", 0)} / {is_.get("rds_items", 0)}',
+        "cf_items": f'{cf.get("matched", 0)} / {cf.get("rds_items", 0)}',
+        "n_stocks": n_stocks,
+        "total_comps": total_comps,
+        "scope": baseline.get("scope", ""),
+    }, ensure_ascii=False)
+    stock_rows_json = json.dumps(stock_rows, ensure_ascii=False)
+    rounds_json = json.dumps(rounds, ensure_ascii=False)
+
+    html = HTML_TEMPLATE.replace("__BASELINE_JSON__", baseline_json)
+    html = html.replace("__STOCK_ROWS_JSON__", stock_rows_json)
+    html = html.replace("__ROUNDS_JSON__", rounds_json)
+    html = html.replace("__GEN_TIME__", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    return html
+
+
+HTML_TEMPLATE = r"""<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -121,12 +222,12 @@
 </div>
 
 <script>
-const BASELINE = {"bs": 99.59, "is": 99.3, "cf": 87.15, "bs_items": "15649 / 15714", "is_items": "10284 / 10357", "cf_items": "8576 / 9840", "n_stocks": 120, "total_comps": 1071, "scope": "120 stocks x [2019, 2020, 2021, 2022] x 3"};
-const STOCKS = [{"code": "000001", "bs": 100.0, "is": 98.1, "cf": 93.4, "bs_m": 123, "bs_t": 123, "is_m": 53, "is_t": 54, "cf_m": 57, "cf_t": 61}, {"code": "000002", "bs": 99.4, "is": 100.0, "cf": 92.7, "bs_m": 167, "bs_t": 168, "is_m": 89, "is_t": 89, "cf_m": 89, "cf_t": 96}, {"code": "000004", "bs": 100.0, "is": 100.0, "cf": 85.7, "bs_m": 106, "bs_t": 106, "is_m": 77, "is_t": 77, "cf_m": 54, "cf_t": 63}, {"code": "000005", "bs": 99.3, "is": 100.0, "cf": 90.4, "bs_m": 139, "bs_t": 140, "is_m": 86, "is_t": 86, "cf_m": 66, "cf_t": 73}, {"code": "000006", "bs": 100.0, "is": 100.0, "cf": 86.8, "bs_m": 114, "bs_t": 114, "is_m": 82, "is_t": 82, "cf_m": 66, "cf_t": 76}, {"code": "000007", "bs": 100.0, "is": 100.0, "cf": 86.7, "bs_m": 103, "bs_t": 103, "is_m": 81, "is_t": 81, "cf_m": 52, "cf_t": 60}, {"code": "000008", "bs": 99.4, "is": 98.9, "cf": 91.5, "bs_m": 154, "bs_t": 155, "is_m": 91, "is_t": 92, "cf_m": 75, "cf_t": 82}, {"code": "000009", "bs": 98.9, "is": 98.0, "cf": 89.9, "bs_m": 174, "bs_t": 176, "is_m": 97, "is_t": 99, "cf_m": 89, "cf_t": 99}, {"code": "000010", "bs": 100.0, "is": 98.9, "cf": 87.5, "bs_m": 119, "bs_t": 119, "is_m": 92, "is_t": 93, "cf_m": 63, "cf_t": 72}, {"code": "000011", "bs": 99.2, "is": 100.0, "cf": 90.0, "bs_m": 125, "bs_t": 126, "is_m": 85, "is_t": 85, "cf_m": 63, "cf_t": 70}, {"code": "000012", "bs": 100.0, "is": 98.9, "cf": 88.6, "bs_m": 137, "bs_t": 137, "is_m": 86, "is_t": 87, "cf_m": 70, "cf_t": 79}, {"code": "000014", "bs": 100.0, "is": 100.0, "cf": 86.6, "bs_m": 97, "bs_t": 97, "is_m": 69, "is_t": 69, "cf_m": 58, "cf_t": 67}, {"code": "000016", "bs": 100.0, "is": 98.9, "cf": 90.3, "bs_m": 164, "bs_t": 164, "is_m": 91, "is_t": 92, "cf_m": 84, "cf_t": 93}, {"code": "000017", "bs": 100.0, "is": 100.0, "cf": 84.9, "bs_m": 80, "bs_t": 80, "is_m": 73, "is_t": 73, "cf_m": 45, "cf_t": 53}, {"code": "000019", "bs": 100.0, "is": 98.9, "cf": 90.9, "bs_m": 137, "bs_t": 137, "is_m": 88, "is_t": 89, "cf_m": 70, "cf_t": 77}, {"code": "000020", "bs": 100.0, "is": 100.0, "cf": 86.5, "bs_m": 111, "bs_t": 111, "is_m": 74, "is_t": 74, "cf_m": 64, "cf_t": 74}, {"code": "000021", "bs": 100.0, "is": 100.0, "cf": 86.6, "bs_m": 136, "bs_t": 136, "is_m": 92, "is_t": 92, "cf_m": 71, "cf_t": 82}, {"code": "000023", "bs": 100.0, "is": 100.0, "cf": 88.9, "bs_m": 127, "bs_t": 127, "is_m": 82, "is_t": 82, "cf_m": 64, "cf_t": 72}, {"code": "000025", "bs": 100.0, "is": 100.0, "cf": 91.4, "bs_m": 124, "bs_t": 124, "is_m": 83, "is_t": 83, "cf_m": 74, "cf_t": 81}, {"code": "000026", "bs": 100.0, "is": 100.0, "cf": 85.5, "bs_m": 124, "bs_t": 124, "is_m": 84, "is_t": 84, "cf_m": 59, "cf_t": 69}];
-const ROUNDS = [{"round": "Round 0\n基线", "bs": 99.37, "is": 87.85, "cf": 65.24}, {"round": "Round 2\n50 aliases", "bs": 99.38, "is": 89.06, "cf": 72.73}, {"round": "Auto-loop\n2026-06-04 12:10", "bs": 99.8, "is": 99.5, "cf": 88.9}];
+const BASELINE = __BASELINE_JSON__;
+const STOCKS = __STOCK_ROWS_JSON__;
+const ROUNDS = __ROUNDS_JSON__;
 
 // Header info
-document.getElementById('gen_time').textContent = 2026-06-04 15:14:59;
+document.getElementById('gen_time').textContent = __GEN_TIME__;
 document.getElementById('scope').textContent = BASELINE.scope;
 document.getElementById('bs_value').textContent = BASELINE.bs + '%';
 document.getElementById('is_value').textContent = BASELINE.is + '%';
@@ -233,3 +334,26 @@ window.addEventListener('resize', () => {
 </script>
 </body>
 </html>
+"""
+
+
+def main() -> int:
+    baseline = _load_json(BASELINE)
+    if not baseline:
+        print("WARNING: baseline_2019_2022.json not found or empty")
+    per_stock = _load_json(PER_STOCK, default=[])
+    rounds = _parse_progression_rounds()
+
+    html = _build_html(baseline, per_stock, rounds)
+    os.makedirs(os.path.dirname(OUT), exist_ok=True)
+    with open(OUT, "w", encoding="utf-8") as f:
+        f.write(html)
+    print(f"Wrote {len(html)} bytes to {OUT}")
+    print(f"  baseline scope: {baseline.get('scope', 'N/A')}")
+    print(f"  per-stock rows: {len(per_stock)}")
+    print(f"  rounds: {len(rounds)}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
