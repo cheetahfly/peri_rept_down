@@ -14,6 +14,40 @@ from dataclasses import dataclass, field
 from difflib import SequenceMatcher
 from typing import Dict, List, Optional, Tuple
 
+
+@dataclass(frozen=True)
+class YearTiers:
+    early: float = 0.02  # 2000-2005
+    mid: float = 0.01    # 2006-2019
+    recent: float = 0.005  # 2020+
+
+    def classify(self, year: int) -> str:
+        if year <= 2005:
+            return "early"
+        if year <= 2019:
+            return "mid"
+        return "recent"
+
+    def keys(self):
+        return ("early", "mid", "recent")
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+_YEAR_TIERS = YearTiers()
+
+
+def year_tier_tolerance() -> YearTiers:
+    """Return the year-tier tolerance configuration."""
+    return _YEAR_TIERS
+
+
+def get_tolerance_for_year(year: int) -> float:
+    """Return the value-matching tolerance for a given year."""
+    tier = _YEAR_TIERS.classify(year)
+    return getattr(_YEAR_TIERS, tier)
+
 # 规则文件目录
 RULES_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))), "rules")
 
