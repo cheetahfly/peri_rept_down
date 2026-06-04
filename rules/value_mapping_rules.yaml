@@ -1020,3 +1020,19 @@ value_match_thresholds:
       rds: "持续经营净利润"
       type: value_exact  # auto (seen in 2 stocks, e.g. 2,500,526,472)
 
+# ============================================================================
+# Sina→RDS aggregation rules (2019-2022)
+# Sina contains multiple sub-items (细项) that should sum into a single RDS total.
+# ============================================================================
+
+sina_aggregations_2019_2022:
+  balance_sheet:
+    - target: "其他应收款"
+      sources:
+        - "其他应收款-关联方"
+        - "其他应收款-外部"
+        - "其他应收款-合计"
+      op: sum
+  income_statement: []
+  cash_flow: []
+

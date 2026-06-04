@@ -92,3 +92,9 @@ def test_aggregate_uses_first_when_op_first():
     df = pd.DataFrame({"X-a": [11.0], "X-b": [22.0]})
     out = apply_aggregations(df, "balance_sheet", rules)
     assert out["X"].iloc[0] == 11.0
+
+
+def test_load_real_yaml_rules_has_sina_block():
+    rules = load_cleaning_rules()
+    assert hasattr(rules, "aliases")
+    assert isinstance(rules.aggregations, dict)
