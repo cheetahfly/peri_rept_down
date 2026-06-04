@@ -29,7 +29,21 @@ CF_DIRECT_PATH = os.path.join(BASE, "rules", "cf_direct_items.yaml")
 OUTPUT = os.path.join(BASE, "data", "ground_truth_reports", "baseline_2019_2022.json")
 
 YEARS = [2019, 2020, 2021, 2022]
-SAMPLE_STOCKS = ["000001", "600000", "600036", "600519", "000002", "000858"]
+DEFAULT_SAMPLE_STOCKS = ["000001", "600000", "600036", "600519", "000002", "000858"]
+EXPANDED_STOCK_LIST = os.path.join(BASE, "data", "ground_truth_reports", "expanded_stock_list.txt")
+
+
+def _load_sample_stocks() -> List[str]:
+    """Load expanded stock list if available, else default."""
+    if os.path.exists(EXPANDED_STOCK_LIST):
+        with open(EXPANDED_STOCK_LIST, "r", encoding="utf-8") as f:
+            stocks = [line.strip() for line in f if line.strip()]
+        if stocks:
+            return stocks
+    return DEFAULT_SAMPLE_STOCKS
+
+
+SAMPLE_STOCKS = _load_sample_stocks()
 STATEMENT_TYPES = ["balance_sheet", "income_statement", "cash_flow"]
 META_COLS = {"报告日", "数据源", "是否审计", "公告日期", "币种", "类型", "更新日期"}
 

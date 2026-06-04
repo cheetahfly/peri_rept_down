@@ -1,35 +1,49 @@
 {
-  "scope": "6 stocks x [2019, 2020, 2021, 2022] x 3",
+  "scope": "20 stocks x [2019, 2020, 2021, 2022] x 3",
   "stocks_sampled": [
     "000001",
-    "600000",
-    "600036",
-    "600519",
     "000002",
-    "000858"
+    "000004",
+    "000005",
+    "000006",
+    "000007",
+    "000008",
+    "000009",
+    "000010",
+    "000011",
+    "000012",
+    "000014",
+    "000016",
+    "000017",
+    "000019",
+    "000020",
+    "000021",
+    "000023",
+    "000025",
+    "000026"
   ],
-  "total_comparisons": 48,
+  "total_comparisons": 180,
   "by_statement": {
     "balance_sheet": {
-      "comparisons": 15,
-      "rds_items": 643,
-      "matched": 639,
-      "match_rate": 0.9938,
-      "avg_value_accuracy": 0.7764
+      "comparisons": 60,
+      "rds_items": 2567,
+      "matched": 2561,
+      "match_rate": 0.9977,
+      "avg_value_accuracy": 0.9412
     },
     "income_statement": {
-      "comparisons": 18,
-      "rds_items": 453,
-      "matched": 445,
-      "match_rate": 0.9823,
-      "avg_value_accuracy": 0.4453
+      "comparisons": 60,
+      "rds_items": 1663,
+      "matched": 1655,
+      "match_rate": 0.9952,
+      "avg_value_accuracy": 0.6114
     },
     "cash_flow": {
-      "comparisons": 15,
-      "rds_items": 366,
-      "matched": 333,
-      "match_rate": 0.9098,
-      "avg_value_accuracy": 0.4777
+      "comparisons": 60,
+      "rds_items": 1499,
+      "matched": 1333,
+      "match_rate": 0.8893,
+      "avg_value_accuracy": 0.6502
     }
   }
 }
