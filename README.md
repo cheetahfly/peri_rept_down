@@ -1,129 +1,137 @@
-# peri_rept_down
+# peri_rept_down → astock_fundamentals
 
-财报年报数据提取系统 - 从PDF年报中自动提取资产负债表、利润表、现金流量表数据
+A股上市公司财务数据多源清洗流水线
 
-## 功能特性
+## 核心能力
 
-### 核心功能
-- **三大表提取**: 资产负债表、利润表、现金流量表
-- **智能页面识别**: 自动识别财务报表所在页面，排除目录页、附注页干扰
-- **乱码检测与恢复**: 检测CID字体乱码，自动切换到PDF2HTMLEX/LibreOffice备选解析
-- **跨页表格合并**: 自动合并跨页表格
-- **表格缓存**: 避免重复解析，提升性能
+从多个数据源获取A股财报，通过规则引擎清洗为统一的 **RDS 标准化 Tidy Data**：
 
-### 解析引擎
-- **pdfplumber**: 主解析器，快速文本提取
-- **PyMuPDF**: 备选解析器，乱码检测
-- **HTML转换**: pdf2htmlEX/LibreOffice转换处理自定义字体PDF
-- **OCR备选**: Tesseract/OCR.space处理极端乱码情况
+| 数据源 | 接入方式 | 覆盖 |
+|--------|---------|------|
+| RDS (cninfo) | `astock_fundamentals/sources/rds/` | 4,836 stocks, 1991-2022 |
+| Sina (AKShare) | `astock_fundamentals/sources/api/` | 3,903 stocks, 1989-2026+ |
+| PDF (年报原文) | `astock_fundamentals/sources/pdf/` | 按需 |
 
-### 测试覆盖
-- **回归测试**: 5只核心股票 (000001, 600000, 600089, 600196, 603501)
-- **扩展测试**: 9只股票，覆盖金融、制造、医药、半导体等行业
-- **置信度评分**: 量化提取质量
+## 清洗流水线
 
-## 安装依赖
-
-```bash
-pip install -r requirements.txt
-
-# 可选: Tesseract OCR (用于极端乱码PDF)
-# Windows: 下载安装包并添加到PATH
-# Linux: sudo apt install tesseract-ocr
 ```
+Sina 原始数据 (data/akshare_bulk/)  ──→  SinaLoader (年度切片)
+                                    ──→  comparator.compare_stock (别名+值匹配)
+                                    ──→  rule_cleaner (重命名/聚合/单位)
+                                    ──→  Tidy Data CSV (display_order)
+```
+
+**当前匹配率** (20 stocks × 2019-2022):
+
+| 报表 | 匹配率 | 
+|------|--------|
+| 资产负债表 (BS) | **99.77%** |
+| 利润表 (IS) | **99.52%** |
+| 现金流量表 (CF) | **88.93%** (直接法子集) |
 
 ## 快速开始
 
-### Python API
-
-```python
-from extraction.parsers.pdf_parser import PdfParser
-from extraction.extractors.balance_sheet import BalanceSheetExtractor
-from extraction.extractors.income_statement import IncomeStatementExtractor
-from extraction.extractors.cash_flow import CashFlowExtractor
-
-# 提取单个PDF的三大表
-pdf_path = "data/by_code/000001/000001_平安银行_2024_年报.pdf"
-
-with PdfParser(pdf_path) as parser:
-    # 资产负债表
-    bs_extractor = BalanceSheetExtractor(parser)
-    bs_result = bs_extractor.extract()
-    print(f"BS置信度: {bs_extractor.calculate_confidence(bs_result)['overall']:.2%}")
-    print(f"提取项数: {len(bs_result.get('data', {}))}")
-
-    # 利润表
-    is_extractor = IncomeStatementExtractor(parser)
-    is_result = is_extractor.extract()
-
-    # 现金流量表
-    cf_extractor = CashFlowExtractor(parser)
-    cf_result = cf_extractor.extract()
-```
-
-### 命令行工具
+### 1. 测量基线
 
 ```bash
-# 提取单个PDF
-python -m extraction.cli extract data/by_code/000001/000001_平安银行_2024_年报.pdf
+# 跑 baseline 对比
+python scripts/baseline_2019_2022.py
+# 产出: data/ground_truth_reports/baseline_2019_2022.json
 
-# 批量处理
-python -m extraction.cli batch data/by_code --years 2024
-
-# 运行回归测试
-pytest tests/test_regression.py -v
-
-# 运行扩展测试
-pytest tests/test_regression.py --extended -v
+# 按行业筛选
+python scripts/baseline_2019_2022.py  # 读取 expanded_stock_list.txt
 ```
 
-### 使用HybridParser (自动级联 fallback)
+### 2. 清洗流水线
 
-```python
-from extraction.parsers.hybrid_parser import HybridParser
+```bash
+# 单股票
+python scripts/clean_sina_pipeline.py --stocks 000001 600000 --years 2019 2020 2021 2022
 
-parser = HybridParser(pdf_path)
-result = parser.extract_tables(page_num=0)
+# 按行业
+python scripts/clean_sina_pipeline.py --industries banking --years 2019 2020 2021 2022
+python scripts/clean_sina_pipeline.py --industries banking insurance --years 2019 2020 2021 2022
+
+# 特殊: 'all' 用 default_pool, 'none' 跳过行业只用手动 --stocks
+```
+
+### 3. 自动学习 + 清洗闭环
+
+```bash
+python scripts/learn_clean_loop.py --industries all --rounds 3 --min-delta 0.005
+
+# 或手动执行两步
+python scripts/learn_sina_aliases.py --industries banking
+python scripts/baseline_2019_2022.py
+```
+
+### 4. 运行测试
+
+```bash
+pytest tests/ -q           # 30 tests in ~3s
+pytest tests/ground_truth/ # 单元测试
+pytest tests/scripts/      # E2E + 行业
 ```
 
 ## 项目结构
 
 ```
-extraction/
-├── parsers/                 # PDF/HTML解析器
-│   ├── pdf_parser.py        # pdfplumber封装
-│   ├── pymupdf_parser.py   # PyMuPDF备选
-│   ├── html_parser.py       # HTML表格解析
-│   ├── html_converter.py    # PDF转HTML
-│   ├── hybrid_parser.py     # 级联fallback解析器
-│   └── ocr_parser.py        # OCR备选
-├── extractors/              # 财务报表提取器
-│   ├── base.py              # 基础提取器
-│   ├── balance_sheet.py     # 资产负债表
-│   ├── income_statement.py  # 利润表
-│   └── cash_flow.py         # 现金流量表
-├── storage/                 # 数据存储
-│   └── sqlite_store.py      # SQLite存储
-├── config.py                # 配置
-└── cli.py                   # 命令行工具
-tests/
-├── test_regression.py       # 回归测试
-├── regression_config.py     # 测试配置
-└── test_expansion.py        # 扩展测试
+astock_fundamentals/       # 核心包
+├── core/                  # 配置、日志、模型、管线
+├── ground_truth/          # 对比引擎、规则学习、清洗器
+│   ├── comparator.py      # RDS vs Sina 匹配引擎
+│   ├── auto_learner.py    # 自动学习别名
+│   ├── rule_cleaner.py    # 规则应用 (rename/convert/aggregate)
+│   ├── sina_loader.py     # Sina CSV 读取 + 年度切片
+│   └── cf_indirect_calculator.py  # CF 间接法推算
+├── sources/               # 数据源适配
+│   ├── api/               # AKShare / Tushare / Wind
+│   ├── rds/               # cninfo RDS 加载器
+│   └── pdf/               # PDF 解析器
+└── storage/               # SQLite 存储
+
+rules/                     # 外置规则 (YAML)
+├── aliases.yaml           # 别名映射 (300+ entries)
+├── value_mapping_rules.yaml   # 值映射规则 (1,024 lines)
+├── field_order.yaml       # RDS 字段 display_order (245 codes)
+├── cf_direct_items.yaml   # CF 直接法白名单 (49 items)
+├── industry_aliases.yaml  # 行业→股票代码映射 (8 industries)
+├── indirect_cf_formulas.yaml  # CF 间接法推算公式
+├── skip_items.yaml        # 跳过的非财务项
+├── validation_rules.yaml  # 表内勾稽规则
+└── regulatory_documents/  # 7 份 CAS 法规参考
+
+scripts/                   # 脚本
+├── baseline_2019_2022.py     # 基线测量
+├── clean_sina_pipeline.py    # 流水线编排 (--industries)
+├── learn_sina_aliases.py     # 规则学习
+├── learn_clean_loop.py       # 闭环 auto-loop
+└── ... (下载/对比/报告工具)
+
+data/
+├── akshare_bulk/          # Sina 原始 CSV (1.9 GB, .gitignored)
+├── decode_mappings_by_type.json  # F006N → 中文名
+├── exports_v2/            # Tidy Data 输出
+└── ground_truth_reports/  # 基线/审计/进度报告
+
+docs/
+├── demo_results.html      # 交互式成果仪表盘
+└── superpowers/           # 设计文档和计划
 ```
 
-## 提取质量
+## 技术栈
 
-| 指标 | 数值 |
-|------|------|
-| 批量处理成功率 | 100% (39/39) |
-| 高质量提取率 | ~97% (194/200 JSON) |
-| 平均置信度 | 85%+ |
+- Python 3.13, pandas, pyreadr, PyYAML, argparse, pytest
+- 规则引擎: YAML 外置化, normalize_name 前缀剥离 + normalize-key clone
+- 清洗器: column rename → value conversion → aggregation → tidy output
+- 匹配链: exact → exact_norm → alias → reverse_alias → fuzzy → cid_value → value_exact
 
-### 已知限制
-- **CID字体PDF**: 部分PDF使用自定义字体编码，无法直接解析
-- **跨页表格**: 复杂跨页格式可能需要人工检查
-- **半年报**: 非年报文件支持有限
+## 关键决策
+
+- **规则外置**: 所有映射存入 YAML (`rules/`)，代码只做匹配
+- **直间分离**: CF 分直接法和间接法子集，Sina 只有直接法数据
+- **前缀剥离**: `normalize_name` 去掉 `其中：`/`减：`/`加：` 前缀后，通过 normalize-key clone 保证 alias 可查
+- **行业参数化**: 通过 `rules/industry_aliases.yaml` 将行业名转为股票代码
 
 ## License
 

@@ -19,6 +19,9 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from astock_fundamentals.sources.rds.rds_loader import RdsLoader
 from astock_fundamentals.ground_truth.sina_loader import SinaLoader
 from astock_fundamentals.ground_truth.comparator import compare_stock
+from astock_fundamentals.ground_truth.cf_indirect_calculator import (
+    compute_indirect_cf_for_period,
+)
 from astock_fundamentals.core.extraction_config import get_aliases
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -141,14 +144,24 @@ def main():
                     continue
                 ext_data = _sina_row_to_ext_dict(row)
 
-                # CF: filter to direct-method items only + inject IS-cross items
+                # CF: filter to direct-method items + indirect items that can be computed
                 if st == "cash_flow" and cf_direct:
-                    gt_data = {k: v for k, v in gt_data.items() if k in cf_direct}
-                    # Inject Sina IS values for IS-cross items (净利润, 财务费用, etc.)
+                    # Save indirect items before filtering; they can be matched
+                    # after we compute them from Sina IS
                     is_cache = sina_is_cache.get(code, {}).get(year, {})
+                    indirect_keys = {k for k in gt_data if k not in cf_direct and k not in cf_is_cross}
+                    # Compute indirect values from Sina IS/BS
+                    indirect_candidates = {k: v for k, v in gt_data.items() if k in indirect_keys}
+                    indirect_computed = compute_indirect_cf_for_period(indirect_candidates, is_cache)
+                    # Build gt_data: direct items + indirect items that we CAN compute
+                    gt_data = {k: v for k, v in gt_data.items() if k in cf_direct or k in cf_is_cross or k in indirect_computed}
+                    # Inject IS-cross items (净利润, 财务费用, etc.)
                     for cross_item in cf_is_cross:
                         if cross_item not in ext_data and cross_item in is_cache:
                             ext_data[cross_item] = is_cache[cross_item]
+                    # Inject computed indirect items
+                    for ir_name, ir_val in indirect_computed.items():
+                        ext_data[ir_name] = ir_val
 
                 if not gt_data or not ext_data:
                     continue
