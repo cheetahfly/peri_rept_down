@@ -1466,3 +1466,15 @@ cash_flow:
     期末现金及现金等价物余额:
       - 期末现金及现金等价物余额
       - 年末现金及现金等价物余额
+
+# ============================================================================
+# Sina→RDS aliases (2019-2022)
+# Auto-derived from baseline_2019_2022.json + manual confirmation.
+# Format: {statement_type: {rds_canonical_name: [sina_alias_1, sina_alias_2, ...]}}
+# This block starts empty; populate in later rounds.
+# ============================================================================
+
+sina_aliases_2019_2022:
+  balance_sheet: {}
+  income_statement: {}
+  cash_flow: {}
