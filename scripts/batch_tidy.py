@@ -181,6 +181,21 @@ for idx, (code, fpath) in enumerate(all_files):
     if idx % 50 == 0:
         print(f"  processed {idx+1}/{len(all_files)} files...", flush=True)
 
+# ===== Run analyze_value_matches on all comparisons =====
+print("\nRunning analyze_value_matches on all comparisons...")
+# Load current aliases to filter out already-mapped items
+current_aliases = {}
+for st in ["balance_sheet", "income_statement", "cash_flow"]:
+    current_aliases[st] = get_aliases(st, "annual")
+
+value_suggestions = analyze_value_matches(all_comparisons, current_aliases, min_stocks=2)
+print(f"Found {len(value_suggestions)} value-match suggestions")
+
+# Count which ones are new (not in existing rules)
+new_count = sum(1 for s in value_suggestions
+                if not any(s.key in v for v in [a for st_aliases in current_aliases.values() for a in st_aliases.values()] if isinstance(a, list)))
+print(f"  {new_count} new aliases to add")
+
 # ===== Save Tidy Data =====
 if tidy_rows:
     df_tidy = pd.DataFrame(tidy_rows)

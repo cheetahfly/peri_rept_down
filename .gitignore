@@ -126,6 +126,5 @@ data/decode_mappings.json
 *.bak
 extraction/config.py.bak
 
-# One-off docs
-docs/superpowers/plans/2026-06-04-sina-rds-cleaning-pipeline.md
-docs/superpowers/specs/2026-06-04-cf-is-match-rate-fix.md
+# One-off planning artifacts (keep in tree but untracked)
+# Only ignore temp spec files, not permanent design docs
