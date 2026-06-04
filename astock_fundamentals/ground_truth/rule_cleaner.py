@@ -61,6 +61,17 @@ def load_cleaning_rules(
 
     _merge_alias_block(aliases, extra_aliases_text)
 
+    # Merge sina_aliases_2019_2022 into the annual report type of each statement type.
+    sina_block = aliases.pop("sina_aliases_2019_2022", None) or {}
+    for stype, items in sina_block.items():
+        aliases.setdefault(stype, {})
+        aliases[stype].setdefault("annual", {})
+        for canonical, alts in items.items():
+            aliases[stype]["annual"].setdefault(canonical, [])
+            for a in alts or []:
+                if a not in aliases[stype]["annual"][canonical]:
+                    aliases[stype]["annual"][canonical].append(a)
+
     skip_items = []
     if skip_items_path is None:
         skip_items_path = os.path.join(RULES_DIR, "skip_items.yaml")
@@ -68,8 +79,22 @@ def load_cleaning_rules(
         with open(skip_items_path, "r", encoding="utf-8") as f:
             skip_items = yaml.safe_load(f) or []
 
+    # Load sina_aggregations_2019_2022 from value_mapping_rules.yaml.
+    if value_mapping_path is None:
+        value_mapping_path = os.path.join(RULES_DIR, "value_mapping_rules.yaml")
+    aggregations: Dict[str, List[dict]] = {}
+    if os.path.exists(value_mapping_path):
+        try:
+            with open(value_mapping_path, "r", encoding="utf-8") as f:
+                vm = yaml.safe_load(f) or {}
+            aggregations = vm.get("sina_aggregations_2019_2022", {}) or {}
+        except yaml.YAMLError:
+            # Pre-existing YAML issue in the file — proceed with empty aggregations
+            aggregations = {}
+
     return CleaningRules(
         aliases=aliases,
+        aggregations=aggregations,
         skip_items=list(skip_items),
     )
 

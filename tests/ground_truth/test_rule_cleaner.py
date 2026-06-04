@@ -98,3 +98,10 @@ def test_load_real_yaml_rules_has_sina_block():
     rules = load_cleaning_rules()
     assert hasattr(rules, "aliases")
     assert isinstance(rules.aggregations, dict)
+
+
+def test_sina_aliases_2019_2022_loaded_into_balance_sheet():
+    rules = load_cleaning_rules()
+    # After Task 7 added the sina_aliases_2019_2022 block,
+    # load_cleaning_rules should merge it into rules.aliases[statement_type]
+    assert "balance_sheet" in rules.aliases
