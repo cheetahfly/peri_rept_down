@@ -53,3 +53,42 @@ def test_convert_values_known_unit_wan_yuan():
     df = pd.DataFrame({"A": [1234.0]})
     out = convert_values(df, rules)
     assert out["A"].iloc[0] == 12340000.0
+
+
+def test_aggregate_sums_subitems_into_target():
+    from astock_fundamentals.ground_truth.rule_cleaner import apply_aggregations
+    rules = load_cleaning_rules()
+    rules.aggregations = {
+        "balance_sheet": [
+            {
+                "target": "其他应收款合计",
+                "sources": ["其他应收款-关联方", "其他应收款-外部"],
+                "op": "sum",
+            }
+        ]
+    }
+    df = pd.DataFrame({
+        "其他应收款-关联方": [100.0],
+        "其他应收款-外部": [200.0],
+        "其他科目": [50.0],
+    })
+    out = apply_aggregations(df, "balance_sheet", rules)
+    assert "其他应收款合计" in out.columns
+    assert out["其他应收款合计"].iloc[0] == 300.0
+
+
+def test_aggregate_uses_first_when_op_first():
+    from astock_fundamentals.ground_truth.rule_cleaner import apply_aggregations
+    rules = load_cleaning_rules()
+    rules.aggregations = {
+        "balance_sheet": [
+            {
+                "target": "X",
+                "sources": ["X-a", "X-b"],
+                "op": "first",
+            }
+        ]
+    }
+    df = pd.DataFrame({"X-a": [11.0], "X-b": [22.0]})
+    out = apply_aggregations(df, "balance_sheet", rules)
+    assert out["X"].iloc[0] == 11.0

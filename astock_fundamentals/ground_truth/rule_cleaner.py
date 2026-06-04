@@ -105,3 +105,27 @@ def convert_values(df: pd.DataFrame, rules: CleaningRules) -> pd.DataFrame:
         if col in out.columns and unit in _UNIT_MULTIPLIERS:
             out[col] = pd.to_numeric(out[col], errors="coerce") * _UNIT_MULTIPLIERS[unit]
     return out
+
+
+def _aggregate_column(series_list: List[pd.Series], op: str) -> pd.Series:
+    aligned = pd.concat(series_list, axis=1)
+    if op == "sum":
+        return aligned.sum(axis=1, min_count=1)
+    if op == "first":
+        return aligned.iloc[:, 0]
+    if op == "max":
+        return aligned.max(axis=1)
+    raise ValueError(f"Unknown aggregation op: {op}")
+
+
+def apply_aggregations(df: pd.DataFrame, statement_type: str, rules: CleaningRules) -> pd.DataFrame:
+    """Aggregate Sina sub-items into RDS totals based on rules."""
+    out = df.copy()
+    for rule in rules.aggregations.get(statement_type, []):
+        sources = rule.get("sources") or []
+        op = rule.get("op", "sum")
+        present = [s for s in sources if s in out.columns]
+        if not present:
+            continue
+        out[rule["target"]] = _aggregate_column([out[s] for s in present], op)
+    return out
