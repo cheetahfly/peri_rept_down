@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Sina→RDS 清洗流水线成果展示</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+         background: linear-gradient(135deg, #1a1d2b 0%, #2c3e50 100%); color: #e8e8e8; padding: 24px; min-height: 100vh; }
+  .header { max-width: 1400px; margin: 0 auto 32px; }
+  h1 { font-size: 32px; font-weight: 700; color: #fff; margin-bottom: 8px;
+       background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .subtitle { color: #95a5a6; font-size: 14px; }
+  .grid { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 12px; padding: 20px; backdrop-filter: blur(10px); }
+  .card.full { grid-column: span 2; }
+  .card h2 { font-size: 16px; color: #4facfe; margin-bottom: 16px; font-weight: 600;
+              border-bottom: 1px solid rgba(79,172,254,0.2); padding-bottom: 8px; }
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .kpi { background: linear-gradient(135deg, rgba(79,172,254,0.1) 0%, rgba(0,242,254,0.05) 100%);
+         border: 1px solid rgba(79,172,254,0.2); border-radius: 8px; padding: 16px; text-align: center; }
+  .kpi-value { font-size: 28px; font-weight: 700; color: #4facfe; }
+  .kpi-label { font-size: 12px; color: #95a5a6; margin-top: 4px; }
+  .kpi-delta { font-size: 11px; color: #2ecc71; margin-top: 4px; }
+  .chart { width: 100%; height: 320px; }
+  .chart.large { height: 420px; }
+  .highlight { background: rgba(46, 204, 113, 0.15); border-left: 3px solid #2ecc71; padding: 12px; margin: 12px 0; border-radius: 4px; color: #e8e8e8; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  th { color: #4facfe; font-weight: 600; }
+  td.num { text-align: right; font-family: 'SF Mono', Monaco, monospace; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .badge-high { background: rgba(46, 204, 113, 0.2); color: #2ecc71; }
+  .badge-mid { background: rgba(241, 196, 15, 0.2); color: #f1c40f; }
+  .badge-low { background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Sina→RDS 财务数据清洗流水线 · 成果展示</h1>
+  <div class="subtitle">A股上市公司年报 2019-2022 · 6 → 20 只股票 · 180 次比较 · 实测匹配率</div>
+</div>
+
+<div class="grid">
+
+  <!-- KPI Row -->
+  <div class="card full">
+    <h2>核心指标</h2>
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="kpi-value">99.77%</div>
+        <div class="kpi-label">资产负债表 BS</div>
+        <div class="kpi-delta">↑ 2,561 / 2,567 items</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-value">99.52%</div>
+        <div class="kpi-label">利润表 IS</div>
+        <div class="kpi-delta">↑ 1,655 / 1,663 items</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-value">88.93%</div>
+        <div class="kpi-label">现金流量表 CF</div>
+        <div class="kpi-delta">↑ 1,333 / 1,499 items (直接法子集)</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-value">180</div>
+        <div class="kpi-label">比较次数</div>
+        <div class="kpi-delta">20 stocks × 3 yrs × 3 stmts</div>
+      </div>
+    </div>
+    <div class="highlight">
+      <b>关键案例 1：</b>000001 平安银行 IS 匹配率从 <b style="color:#e74c3c">71.9%</b> 提升至 <b style="color:#2ecc71">98.1%</b>。根因是 <code>normalize_name()</code> 剥离 <code>其中：</code>/<code>减：</code>/<code>加：</code> 前缀后，alias map 查不到 key。修复方案：在 <code>get_aliases()</code> 中同时把别名复制到剥离后的 key 下。
+    </div>
+  </div>
+
+  <!-- Round progression -->
+  <div class="card">
+    <h2>5 轮迭代的匹配率提升</h2>
+    <div id="round_chart" class="chart"></div>
+  </div>
+
+  <!-- Bank fix before/after -->
+  <div class="card">
+    <h2>银行股 IS 修复前后对比</h2>
+    <div id="bank_chart" class="chart"></div>
+  </div>
+
+  <!-- Per-stock heatmap -->
+  <div class="card full">
+    <h2>20 只股票 × 3 报表 匹配率热力图</h2>
+    <div id="heatmap" class="chart large"></div>
+  </div>
+
+  <!-- Per-stock detail table -->
+  <div class="card full">
+    <h2>逐股匹配明细</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>股票</th>
+          <th class="num">BS 匹配</th>
+          <th class="num">BS 率</th>
+          <th class="num">IS 匹配</th>
+          <th class="num">IS 率</th>
+          <th class="num">CF 匹配</th>
+          <th class="num">CF 率</th>
+          <th>评级</th>
+        </tr>
+      </thead>
+      <tbody id="stock_table"></tbody>
+    </table>
+  </div>
+
+  <!-- CF case study -->
+  <div class="card full">
+    <h2>关键案例 2：CF 间接法直接法的拆分</h2>
+    <div class="highlight">
+      <b>问题：</b>600519 茅台 RDS CF 有 54 项，Sina CF 仅有 23 项 (43%)。差额 29 项中：
+      <ul style="margin-top:8px;margin-left:20px;line-height:1.6">
+        <li>2 项在 Sina IS 表中 (净利润, 信用减值损失) — 跨表注入可补</li>
+        <li>27 项是间接法调节项 (折旧、摊销、应收应付变动) — Sina 根本不提供</li>
+      </ul>
+    </div>
+    <div class="highlight" style="border-left-color:#3498db;background:rgba(52,152,219,0.1)">
+      <b>方案：</b>新增 <code>rules/cf_direct_items.yaml</code> 白名单（49 个直接法项），comparator 计算 CF 匹配率时分母仅含白名单项。CF 匹配率从 <b>65.24%</b> 提升至 <b>88.93%</b>。
+    </div>
+    <div id="cf_chart" class="chart large"></div>
+  </div>
+
+</div>
+
+<script>
+// Embedded data
+const rounds = [
+  { round: 'Round 0\n基线', bs: 99.37, is: 87.85, cf: 65.24 },
+  { round: 'Round 1\n50 aliases', bs: 99.38, is: 89.06, cf: 72.73 },
+  { round: 'Round 2\nCF 直接法', bs: 99.38, is: 89.06, cf: 90.98 },
+  { round: 'Round 3\nIS normalize', bs: 99.38, is: 98.23, cf: 90.98 },
+  { round: 'Round 4\n20 stocks', bs: 99.77, is: 99.52, cf: 88.93 }
+];
+
+const bankFix = [
+  { stock: '000001 平安银行', before: 71.9, after: 98.1 },
+  { stock: '600036 招商银行', before: 81.2, after: 98.1 },
+  { stock: '600519 贵州茅台', before: 95.6, after: 98.9 },
+  { stock: '000002 万科A', before: 95.5, after: 100.0 },
+  { stock: '000858 五粮液', before: 95.1, after: 100.0 }
+];
+
+const perStock = [
+  {code:'000001',bs:100.0,is:98.1,cf:93.4,bs_m:123,bs_t:123,is_m:53,is_t:54,cf_m:57,cf_t:61},
+  {code:'000002',bs:99.4,is:100.0,cf:92.7,bs_m:167,bs_t:168,is_m:89,is_t:89,cf_m:89,cf_t:96},
+  {code:'000004',bs:100.0,is:100.0,cf:85.7,bs_m:106,bs_t:106,is_m:77,is_t:77,cf_m:54,cf_t:63},
+  {code:'000005',bs:100.0,is:100.0,cf:91.7,bs_m:75,bs_t:75,is_m:62,is_t:62,cf_m:44,cf_t:48},
+  {code:'000006',bs:100.0,is:98.1,cf:95.5,bs_m:105,bs_t:105,is_m:52,is_t:53,cf_m:63,cf_t:66},
+  {code:'000007',bs:100.0,is:100.0,cf:95.0,bs_m:59,bs_t:59,is_m:40,is_t:40,cf_m:38,cf_t:40},
+  {code:'000008',bs:100.0,is:98.4,cf:86.1,bs_m:127,bs_t:127,is_m:61,is_t:62,cf_m:62,cf_t:72},
+  {code:'000009',bs:100.0,is:100.0,cf:85.7,bs_m:107,bs_t:107,is_m:69,is_t:69,cf_m:60,cf_t:70},
+  {code:'000010',bs:100.0,is:100.0,cf:95.5,bs_m:75,bs_t:75,is_m:69,is_t:69,cf_m:42,cf_t:44},
+  {code:'000011',bs:100.0,is:100.0,cf:89.5,bs_m:75,bs_t:75,is_m:53,is_t:53,cf_m:34,cf_t:38},
+  {code:'000012',bs:100.0,is:100.0,cf:84.1,bs_m:130,bs_t:130,is_m:87,is_t:87,cf_m:53,cf_t:63},
+  {code:'000014',bs:100.0,is:100.0,cf:96.4,bs_m:43,bs_t:43,is_m:25,is_t:25,cf_m:27,cf_t:28},
+  {code:'000016',bs:100.0,is:100.0,cf:85.0,bs_m:117,bs_t:117,is_m:69,is_t:69,cf_m:51,cf_t:60},
+  {code:'000017',bs:100.0,is:100.0,cf:85.0,bs_m:39,bs_t:39,is_m:23,is_t:23,cf_m:17,cf_t:20},
+  {code:'000019',bs:100.0,is:100.0,cf:96.6,bs_m:58,bs_t:58,is_m:39,is_t:39,cf_m:28,cf_t:29},
+  {code:'000020',bs:100.0,is:100.0,cf:96.9,bs_m:53,bs_t:53,is_m:38,is_t:38,cf_m:31,cf_t:32},
+  {code:'000021',bs:100.0,is:100.0,cf:95.1,bs_m:182,bs_t:182,is_m:108,is_t:108,cf_m:78,cf_t:82},
+  {code:'000023',bs:100.0,is:100.0,cf:90.9,bs_m:55,bs_t:55,is_m:30,is_t:30,cf_m:20,cf_t:22},
+  {code:'000025',bs:100.0,is:100.0,cf:95.7,bs_m:104,bs_t:104,is_m:69,is_t:69,cf_m:45,cf_t:47},
+  {code:'000026',bs:100.0,is:100.0,cf:91.1,bs_m:99,bs_t:99,is_m:63,is_t:63,cf_m:41,cf_t:45}
+];
+
+const cfCase = {
+  total: 54,
+  inSinaCF: 23,
+  crossToIS: 2,
+  missing: 29,
+  matched: 49  // direct items we now match
+};
+
+// Theme
+const textColor = '#e8e8e8';
+const axisColor = 'rgba(255,255,255,0.1)';
+const labelColor = '#95a5a6';
+
+// 1. Round progression
+const roundChart = echarts.init(document.getElementById('round_chart'), 'dark');
+roundChart.setOption({
+  backgroundColor: 'transparent',
+  tooltip: { trigger: 'axis', valueFormatter: v => v + '%' },
+  legend: { data: ['BS', 'IS', 'CF'], textStyle: { color: textColor }, top: 0 },
+  grid: { left: 50, right: 30, top: 40, bottom: 60 },
+  xAxis: { type: 'category', data: rounds.map(r => r.round), axisLine: { lineStyle: { color: axisColor } }, axisLabel: { color: labelColor, fontSize: 11 } },
+  yAxis: { type: 'value', max: 100, axisLine: { lineStyle: { color: axisColor } }, axisLabel: { color: labelColor, formatter: '{value}%' }, splitLine: { lineStyle: { color: axisColor } } },
+  series: [
+    { name: 'BS', type: 'line', data: rounds.map(r => r.bs), smooth: true, itemStyle: { color: '#4facfe' }, lineStyle: { width: 3 } },
+    { name: 'IS', type: 'line', data: rounds.map(r => r.is), smooth: true, itemStyle: { color: '#2ecc71' }, lineStyle: { width: 3 } },
+    { name: 'CF', type: 'line', data: rounds.map(r => r.cf), smooth: true, itemStyle: { color: '#f39c12' }, lineStyle: { width: 3 }, areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{offset: 0, color: 'rgba(243,156,18,0.3)'}, {offset: 1, color: 'rgba(243,156,18,0)'}]}}}
+  ]
+});
+
+// 2. Bank fix before/after
+const bankChart = echarts.init(document.getElementById('bank_chart'), 'dark');
+bankChart.setOption({
+  backgroundColor: 'transparent',
+  tooltip: { trigger: 'axis', valueFormatter: v => v + '%' },
+  legend: { data: ['修复前', '修复后'], textStyle: { color: textColor }, top: 0 },
+  grid: { left: 100, right: 30, top: 40, bottom: 30 },
+  xAxis: { type: 'value', max: 100, axisLabel: { color: labelColor, formatter: '{value}%' }, splitLine: { lineStyle: { color: axisColor } } },
+  yAxis: { type: 'category', data: bankFix.map(b => b.stock), axisLine: { lineStyle: { color: axisColor } }, axisLabel: { color: labelColor, fontSize: 11 } },
+  series: [
+    { name: '修复前', type: 'bar', data: bankFix.map(b => b.before), itemStyle: { color: '#e74c3c' }, label: { show: true, position: 'right', formatter: '{c}%', color: '#e74c3c', fontSize: 10 } },
+    { name: '修复后', type: 'bar', data: bankFix.map(b => b.after), itemStyle: { color: '#2ecc71' }, label: { show: true, position: 'right', formatter: '{c}%', color: '#2ecc71', fontSize: 10 } }
+  ]
+});
+
+// 3. Heatmap
+const heatmap = echarts.init(document.getElementById('heatmap'), 'dark');
+const codes = perStock.map(p => p.code);
+heatmap.setOption({
+  backgroundColor: 'transparent',
+  tooltip: {
+    position: 'top',
+    formatter: p => `<b>${codes[p.value[0]]}</b><br>${p.value[1]}: ${p.value[2].toFixed(1)}%`
+  },
+  grid: { left: 50, right: 30, top: 30, bottom: 30 },
+  xAxis: { type: 'category', data: ['BS', 'IS', 'CF'], splitArea: { show: true }, axisLabel: { color: labelColor, fontWeight: 600 } },
+  yAxis: { type: 'category', data: codes, splitArea: { show: true }, axisLabel: { color: labelColor, fontSize: 10 } },
+  visualMap: {
+    min: 70, max: 100, calculable: true, orient: 'horizontal', left: 'center', bottom: 0,
+    inRange: { color: ['#e74c3c', '#f39c12', '#f1c40f', '#2ecc71'] },
+    textStyle: { color: textColor },
+    formatter: '{value}%'
+  },
+  series: [{
+    type: 'heatmap', data: [],
+    label: { show: true, color: '#fff', fontSize: 10, formatter: p => p.value[2].toFixed(0)+'%' }
+  }]
+});
+const heatData = [];
+perStock.forEach((p, i) => {
+  heatData.push([0, i, p.bs]);
+  heatData.push([1, i, p.is]);
+  heatData.push([2, i, p.cf]);
+});
+heatmap.setOption({ series: [{ data: heatData }] });
+
+// 4. Stock table
+const table = document.getElementById('stock_table');
+perStock.forEach(p => {
+  const avg = (p.bs + p.is + p.cf) / 3;
+  const rating = avg >= 98 ? '<span class="badge badge-high">优秀</span>' : avg >= 92 ? '<span class="badge badge-mid">良好</span>' : '<span class="badge badge-low">待优化</span>';
+  table.innerHTML += `<tr>
+    <td><b>${p.code}</b></td>
+    <td class="num">${p.bs_m} / ${p.bs_t}</td>
+    <td class="num">${p.bs.toFixed(1)}%</td>
+    <td class="num">${p.is_m} / ${p.is_t}</td>
+    <td class="num">${p.is.toFixed(1)}%</td>
+    <td class="num">${p.cf_m} / ${p.cf_t}</td>
+    <td class="num">${p.cf.toFixed(1)}%</td>
+    <td>${rating}</td>
+  </tr>`;
+});
+
+// 5. CF case pie + bar
+const cfChart = echarts.init(document.getElementById('cf_chart'), 'dark');
+cfChart.setOption({
+  backgroundColor: 'transparent',
+  tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+  legend: { textStyle: { color: textColor }, bottom: 0 },
+  series: [
+    {
+      name: 'RDS CF 54 项分类',
+      type: 'pie',
+      radius: ['35%', '60%'],
+      center: ['25%', '45%'],
+      label: { color: textColor, fontSize: 11 },
+      data: [
+        { name: 'Sina CF 直接法 (已匹配)', value: cfCase.inSinaCF, itemStyle: { color: '#2ecc71' } },
+        { name: 'Sina IS 跨表可注入', value: cfCase.crossToIS, itemStyle: { color: '#3498db' } },
+        { name: 'Sina 完全无数据', value: cfCase.missing - cfCase.crossToIS, itemStyle: { color: '#e74c3c' } }
+      ]
+    },
+    {
+      name: 'CF 匹配率',
+      type: 'bar',
+      xAxisIndex: 0,
+      yAxisIndex: 0,
+      center: ['75%', '45%'],
+      data: [
+        { name: '原始基线', value: 65.24, itemStyle: { color: '#e74c3c' } },
+        { name: '当前 (20 stocks)', value: 88.93, itemStyle: { color: '#2ecc71' } }
+      ]
+    }
+  ]
+});
+
+window.addEventListener('resize', () => {
+  roundChart.resize();
+  bankChart.resize();
+  heatmap.resize();
+  cfChart.resize();
+});
+</script>
+</body>
+</html>
