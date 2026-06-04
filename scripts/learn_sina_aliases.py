@@ -83,13 +83,21 @@ def _name_similarity(a: str, b: str) -> float:
     return len(set_a & set_b) / len(set_a | set_b)
 
 
-def learn_aliases() -> Tuple[Dict[str, List[dict]], List[dict]]:
+def learn_aliases(stocks: List[str] = None, years: List[int] = None) -> Tuple[Dict[str, List[dict]], List[dict]]:
     """Discover exact-value aliases from cross-source value matching.
+
+    Args:
+        stocks: Stock codes to use. Defaults to SAMPLE_STOCKS.
+        years: Years to use. Defaults to YEARS.
 
     Returns:
         aliases_by_type: {statement_type: [{rds_name, sina_names, evidence}, ...]}
         aggregations: [{statement_type, target, sources, op, evidence}, ...]
     """
+    if stocks is None:
+        stocks = SAMPLE_STOCKS
+    if years is None:
+        years = YEARS
     sina = SinaLoader(CACHE_DIR)
     rds = RdsLoader(RDS_DIR, decode_map_path=DECODE_PATH)
 
@@ -101,10 +109,10 @@ def learn_aliases() -> Tuple[Dict[str, List[dict]], List[dict]]:
     rds_presence: Dict[str, Dict[str, set]] = defaultdict(lambda: defaultdict(set))
     sina_names_by_st: Dict[str, set] = defaultdict(set)
 
-    for code in SAMPLE_STOCKS:
+    for code in stocks:
         for st in STATEMENT_TYPES:
             try:
-                sina_df = sina.get_annual(code, YEARS, st)
+                sina_df = sina.get_annual(code, years, st)
             except FileNotFoundError:
                 continue
             if sina_df.empty:
@@ -282,9 +290,13 @@ def write_to_yaml(
 
 
 def main() -> int:
-    print(f"Learning from {len(SAMPLE_STOCKS)} stocks x {len(YEARS)} years x {len(STATEMENT_TYPES)} types")
+    # Resolve stocks/years from CLI
+    years, stocks, industries = _parse_cli_args()
+    print(f"Learning from {len(stocks)} stocks x {len(years)} years x {len(STATEMENT_TYPES)} types")
+    if industries:
+        print(f"  industries: {industries}")
     print(f"  min evidence: {MIN_EVIDENCE} matches, tol: {EXACT_TOL}")
-    aliases_by_type, aggregations = learn_aliases()
+    aliases_by_type, aggregations = learn_aliases(stocks=stocks, years=years)
     total = sum(len(v) for v in aliases_by_type.values())
     print(f"Discovered {total} alias rules and {len(aggregations)} aggregation rules")
     if total == 0 and len(aggregations) == 0:
@@ -292,6 +304,45 @@ def main() -> int:
         return 0
     write_to_yaml(aliases_by_type, aggregations)
     return 0
+
+
+def _parse_cli_args():
+    """Parse --stocks / --years / --industries from sys.argv. Falls back to defaults."""
+    import argparse
+    p = argparse.ArgumentParser(add_help=False)
+    p.add_argument("--stocks", nargs="+", default=None)
+    p.add_argument("--years", nargs="+", default=None)
+    p.add_argument("--industries", nargs="+", default=None)
+    p.add_argument("--min-evidence", type=int, default=None)
+    p.add_argument("--tol", type=float, default=None)
+    p.add_argument("--cache-dir", default=CACHE_DIR)
+    p.add_argument("--rds-dir", default=RDS_DIR)
+    args, _unknown = p.parse_known_args()
+
+    stocks = args.stocks
+    if args.industries and "none" not in args.industries:
+        from pathlib import Path
+        ind_path = Path(__file__).parent.parent / "rules" / "industry_aliases.yaml"
+        try:
+            with open(ind_path, "r", encoding="utf-8") as f:
+                ind_doc = yaml.safe_load(f) or {}
+        except FileNotFoundError:
+            ind_doc = {}
+        ind_defs = ind_doc.get("industries", {}) or {}
+        default_pool = ind_doc.get("default_pool", []) or []
+        resolved: list = []
+        for name in args.industries:
+            if name in ("all", "default"):
+                for s in default_pool:
+                    if s not in resolved: resolved.append(s)
+                continue
+            ind = ind_defs.get(name) or {}
+            for s in ind.get("stocks", []):
+                if s not in resolved: resolved.append(s)
+        stocks = resolved or SAMPLE_STOCKS
+
+    years = [int(y) for y in args.years] if args.years else YEARS
+    return years, (stocks or SAMPLE_STOCKS), args.industries or []
 
 
 if __name__ == "__main__":

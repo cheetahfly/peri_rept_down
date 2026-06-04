@@ -33,10 +33,46 @@ DEFAULT_OUTPUT = os.path.join(BASE, "data", "exports_v2")
 DEFAULT_REPORT_DIR = os.path.join(BASE, "data", "ground_truth_reports")
 FIELD_ORDER_PATH = os.path.join(BASE, "rules", "field_order.yaml")
 DECODE_PATH = os.path.join(BASE, "data", "decode_mappings_by_type.json")
+INDUSTRY_ALIASES_PATH = os.path.join(BASE, "rules", "industry_aliases.yaml")
 
 
 def _parse_years(values: List[str]) -> List[int]:
     return [int(v) for v in values]
+
+
+def _load_industry_stocks(industries: List[str]) -> List[str]:
+    """Resolve industry names to stock codes via rules/industry_aliases.yaml.
+
+    - Special tokens 'all' / 'default' use the default_pool
+    - 'none' returns an empty list (caller will use --stocks instead)
+    - Unknown names are skipped with a warning
+    """
+    if not industries:
+        return []
+    try:
+        with open(INDUSTRY_ALIASES_PATH, "r", encoding="utf-8") as f:
+            doc = yaml.safe_load(f) or {}
+    except FileNotFoundError:
+        return []
+    ind_defs = doc.get("industries", {}) or {}
+    default_pool = doc.get("default_pool", []) or []
+    seen: List[str] = []
+    for name in industries:
+        if name in ("all", "default"):
+            for s in default_pool:
+                if s not in seen:
+                    seen.append(s)
+            continue
+        if name == "none":
+            continue
+        ind = ind_defs.get(name)
+        if not ind:
+            print(f"  WARN: unknown industry '{name}', skipping")
+            continue
+        for s in ind.get("stocks", []):
+            if s not in seen:
+                seen.append(s)
+    return seen
 
 
 def _load_field_order() -> Dict[str, Dict[str, int]]:
@@ -167,15 +203,32 @@ def run_pipeline(
 
 def main() -> int:
     p = argparse.ArgumentParser(description="Sina→RDS cleaning pipeline")
-    p.add_argument("--stocks", nargs="+", default=["000001", "600000"])
+    p.add_argument("--stocks", nargs="+", default=None,
+                   help="Specific stock codes. Ignored if --industries is given.")
+    p.add_argument("--industries", nargs="+", default=None,
+                   help="Industry names from rules/industry_aliases.yaml "
+                        "(e.g. banking insurance securities). "
+                        "Special: 'all' for default pool, 'none' to skip.")
     p.add_argument("--years", nargs="+", required=True)
     p.add_argument("--cache-dir", default=DEFAULT_CACHE)
     p.add_argument("--output-dir", default=DEFAULT_OUTPUT)
     p.add_argument("--report-dir", default=DEFAULT_REPORT_DIR)
     args = p.parse_args()
 
+    # Resolve stocks: --industries overrides --stocks if both given
+    if args.industries and "none" not in args.industries:
+        stocks = _load_industry_stocks(args.industries)
+        if not stocks:
+            print("ERROR: --industries resolved to empty stock list")
+            return 1
+        print(f"Resolved {len(stocks)} stocks from industries: {stocks}")
+    elif args.stocks:
+        stocks = args.stocks
+    else:
+        stocks = ["000001", "600000"]
+
     run_pipeline(
-        stocks=args.stocks,
+        stocks=stocks,
         years=_parse_years(args.years),
         cache_dir=args.cache_dir,
         output_dir=args.output_dir,

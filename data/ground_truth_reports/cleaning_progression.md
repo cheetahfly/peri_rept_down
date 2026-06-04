@@ -95,3 +95,11 @@
 - `rules/value_mapping_rules.yaml` (sina_aggregations_2019_2022 populated)
 - `data/ground_truth_reports/baseline_2019_2022.json` (re-measured)
 - `data/exports_v2/sina_cleaned_*.csv` (re-run with new aliases)
+
+## Auto-loop run @ 2026-06-04 12:10:51
+
+| Stage | BS | IS | CF |
+|-------|----|----|-----|
+| Round 1 | 99.8% → 99.8% (+0.00%) | 99.5% → 99.5% (+0.00%) | 88.9% → 88.9% (+0.00%) |
+
+Value accuracy after run: BS=94.12%, IS=61.14%, CF=65.02%

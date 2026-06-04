@@ -111,3 +111,21 @@ README_PROGRESS.md
 # Generated / cache data
 temp_eastmoney/lo_output/
 data/stock_list.json
+
+# Sina AKShare bulk downloads (1.9 GB, 27k+ files, regenerable)
+data/akshare_bulk/
+
+# Download manifest / checkpoint JSONs (regenerate via scripts/batch_pdf_download.py)
+data/akshare_cache/
+data/download_checkpoint.json
+data/download_manifest.json
+data/pdf_download_checkpoint.json
+data/decode_mappings.json
+
+# Backup files
+*.bak
+extraction/config.py.bak
+
+# One-off docs
+docs/superpowers/plans/2026-06-04-sina-rds-cleaning-pipeline.md
+docs/superpowers/specs/2026-06-04-cf-is-match-rate-fix.md
