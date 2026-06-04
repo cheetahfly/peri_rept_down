@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8">
+<title>三源交叉可靠性对比</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif;margin:30px;background:#f5f5f5;font-size:13px}
+h1,h2{color:#1a237e}
+.summary{display:flex;gap:16px;margin:20px 0}
+.card{background:white;border-radius:8px;padding:16px 24px;box-shadow:0 1px 4px rgba(0,0,0,0.08);flex:1;text-align:center}
+.card .big{font-size:28px;font-weight:bold}
+.card .lbl{font-size:12px;color:#666;margin-top:4px}
+table{border-collapse:collapse;width:100%;background:white;border-radius:6px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.07);margin:15px 0}
+th{background:#1a237e;color:white;padding:7px 10px;text-align:left;font-size:12px}
+td{padding:6px 10px;border-bottom:1px solid #eee;font-size:12px}
+tr:hover{background:#e8eaf6}
+.num{text-align:right}
+.footer{background:#e8eaf6;padding:10px 16px;border-radius:8px;margin-top:25px;font-size:12px}
+.green{color:#2e7d32;font-weight:bold}
+.amber{color:#e65100}
+.na{color:#999}
+</style>
+</head><body>
+<h1>三源交叉可靠性对比: RDS vs AKShare(新浪) vs PDF提取</h1>
+<p>基准年份: 2020 | PDF源: 巨潮资讯网 | 新浪源: AKShare</p>
+
+<div class="summary">
+<div class="card"><div class="big" style="color:#1a237e">6</div><div class="lbl">股票(有PDF)</div></div>
+<div class="card"><div class="big" style="color:#1565c0">18</div><div class="lbl">对比测试</div></div>
+</div>
+
+<h2>总体可靠性矩阵</h2>
+<table><tr><th>对比</th><th>匹配</th><th>覆盖率</th><th>值准确率</th></tr><tr><td><b>RDS→Sina</b></td><td>668/760</td><td>87.9%</td><td>98.8%</td></tr><tr><td><b>RDS→PDF</b></td><td>557/735</td><td>75.8%</td><td>92.3%</td></tr><tr><td><b>Sina→PDF</b></td><td>576/747</td><td>77.1%</td><td>88.9%</td></tr></table>
+
+<p style="font-size:12px;color:#666">* RDS→Sina 仅含前期已成功获取新浪数据的部分。新浪API有请求频率限制，近期请求全部被限流。</p>
+
+<h2>逐项明细</h2>
+<table>
+<tr><th>股票</th><th>报表</th><th>RDS</th>
+<th colspan="3">RDS→Sina</th><th colspan="3">RDS→PDF</th><th colspan="2">Sina→PDF</th><th>Sina</th></tr>
+<tr><th></th><th></th><th>科目</th>
+<th>匹配</th><th>覆盖率</th><th>值准确率</th><th>匹配</th><th>覆盖率</th><th>值准确率</th><th>匹配</th><th>覆盖率</th><th>有</th></tr>
+<tr>
+<td>000002<br>万科A</td><td>BS</td><td>55</td>
+<td>55/55</td><td>100%</td><td>100%</td>
+<td>48/55</td><td>87%</td><td>100%</td>
+<td>51/61</td><td>84%</td>
+<td>Y</td>
+</tr><tr>
+<td>000002<br>万科A</td><td>IS</td><td>30</td>
+<td>29/30</td><td>97%</td><td>100%</td>
+<td>29/30</td><td>97%</td><td>93%</td>
+<td>30/41</td><td>73%</td>
+<td>Y</td>
+</tr><tr>
+<td>000002<br>万科A</td><td>CF</td><td>50</td>
+<td>38/51</td><td>74%</td><td>100%</td>
+<td>27/50</td><td>54%</td><td>78%</td>
+<td>25/35</td><td>71%</td>
+<td>Y</td>
+</tr><tr>
+<td>000858<br>五粮液</td><td>BS</td><td>37</td>
+<td>37/37</td><td>100%</td><td>97%</td>
+<td>1/37</td><td>3%</td><td>0%</td>
+<td>1/50</td><td>2%</td>
+<td>Y</td>
+</tr><tr>
+<td>000858<br>五粮液</td><td>IS</td><td>27</td>
+<td>27/28</td><td>96%</td><td>100%</td>
+<td>15/27</td><td>56%</td><td>100%</td>
+<td>14/29</td><td>48%</td>
+<td>Y</td>
+</tr><tr>
+<td>000858<br>五粮液</td><td>CF</td><td>40</td>
+<td>29/42</td><td>69%</td><td>100%</td>
+<td>21/40</td><td>52%</td><td>95%</td>
+<td>22/29</td><td>76%</td>
+<td>Y</td>
+</tr><tr>
+<td>002415<br>海康威视</td><td>BS</td><td>51</td>
+<td>51/51</td><td>100%</td><td>100%</td>
+<td>48/51</td><td>94%</td><td>100%</td>
+<td>50/58</td><td>86%</td>
+<td>Y</td>
+</tr><tr>
+<td>002415<br>海康威视</td><td>IS</td><td>28</td>
+<td>30/31</td><td>97%</td><td>100%</td>
+<td>27/28</td><td>96%</td><td>96%</td>
+<td>33/36</td><td>92%</td>
+<td>Y</td>
+</tr><tr>
+<td>002415<br>海康威视</td><td>CF</td><td>52</td>
+<td>38/54</td><td>70%</td><td>100%</td>
+<td>34/52</td><td>65%</td><td>97%</td>
+<td>35/38</td><td>92%</td>
+<td>Y</td>
+</tr><tr>
+<td>300750<br>宁德时代</td><td>BS</td><td>47</td>
+<td>50/50</td><td>100%</td><td>100%</td>
+<td>36/47</td><td>77%</td><td>100%</td>
+<td>40/56</td><td>71%</td>
+<td>Y</td>
+</tr><tr>
+<td>300750<br>宁德时代</td><td>IS</td><td>27</td>
+<td>30/31</td><td>97%</td><td>100%</td>
+<td>20/27</td><td>74%</td><td>100%</td>
+<td>19/35</td><td>54%</td>
+<td>Y</td>
+</tr><tr>
+<td>300750<br>宁德时代</td><td>CF</td><td>50</td>
+<td>37/53</td><td>70%</td><td>100%</td>
+<td>28/50</td><td>56%</td><td>100%</td>
+<td>29/36</td><td>81%</td>
+<td>Y</td>
+</tr><tr>
+<td>600519<br>贵州茅台</td><td>BS</td><td>36</td>
+<td>36/36</td><td>100%</td><td>100%</td>
+<td>36/36</td><td>100%</td><td>100%</td>
+<td>41/43</td><td>95%</td>
+<td>Y</td>
+</tr><tr>
+<td>600519<br>贵州茅台</td><td>IS</td><td>28</td>
+<td>30/30</td><td>100%</td><td>97%</td>
+<td>28/28</td><td>100%</td><td>100%</td>
+<td>28/31</td><td>90%</td>
+<td>Y</td>
+</tr><tr>
+<td>600519<br>贵州茅台</td><td>CF</td><td>47</td>
+<td>34/47</td><td>72%</td><td>97%</td>
+<td>47/47</td><td>100%</td><td>98%</td>
+<td>34/36</td><td>94%</td>
+<td>Y</td>
+</tr><tr>
+<td>600887<br>伊利股份</td><td>BS</td><td>50</td>
+<td>49/49</td><td>100%</td><td>96%</td>
+<td>48/50</td><td>96%</td><td>100%</td>
+<td>51/58</td><td>88%</td>
+<td>Y</td>
+</tr><tr>
+<td>600887<br>伊利股份</td><td>IS</td><td>30</td>
+<td>32/32</td><td>100%</td><td>88%</td>
+<td>30/30</td><td>100%</td><td>97%</td>
+<td>38/39</td><td>97%</td>
+<td>Y</td>
+</tr><tr>
+<td>600887<br>伊利股份</td><td>CF</td><td>50</td>
+<td>36/53</td><td>68%</td><td>100%</td>
+<td>34/50</td><td>68%</td><td>100%</td>
+<td>35/36</td><td>97%</td>
+<td>Y</td>
+</tr>
+</table>
+
+<div class="footer">
+生成: 2026-05-29T10:20:57<br>
+RDS: cninfo数据备份 | AKShare: v1.18.47 (新浪财经) | PDF: 巨潮资讯网公告
+</div>
+</body></html>

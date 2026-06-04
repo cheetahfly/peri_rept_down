@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8">
+<title>Tidy Data 管线 - 差异分析报告</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif;margin:30px;background:#f5f5f5;font-size:13px}
+h1,h2{color:#1a237e}
+.summary{display:flex;gap:16px;margin:20px 0;flex-wrap:wrap}
+.card{background:white;border-radius:8px;padding:16px 24px;box-shadow:0 1px 4px rgba(0,0,0,0.08);flex:1;text-align:center;min-width:150px}
+.card .big{font-size:28px;font-weight:bold;color:#1a237e}
+.card .lbl{font-size:12px;color:#666;margin-top:4px}
+table{border-collapse:collapse;width:100%;background:white;border-radius:6px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.07);margin:15px 0}
+th{background:#1a237e;color:white;padding:7px 10px;text-align:left;font-size:12px}
+td{padding:6px 10px;border-bottom:1px solid #eee}
+tr:hover{background:#e8eaf6}
+.good{color:#2e7d32;font-weight:bold}
+.warn{color:#e65100}
+.footer{background:#e8eaf6;padding:10px 16px;border-radius:8px;margin-top:25px;font-size:12px}
+</style></head><body>
+<h1>Tidy Data 管线 — 差异分析报告</h1>
+
+<div class="summary">
+<div class="card"><div class="big">21</div><div class="lbl">对比测试</div></div>
+<div class="card"><div class="big">7</div><div class="lbl">股票数</div></div>
+<div class="card"><div class="big"><span class="good">583</span></div><div class="lbl">匹配科目</div></div>
+<div class="card"><div class="big"><span class="warn">259</span></div><div class="lbl">缺失科目</div></div>
+<div class="card"><div class="big">0</div><div class="lbl">值匹配建议</div></div>
+</div>
+
+<h2>按股票汇总</h2>
+<table><tr><th>代码</th><th>测试</th><th>匹配</th><th>缺失</th><th>多余</th><th>覆盖率</th></tr><tr><td>000001</td><td>3</td><td>22</td><td>81</td><td>115</td><td>21.4%</td></tr><tr><td>000002</td><td>3</td><td>104</td><td>31</td><td>43</td><td>77.0%</td></tr><tr><td>000858</td><td>3</td><td>37</td><td>67</td><td>30</td><td>35.6%</td></tr><tr><td>002415</td><td>3</td><td>111</td><td>22</td><td>34</td><td>83.5%</td></tr><tr><td>300750</td><td>3</td><td>85</td><td>40</td><td>28</td><td>68.0%</td></tr><tr><td>600519</td><td>3</td><td>112</td><td>0</td><td>60</td><td>100.0%</td></tr><tr><td>600887</td><td>3</td><td>112</td><td>18</td><td>42</td><td>86.2%</td></tr></table>
+
+<h2>候选别名映射（值相同但名不同，2+ 股票）</h2>
+<table><tr><th>报表</th><th>RDS 名称</th><th>提取名称</th><th>出现次数</th><th>证据</th></tr>
+<tr><td colspan="5" style="text-align:center;color:#999">无高频候选映射</td></tr>
+</table>
+
+<div class="footer">
+生成: 2026-06-03T08:53:31<br>
+Tidy Data 输出: F:\ai_fin_proj\peri_rept_down\data\exports_v2\tidy_data.csv | F:\ai_fin_proj\peri_rept_down\data\exports_v2\tidy_data_extracted.csv<br>
+规则: rules/field_order.yaml (display_order) | rules/value_mapping_rules.yaml (别名映射)
+</div>
+</body></html>

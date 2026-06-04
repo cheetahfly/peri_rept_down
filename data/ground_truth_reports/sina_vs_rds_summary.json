@@ -1,0 +1,182 @@
+{
+  "total_comparisons": 2780,
+  "by_statement": {
+    "balance_sheet": {
+      "total": 1015,
+      "matched": 33474,
+      "missing": 6777
+    },
+    "income_statement": {
+      "total": 995,
+      "matched": 18456,
+      "missing": 2887
+    },
+    "cash_flow": {
+      "total": 770,
+      "matched": 21415,
+      "missing": 12514
+    }
+  },
+  "by_year": {
+    "2021": {
+      "total": 97,
+      "matched": 2315,
+      "missing": 837
+    },
+    "2020": {
+      "total": 97,
+      "matched": 3277,
+      "missing": 521
+    },
+    "2019": {
+      "total": 97,
+      "matched": 3274,
+      "missing": 484
+    },
+    "2018": {
+      "total": 100,
+      "matched": 3191,
+      "missing": 568
+    },
+    "2017": {
+      "total": 100,
+      "matched": 3150,
+      "missing": 539
+    },
+    "2016": {
+      "total": 99,
+      "matched": 3144,
+      "missing": 517
+    },
+    "2015": {
+      "total": 99,
+      "matched": 2988,
+      "missing": 545
+    },
+    "2014": {
+      "total": 99,
+      "matched": 2876,
+      "missing": 616
+    },
+    "2013": {
+      "total": 99,
+      "matched": 2942,
+      "missing": 621
+    },
+    "2012": {
+      "total": 99,
+      "matched": 2720,
+      "missing": 552
+    },
+    "2011": {
+      "total": 99,
+      "matched": 2794,
+      "missing": 653
+    },
+    "2010": {
+      "total": 99,
+      "matched": 2756,
+      "missing": 692
+    },
+    "2009": {
+      "total": 99,
+      "matched": 2647,
+      "missing": 575
+    },
+    "2008": {
+      "total": 99,
+      "matched": 2630,
+      "missing": 541
+    },
+    "2007": {
+      "total": 99,
+      "matched": 2634,
+      "missing": 586
+    },
+    "2006": {
+      "total": 99,
+      "matched": 2269,
+      "missing": 759
+    },
+    "2005": {
+      "total": 99,
+      "matched": 2508,
+      "missing": 608
+    },
+    "2004": {
+      "total": 99,
+      "matched": 2562,
+      "missing": 595
+    },
+    "2003": {
+      "total": 99,
+      "matched": 2565,
+      "missing": 630
+    },
+    "2002": {
+      "total": 99,
+      "matched": 2252,
+      "missing": 959
+    },
+    "2001": {
+      "total": 98,
+      "matched": 2253,
+      "missing": 1275
+    },
+    "2000": {
+      "total": 98,
+      "matched": 2344,
+      "missing": 1388
+    },
+    "1999": {
+      "total": 98,
+      "matched": 2282,
+      "missing": 1471
+    },
+    "1998": {
+      "total": 98,
+      "matched": 2314,
+      "missing": 1356
+    },
+    "1997": {
+      "total": 66,
+      "matched": 1458,
+      "missing": 760
+    },
+    "1996": {
+      "total": 66,
+      "matched": 1442,
+      "missing": 659
+    },
+    "1995": {
+      "total": 66,
+      "matched": 1426,
+      "missing": 660
+    },
+    "1994": {
+      "total": 64,
+      "matched": 1375,
+      "missing": 638
+    },
+    "1993": {
+      "total": 64,
+      "matched": 1335,
+      "missing": 605
+    },
+    "1992": {
+      "total": 52,
+      "matched": 1030,
+      "missing": 605
+    },
+    "1991": {
+      "total": 30,
+      "matched": 560,
+      "missing": 315
+    },
+    "1990": {
+      "total": 4,
+      "matched": 32,
+      "missing": 48
+    }
+  }
+}
