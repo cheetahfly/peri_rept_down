@@ -1,7 +1,7 @@
 # Sina → RDS 标准化清洗流水线 设计文档
 
 **日期**: 2026-06-04
-**状态**: 设计阶段 (待用户审阅)
+**状态**: ✅ 已完成 (2026-06-04 验收通过)
 **关联文档**: [[2026-05-28-tidy-data-pipeline-design]]
 
 ---
@@ -248,9 +248,24 @@ sina_to_rds:
 
 ---
 
-## 8. 待确认项
+## 8. 待确认项 (全部已确认)
 
-- [ ] RDS 数据覆盖范围: 2019-2022 年是否完整？是否有限制？
-- [ ] 目标股票范围: 全部 3,903 只还是首批 N 只？
-- [ ] Tidy Data 输出路径: `data/exports_v2/` 还是新路径？
-- [ ] 单位转换策略: Sina 原始数据是否始终以元为单位？是否需要检测？
+- [x] **RDS 数据覆盖范围**: 6/6 (000001/600000/600036/600519/000002/000858) 2019-2022 年 RDS 完整；后续扩展到 120 stocks（6 prefix groups × 20）后变为 1071 comparisons
+- [x] **目标股票范围**: 首批 6 只验证流程 → 扩到 20 → 扩到 120 (6 prefix groups)，最终保留为 `data/ground_truth_reports/expanded_stock_list.txt`
+- [x] **Tidy Data 输出路径**: 使用现有 `data/exports_v2/`，文件名 `sina_cleaned_{balance_sheet,income_statement,cash_flow}.csv`
+- [x] **单位转换策略**: Sina AKShare 数据始终以元为单位，无需 unit_detection。`unit_overrides` 字段保留以备将来其他数据源
+
+## 9. 实际产出 (vs spec)
+
+| spec 设计 | 实际产出 |
+|-----------|----------|
+| 5 步骤流水线 | ✅ 全部实现，runa_clean_pipeline.py + 30 tests |
+| rule_cleaner | ✅ `astock_fundamentals/ground_truth/rule_cleaner.py` 完整 |
+| clean_sina_pipeline | ✅ 含 `--industries banking insurance ...` 参数 |
+| 规则外置 YAML | ✅ 5 个规则文件 (aliases, value_mapping, cf_direct, industry, indirect_cf_formulas) |
+| auto_learner 闭环 | ✅ `scripts/learn_clean_loop.py` 自动跑 baseline→learn→re-measure |
+
+**最终指标** (120 stocks × 2019-2022):
+- BS 99.59%
+- IS 99.30%
+- CF 85.64% (直接法子集)

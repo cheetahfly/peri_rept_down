@@ -100,28 +100,53 @@ def main():
     rds = RdsLoader(RDS_DIR, decode_map_path=DECODE_PATH)
     cf_direct, cf_is_cross = _load_cf_direct_sets()
 
-    # Pre-load Sina IS data for CF cross-item injection
+    # Pre-load Sina IS and BS data for CF cross-item injection + indirect calc
     sina_is_cache: Dict[str, Dict[int, Dict[str, float]]] = {}
+    sina_bs_cache: Dict[str, Dict[int, Dict[str, float]]] = {}
     for code in SAMPLE_STOCKS:
+        # IS
         try:
             is_df = sina.get_annual(code, YEARS, "income_statement")
         except FileNotFoundError:
-            continue
+            is_df = None
         sina_is_cache[code] = {}
-        for _, row in is_df.iterrows():
-            period = str(row.get("报告日", ""))
-            if not period.endswith("1231"):
-                continue
-            year = int(period[:4])
-            ext_is = {}
-            for k, v in row.items():
-                if k in META_COLS or v is None:
+        if is_df is not None:
+            for _, row in is_df.iterrows():
+                period = str(row.get("报告日", ""))
+                if not period.endswith("1231"):
                     continue
-                try:
-                    ext_is[k] = float(v)
-                except (TypeError, ValueError):
+                year = int(period[:4])
+                ext_is = {}
+                for k, v in row.items():
+                    if k in META_COLS or v is None:
+                        continue
+                    try:
+                        ext_is[k] = float(v)
+                    except (TypeError, ValueError):
+                        continue
+                sina_is_cache[code][year] = ext_is
+
+        # BS — load also prior year (year-1) for delta computation
+        try:
+            bs_df = sina.get_annual(code, [y - 1 for y in YEARS] + YEARS, "balance_sheet")
+        except FileNotFoundError:
+            bs_df = None
+        sina_bs_cache[code] = {}
+        if bs_df is not None:
+            for _, row in bs_df.iterrows():
+                period = str(row.get("报告日", ""))
+                if not period.endswith("1231"):
                     continue
-            sina_is_cache[code][year] = ext_is
+                year = int(period[:4])
+                ext_bs = {}
+                for k, v in row.items():
+                    if k in META_COLS or v is None:
+                        continue
+                    try:
+                        ext_bs[k] = float(v)
+                    except (TypeError, ValueError):
+                        continue
+                sina_bs_cache[code][year] = ext_bs
 
     results: List[dict] = []
     for code in SAMPLE_STOCKS:
@@ -144,22 +169,28 @@ def main():
                     continue
                 ext_data = _sina_row_to_ext_dict(row)
 
-                # CF: filter to direct-method items + indirect items that can be computed
+                # CF: filter to direct-method items only (indirect items kept out of
+                # denominator since Sina BS-delta error vs RDS is too high to
+                # count as a reliable match). Indirect items CAN be computed and
+                # injected into ext_data for opportunistic matching, but won't
+                # count as "missing" if not matched.
                 if st == "cash_flow" and cf_direct:
-                    # Save indirect items before filtering; they can be matched
-                    # after we compute them from Sina IS
                     is_cache = sina_is_cache.get(code, {}).get(year, {})
-                    indirect_keys = {k for k in gt_data if k not in cf_direct and k not in cf_is_cross}
-                    # Compute indirect values from Sina IS/BS
-                    indirect_candidates = {k: v for k, v in gt_data.items() if k in indirect_keys}
-                    indirect_computed = compute_indirect_cf_for_period(indirect_candidates, is_cache)
-                    # Build gt_data: direct items + indirect items that we CAN compute
-                    gt_data = {k: v for k, v in gt_data.items() if k in cf_direct or k in cf_is_cross or k in indirect_computed}
+                    bs_end = sina_bs_cache.get(code, {}).get(year, {})
+                    bs_begin = sina_bs_cache.get(code, {}).get(year - 1, {})
+                    # Restrict denominator to direct + IS-cross items only
+                    gt_data = {k: v for k, v in gt_data.items() if k in cf_direct or k in cf_is_cross}
                     # Inject IS-cross items (净利润, 财务费用, etc.)
                     for cross_item in cf_is_cross:
                         if cross_item not in ext_data and cross_item in is_cache:
                             ext_data[cross_item] = is_cache[cross_item]
-                    # Inject computed indirect items
+                    # Opportunistic: compute indirect items and inject, but don't
+                    # expand the denominator. If they match, bonus; if not, no penalty.
+                    indirect_keys = {k: v for k, v in rds.load_stock_data(code, year, "cash_flow").items()
+                                     if k not in cf_direct and k not in cf_is_cross}
+                    indirect_computed = compute_indirect_cf_for_period(
+                        indirect_keys, is_cache, bs_end, bs_begin,
+                    )
                     for ir_name, ir_val in indirect_computed.items():
                         ext_data[ir_name] = ir_val
 

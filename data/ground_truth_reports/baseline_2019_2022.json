@@ -127,23 +127,23 @@
     "balance_sheet": {
       "comparisons": 357,
       "rds_items": 15714,
-      "matched": 15650,
+      "matched": 15649,
       "match_rate": 0.9959,
-      "avg_value_accuracy": 0.9637
+      "avg_value_accuracy": 0.9638
     },
     "income_statement": {
       "comparisons": 357,
-      "rds_items": 10359,
-      "matched": 10287,
+      "rds_items": 10357,
+      "matched": 10284,
       "match_rate": 0.993,
-      "avg_value_accuracy": 0.6253
+      "avg_value_accuracy": 0.6254
     },
     "cash_flow": {
       "comparisons": 357,
-      "rds_items": 10523,
-      "matched": 9012,
-      "match_rate": 0.8564,
-      "avg_value_accuracy": 0.6658
+      "rds_items": 9840,
+      "matched": 8576,
+      "match_rate": 0.8715,
+      "avg_value_accuracy": 0.6665
     }
   }
 }

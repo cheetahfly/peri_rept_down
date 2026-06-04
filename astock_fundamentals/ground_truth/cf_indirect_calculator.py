@@ -19,15 +19,20 @@ Indirect-method CF adjustments are formulaic relationships on BS/IS items:
   - 无形资产摊销 = BS_累计摊销 (估计)
   - 现金及现金等价物净增加额 = BS_货币资金 (end) - BS_货币资金 (begin) (近似)
 
-This module produces a mapping {RDS_CF_item: sina_name or formula} for use
-in baseline_2019_2022 and the cleaning pipeline.
+Operations supported:
+  - as_is:        use Sina column as-is
+  - negate:       multiply by -1
+  - sum:          sum of multiple columns
+  - delta_pos:    sina_end - sina_begin (for CF items that increase)
+  - delta_neg:    sina_begin - sina_end (for CF items that decrease)
+  - sum_pos:      sum of (end - begin) for each source
+  - sum_neg:      -(sum of (end - begin)) for each source
 """
 
 import os
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
-import pandas as pd
 import yaml
 
 INDIRECT_CF_FORMULAS_PATH = os.path.join(
@@ -41,25 +46,78 @@ class IndirectFormula:
     """A formula for computing an indirect-method CF item from Sina BS/IS."""
     rds_cf_name: str
     sina_sources: List[str]  # Sina column names to read
-    operation: str  # 'as_is', 'negate', 'sum', 'delta'
+    operation: str  # see module docstring
     note: str = ""
 
-    def compute(self, sina_data: Dict[str, float]) -> Optional[float]:
-        """Apply the formula to Sina data dict. Returns None if data missing."""
+    def compute(
+        self,
+        sina_is_row: Dict[str, float],
+        sina_bs_end: Optional[Dict[str, float]] = None,
+        sina_bs_begin: Optional[Dict[str, float]] = None,
+    ) -> Optional[float]:
+        """Apply the formula. Returns None if data missing.
+
+        Args:
+            sina_is_row: Sina IS dict (current year income statement)
+            sina_bs_end: Sina BS dict (current year-end)
+            sina_bs_begin: Sina BS dict (prior year-end)
+
+        For IS-only ops (as_is/negate/sum), only sina_is_row is used.
+        For BS-delta ops (delta_pos/delta_neg/sum_pos/sum_neg), both BS dicts required.
+        """
         if self.operation == "as_is":
-            return sina_data.get(self.sina_sources[0])
+            v = sina_is_row.get(self.sina_sources[0])
+            return float(v) if v is not None else None
+
         if self.operation == "negate":
-            v = sina_data.get(self.sina_sources[0])
-            return -v if v is not None else None
+            v = sina_is_row.get(self.sina_sources[0])
+            return -float(v) if v is not None else None
+
         if self.operation == "sum":
-            vals = [sina_data.get(s) for s in self.sina_sources]
-            vals = [v for v in vals if v is not None]
+            vals = [sina_is_row.get(s) for s in self.sina_sources]
+            vals = [float(v) for v in vals if v is not None]
             return sum(vals) if vals else None
+
+        # BS-delta operations require both periods
+        if sina_bs_end is None or sina_bs_begin is None:
+            return None
+
+        if self.operation == "delta_pos":
+            end = sina_bs_end.get(self.sina_sources[0])
+            begin = sina_bs_begin.get(self.sina_sources[0])
+            if end is None or begin is None:
+                return None
+            return float(end) - float(begin)
+
+        if self.operation == "delta_neg":
+            end = sina_bs_end.get(self.sina_sources[0])
+            begin = sina_bs_begin.get(self.sina_sources[0])
+            if end is None or begin is None:
+                return None
+            return float(begin) - float(end)
+
+        if self.operation == "sum_pos":
+            deltas = []
+            for s in self.sina_sources:
+                end = sina_bs_end.get(s)
+                begin = sina_bs_begin.get(s)
+                if end is not None and begin is not None:
+                    deltas.append(float(end) - float(begin))
+            return sum(deltas) if deltas else None
+
+        if self.operation == "sum_neg":
+            deltas = []
+            for s in self.sina_sources:
+                end = sina_bs_end.get(s)
+                begin = sina_bs_begin.get(s)
+                if end is not None and begin is not None:
+                    deltas.append(float(end) - float(begin))
+            return -sum(deltas) if deltas else None
+
         return None
 
 
 def load_indirect_formulas() -> Dict[str, IndirectFormula]:
-    """Load the indirect CF formula registry from rules/indirect_cf_formulas.yaml."""
     if not os.path.exists(INDIRECT_CF_FORMULAS_PATH):
         return {}
     try:
@@ -79,58 +137,31 @@ def load_indirect_formulas() -> Dict[str, IndirectFormula]:
     return formulas
 
 
-# Default formulas (used if YAML not present)
-DEFAULT_INDIRECT_FORMULAS: Dict[str, IndirectFormula] = {
-    "加：资产减值准备": IndirectFormula(
-        rds_cf_name="加：资产减值准备",
-        sina_sources=["资产减值损失"],
-        operation="as_is",
-        note="IS_资产减值损失 (negate since CF subtracts)",
-    ),
-    "固定资产折旧、油气资产折耗、生产性生物资产折旧": IndirectFormula(
-        rds_cf_name="固定资产折旧、油气资产折耗、生产性生物资产折旧",
-        sina_sources=["折旧费"],
-        operation="as_is",
-        note="IS_折旧费 from income_statement",
-    ),
-    "无形资产摊销": IndirectFormula(
-        rds_cf_name="无形资产摊销",
-        sina_sources=["摊销"],
-        operation="as_is",
-        note="If Sina IS has 摊销 column",
-    ),
-    "投资损失": IndirectFormula(
-        rds_cf_name="投资损失",
-        sina_sources=["投资收益"],
-        operation="negate",
-        note="IS_投资收益 (negate since CF adds back loss)",
-    ),
-    "公允价值变动损失": IndirectFormula(
-        rds_cf_name="公允价值变动损失",
-        sina_sources=["公允价值变动收益/(损失)"],
-        operation="negate",
-        note="IS_公允价值变动 (negate since CF adds back loss)",
-    ),
-}
-
-
 def compute_indirect_cf_for_period(
     cf_gt_items: Dict[str, float],
     sina_is_row: Dict[str, float],
+    sina_bs_end: Optional[Dict[str, float]] = None,
+    sina_bs_begin: Optional[Dict[str, float]] = None,
 ) -> Dict[str, float]:
-    """Compute indirect-method CF items from Sina IS row.
+    """Compute indirect-method CF items from Sina IS row + optional BS deltas.
 
     Args:
         cf_gt_items: RDS CF items (some indirect ones we want to match)
         sina_is_row: Sina IS row dict (one year's income statement)
+        sina_bs_end: Sina BS end-of-period dict (current year)
+        sina_bs_begin: Sina BS dict (prior year-end, for delta ops)
 
     Returns: {rds_cf_name: computed_value} for items that can be computed
     """
-    formulas = load_indirect_formulas() or DEFAULT_INDIRECT_FORMULAS
+    formulas = load_indirect_formulas()
     out: Dict[str, float] = {}
     for rds_name in cf_gt_items:
         if rds_name in formulas:
-            v = formulas[rds_name].compute(sina_is_row)
-            if v is not None:
+            v = formulas[rds_name].compute(
+                sina_is_row=sina_is_row,
+                sina_bs_end=sina_bs_end,
+                sina_bs_begin=sina_bs_begin,
+            )
+            if v is not None and not (v != v):  # skip NaN
                 out[rds_name] = float(v)
     return out

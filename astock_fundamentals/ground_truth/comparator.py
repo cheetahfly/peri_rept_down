@@ -288,6 +288,14 @@ def compare_stock(
     # Strategy-driven matching chain: ordered list of (name, func)
     # Each func receives: (gt_name, gt_val, norm_gt, exact_ext, norm_ext, matched_keys)
     # Returns: (ext_name, ext_val, match_type) or None
+    # Tolerances are year-tier aware (from YearTiers):
+    #   - early (≤2005): 2% / fuzzy
+    #   - mid (2006-2019): 1% / fuzzy
+    #   - recent (2020+): 0.5% / fuzzy
+    fuzzy_tol = (get_tolerance_for_year(year) * 100.0) if year else 10.0
+    keyword_tol = 5.0
+    value_exact_tol = 0.001
+    cid_tol = 1.0
     _STRATEGY = [
         ("exact_original", lambda n,v,ng,ee,ne,mk:
             (n,ee[n],"exact") if n in ee and _compare_values(v,ee[n]) is not None and _compare_values(v,ee[n])<10 else None),
@@ -298,16 +306,16 @@ def compare_stock(
         ("reverse_alias", lambda n,v,ng,ee,ne,mk:
             (ne[_ms(s)][0],ne[_ms(s)][1],"alias") if (s:=reverse_aliases.get(ng)) and (_ms:=normalize_name)(s) in ne else None),
         ("fuzzy", lambda n,v,ng,ee,ne,mk:
-            (lambda b:(b[2],b[3],"fuzzy") if b[0]>=0.7 else None)(max([(0.6*_name_similarity(ng,nk)+0.4*(1-_compare_values(v,vl)/100),nk,ok,vl) for nk,(ok,vl) in ne.items() if ok not in mk and _name_similarity(ng,nk)>=0.8 and _compare_values(v,vl) is not None and _compare_values(v,vl)<10],default=[0]))),
+            (lambda b:(b[2],b[3],"fuzzy") if b[0]>=0.7 else None)(max([(0.6*_name_similarity(ng,nk)+0.4*(1-_compare_values(v,vl)/100),nk,ok,vl) for nk,(ok,vl) in ne.items() if ok not in mk and _name_similarity(ng,nk)>=0.8 and _compare_values(v,vl) is not None and _compare_values(v,vl)<fuzzy_tol],default=[0]))),
         ("cid", lambda n,v,ng,ee,ne,mk:
-            (lambda c:(c[0][0],c[0][1],"cid_value") if len(c)==1 else None)([(ok,vl) for nk,(ok,vl) in ne.items() if ok not in mk and _compare_values(v,vl) is not None and _compare_values(v,vl)<1.0])),
+            (lambda c:(c[0][0],c[0][1],"cid_value") if len(c)==1 else None)([(ok,vl) for nk,(ok,vl) in ne.items() if ok not in mk and _compare_values(v,vl) is not None and _compare_values(v,vl)<cid_tol])),
         ("keyword", lambda n,v,ng,ee,ne,mk:
-            next(((ok,vl,"keyword") for kw in _extract_keywords(n) for nk,(ok,vl) in ne.items() if ok not in mk and any(k in nk for k in _extract_keywords(n)) and _compare_values(v,vl) is not None and _compare_values(v,vl)<5.0),
+            next(((ok,vl,"keyword") for kw in _extract_keywords(n) for nk,(ok,vl) in ne.items() if ok not in mk and any(k in nk for k in _extract_keywords(n)) and _compare_values(v,vl) is not None and _compare_values(v,vl)<keyword_tol),
                  next(((ok,vl,"keyword") for kw in _extract_keywords(n) for nk,(ok,vl) in ne.items() if ok in mk and any(k in nk for k in _extract_keywords(n)) and _compare_values(v,vl) is not None and _compare_values(v,vl)<1.0),None)) if _extract_keywords(n) else None),
         ("redundant", lambda n,v,ng,ee,ne,mk:
             next(((ok,vl,"redundant") for nk,(ok,vl) in ne.items() if ok in mk and _compare_values(v,vl) is not None and _compare_values(v,vl)<1.0),None)),
         ("value_exact", lambda n,v,ng,ee,ne,mk:
-            next(((ek,ev,"value_exact") for ek,ev in ext_data.items() if ek not in mk and _compare_values(v,ev) is not None and _compare_values(v,ev)<0.001),None)),
+            next(((ek,ev,"value_exact") for ek,ev in ext_data.items() if ek not in mk and _compare_values(v,ev) is not None and _compare_values(v,ev)<value_exact_tol),None)),
     ]
 
     matched_ext_keys = set()

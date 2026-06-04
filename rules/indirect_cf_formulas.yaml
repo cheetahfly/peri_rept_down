@@ -1,39 +1,82 @@
 # 间接法现金流量项推算公式
-# 用于从 Sina IS 数据推算 RDS CF 中无法直接映射的间接法调节项
+# 用于从 Sina IS + BS(2 期) 推算 RDS CF 中无法直接映射的间接法调节项
 
 formulas:
-  # 资产减值 — IS 信用减值损失/资产减值损失 (CF 中加回, 转正值)
+  # ===== IS-only 操作 (as_is/negate/sum) =====
+
+  # 资产减值损失合计 (CF 加回)
   加：资产减值准备:
     sources: ["信用减值损失", "资产减值损失"]
     op: sum
     note: "IS 减值损失合计 (CF 中加回)"
 
-  # 公允价值变动 — IS 公允价值变动收益 (CF 取负: 损失=加回)
+  # 公允价值变动 (CF 加回损失 = negate IS 收益)
   公允价值变动损失:
     sources: ["公允价值变动收益/(损失)", "公允价值变动收益"]
     op: negate
     note: "IS 公允价值变动收益 negate"
 
-  # 投资损失 — IS 投资收益 (CF 取负: 损失=加回)
+  # 投资损失 (CF 加回 = negate IS 投资收益)
   投资损失:
     sources: ["投资收益", "对联营公司的投资收益"]
     op: negate
     note: "IS 投资收益 negate"
 
-  # 资产处置损失 — IS 资产处置收益 (CF 取负: 损失=加回)
+  # 资产处置损失 (CF 加回 = negate IS 资产处置收益)
   处置固定资产、无形资产和其他长期资产的损失:
     sources: ["资产处置收益", "非流动资产处置损失"]
     op: negate
     note: "IS 资产处置 negate"
 
-  # 折旧/摊销 — IS 折旧费
+  # 折旧 (CF 加回)
   固定资产折旧、油气资产折耗、生产性生物资产折旧:
     sources: ["折旧费"]
     op: as_is
     note: "IS 折旧费"
 
-  # 财务费用 (CF 中加回)
+  # 财务费用 (CF 加回)
   财务费用:
     sources: ["财务费用"]
     op: as_is
     note: "IS 财务费用 (CF 中加回)"
+
+  # ===== BS-delta 操作 (delta_pos/delta_neg/sum_pos/sum_neg) =====
+  # 间接法 CF 中, 资产减少/负债增加 = 加回 (正贡献)
+  # 资产增加/负债减少 = 减 (负贡献)
+
+  # 存货的减少 = -(存货end - 存货begin) = 存货begin - 存货end
+  存货的减少:
+    sources: ["存货"]
+    op: delta_neg
+    note: "BS 存货 (期初-期末) = 存货减少 (CF 假设：减少=正)"
+
+  # 递延所得税资产减少 = -(递延所得税资产end - 递延所得税资产begin)
+  递延所得税资产减少:
+    sources: ["递延所得税资产"]
+    op: delta_neg
+    note: "BS 递延所得税资产 (期初-期末)"
+
+  # 递延所得税负债增加 = 递延所得税负债end - 递延所得税负债begin
+  递延所得税负债增加:
+    sources: ["递延所得税负债"]
+    op: delta_pos
+    note: "BS 递延所得税负债 (期末-期初)"
+
+  # 经营性应收项目的减少 = -(应收票据end+应收账款end+预付账款end+其他应收款end) + same begin
+  经营性应收项目的减少:
+    sources: ["应收票据", "应收账款", "预付账款", "其他应收款"]
+    op: sum_neg
+    note: "BS 经营性应收 sum (期初-期末)"
+
+  # 经营性应付项目的增加 = 应付票据end+应付账款end+其他应付款end+... - begin
+  经营性应付项目的增加:
+    sources: ["应付票据", "应付账款", "预收款项", "其他应付款"]
+    op: sum_pos
+    note: "BS 经营性应付 sum (期末-期初)"
+
+  # 现金及现金等价物净增加额 ≈ BS 货币资金 (期末-期初)
+  现金及现金等价物净增加额:
+    sources: ["货币资金"]
+    op: delta_pos
+    note: "BS 货币资金 期末-期初 (近似)"
+
