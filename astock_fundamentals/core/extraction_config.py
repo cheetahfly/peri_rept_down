@@ -70,11 +70,40 @@ LOG_FILE = os.path.join(BASE_DIR, "extraction.log")
 _ITEM_ALIAS_MAP_HIERARCHICAL = load_yaml_rule("aliases.yaml", {})
 
 
+def _merge_sina_aliases(annual_block: Dict[str, List[str]], sina_block: Dict[str, List[str]]) -> Dict[str, List[str]]:
+    """Merge sina_aliases_2019_2022 entries into the annual report-type block.
+
+    For each (canonical_name, [sina_aliases]) in sina_block:
+      - If canonical is in annual_block: append sina aliases to existing list
+        (deduped, order-preserving).
+      - If canonical is NEW (not in annual_block): create entry with
+        canonical_name first, then sina aliases (deduped).
+    Returns a fresh dict; does not mutate inputs.
+    """
+    if not sina_block:
+        return annual_block
+    merged: Dict[str, List[str]] = {}
+    for k, v in annual_block.items():
+        merged[k] = list(v or [])
+    for canonical, sina_als in sina_block.items():
+        existing = merged.setdefault(canonical, [])
+        # Ensure canonical name is in its own alias list (so comparators
+        # can match self-entries via reverse lookup)
+        if canonical not in existing:
+            existing.append(canonical)
+        for a in sina_als or []:
+            if a != canonical and a not in existing:
+                existing.append(a)
+    return merged
+
+
 def get_aliases(statement_type: str, report_type: str = "annual") -> Dict[str, List[str]]:
     """
     Get alias map for a specific statement type and report type.
 
-    Falls back to 'annual' if the specified report_type is not found.
+    Falls back to 'annual' if the specified report_type not found.
+    Auto-merges sina_aliases_2019_2022 entries (populated by
+    scripts/learn_sina_aliases.py) into the annual block.
 
     Args:
         statement_type: One of 'balance_sheet', 'income_statement', 'cash_flow'
@@ -86,8 +115,13 @@ def get_aliases(statement_type: str, report_type: str = "annual") -> Dict[str, L
     if not _ITEM_ALIAS_MAP_HIERARCHICAL:
         return {}
     st_data = _ITEM_ALIAS_MAP_HIERARCHICAL.get(statement_type, {})
-    # Fall back to annual if specific report_type not found
-    return st_data.get(report_type, st_data.get("annual", {}))
+    annual_block = st_data.get("annual", {})
+    sina_block = _ITEM_ALIAS_MAP_HIERARCHICAL.get("sina_aliases_2019_2022", {}).get(statement_type, {})
+    annual_with_sina = _merge_sina_aliases(annual_block, sina_block)
+    if report_type == "annual":
+        return annual_with_sina
+    # Other report types: fall back to their own block, else annual
+    return st_data.get(report_type, annual_with_sina)
 
 
 # Backward compatible - default to income_statement.annual

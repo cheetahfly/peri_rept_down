@@ -12,24 +12,24 @@
   "by_statement": {
     "balance_sheet": {
       "comparisons": 15,
-      "rds_items": 636,
-      "matched": 632,
-      "match_rate": 0.9937,
-      "avg_value_accuracy": 0.8111
+      "rds_items": 643,
+      "matched": 639,
+      "match_rate": 0.9938,
+      "avg_value_accuracy": 0.7764
     },
     "income_statement": {
       "comparisons": 18,
-      "rds_items": 480,
-      "matched": 410,
-      "match_rate": 0.8542,
-      "avg_value_accuracy": 0.5762
+      "rds_items": 478,
+      "matched": 419,
+      "match_rate": 0.8766,
+      "avg_value_accuracy": 0.5539
     },
     "cash_flow": {
       "comparisons": 15,
-      "rds_items": 569,
-      "matched": 335,
-      "match_rate": 0.5888,
-      "avg_value_accuracy": 0.67
+      "rds_items": 584,
+      "matched": 381,
+      "match_rate": 0.6524,
+      "avg_value_accuracy": 0.5633
     }
   }
 }
