@@ -97,6 +97,20 @@ def _merge_sina_aliases(annual_block: Dict[str, List[str]], sina_block: Dict[str
     return merged
 
 
+def _normalize_alias_key(name: str) -> str:
+    """Normalize an alias key the same way comparator.normalize_name does.
+    This ensures that alias-map lookups using normalized gt_names find the
+    right entries even when normalize_name strips prefixes."""
+    import re
+    name = re.sub(r'_c\d+$', '', name)
+    name = re.sub(r'^(其中[：:]|减[：:]|加[：:])', '', name)
+    name = re.sub(r'^[一二三四五六七八九十]+[、.]', '', name)
+    name = re.sub(r'^[（(][一二三四五六七八九十1234567890]+[)）]', '', name)
+    name = re.sub(r'^\d+[、.]', '', name)
+    name = re.sub(r'[（(][^)）]*$', '', name)
+    return name.strip()
+
+
 def get_aliases(statement_type: str, report_type: str = "annual") -> Dict[str, List[str]]:
     """
     Get alias map for a specific statement type and report type.
@@ -104,6 +118,8 @@ def get_aliases(statement_type: str, report_type: str = "annual") -> Dict[str, L
     Falls back to 'annual' if the specified report_type not found.
     Auto-merges sina_aliases_2019_2022 entries (populated by
     scripts/learn_sina_aliases.py) into the annual block.
+    Also clones entries under normalized keys (e.g. '营业成本' <- '其中：营业成本')
+    so that comparator.normalize_name's prefix-stripping doesn't miss matches.
 
     Args:
         statement_type: One of 'balance_sheet', 'income_statement', 'cash_flow'
@@ -118,6 +134,27 @@ def get_aliases(statement_type: str, report_type: str = "annual") -> Dict[str, L
     annual_block = st_data.get("annual", {})
     sina_block = _ITEM_ALIAS_MAP_HIERARCHICAL.get("sina_aliases_2019_2022", {}).get(statement_type, {})
     annual_with_sina = _merge_sina_aliases(annual_block, sina_block)
+
+    # Clone entries under their normalize_name-stripped keys so that
+    # comparator's prefix-stripping (其中：/减：/加：) doesn't miss matches.
+    # e.g. 其中：营业成本 -> dup to 营业成本
+    extras: Dict[str, List[str]] = {}
+    for canonical, aliases in list(annual_with_sina.items()):
+        stripped = _normalize_alias_key(canonical)
+        if stripped and stripped != canonical:
+            existing = extras.setdefault(stripped, [])
+            for a in aliases or []:
+                if a not in existing:
+                    existing.append(a)
+
+    if extras:
+        annual_with_sina = dict(annual_with_sina)
+        for stripped, aliases in extras.items():
+            annual_with_sina.setdefault(stripped, [])
+            for a in aliases:
+                if a not in annual_with_sina[stripped]:
+                    annual_with_sina[stripped].append(a)
+
     if report_type == "annual":
         return annual_with_sina
     # Other report types: fall back to their own block, else annual
