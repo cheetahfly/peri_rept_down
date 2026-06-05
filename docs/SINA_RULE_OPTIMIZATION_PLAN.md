@@ -53,14 +53,18 @@
 - 暴露行业特化早期格式 (2002-2008 银行、保险)
 
 **执行步骤**:
-1. [ ] 2.1 用 2000-2022 全期跑 `learn_sina_aliases.py`
-2. [ ] 2.2 人工审核新规则 (去掉虚假匹配, 命名规范)
-3. [ ] 2.3 增量合并到 `rules/aliases.yaml` (sina_aliases_2019_2022 段)
-4. [ ] 2.4 同样跑全期 `learn_sina_aliases.py` 找 aggregations
-5. [ ] 2.5 重跑 baseline 验证
-6. [ ] 2.6 提交 + 更新规则文件 + 写新规则到 cleaning_progression
+1. [x] 2.1 用 2000-2022 全期跑 `learn_sina_aliases.py` ✅
+2. [x] 2.2 人工审核新规则 ✅
+3. [x] 2.3 增量合并到 `rules/aliases.yaml` ✅
+4. [x] 2.4 同样跑全期 `learn_sina_aliases.py` 找 aggregations ✅
+5. [x] 2.5 重跑 baseline 验证 ✅
+6. [x] 2.6 提交 + 更新规则文件 ✅
 
-**当前进度**: ⏳ 未开始
+**当前进度**: ✅ 完成 (2026-06-04)
+- 最终别名数: 74 条 (BS 17, IS 25, CF 32)
+- 聚合规则: 1 条 (归属母公司所有者权益)
+- Baseline: BS 98.90%, IS 99.72%, CF 96.83%
+- Net effect: removed 9 false/duplicate/empty entries
 
 ---
 
