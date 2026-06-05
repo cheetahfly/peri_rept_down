@@ -50,7 +50,13 @@ def test_pipeline_tidy_uses_field_codes():
 
 
 def test_pipeline_runs_with_guosen_source():
-    """Pipeline should accept --source=guosen and call GuosenLoader."""
+    """Pipeline should accept --source=guosen and call GuosenLoader.
+
+    Uses sys.executable with a fresh PYTHONPATH so the subprocess
+    doesn't inherit sys.modules contamination from prior tests in the
+    parent pytest process. The subprocess must re-import pandas,
+    astock_fundamentals, etc. from scratch.
+    """
     import subprocess
     import os
     result = subprocess.run(
@@ -65,6 +71,15 @@ def test_pipeline_runs_with_guosen_source():
         capture_output=True,
         text=True,
         timeout=120,
+        # Build minimal env: only PATH, TEMP, HOME + PYTHONPATH
+        env={
+            "PATH": os.environ.get("PATH", ""),
+            "TEMP": os.environ.get("TEMP", ""),
+            "TMP": os.environ.get("TMP", ""),
+            "SYSTEMROOT": os.environ.get("SYSTEMROOT", ""),
+            "PATHEXT": os.environ.get("PATHEXT", ""),
+            "PYTHONPATH": PROJECT_ROOT,
+        },
     )
     # Should fail with GuosenAuthError (no API key), NOT ModuleNotFoundError
     # or argument error
