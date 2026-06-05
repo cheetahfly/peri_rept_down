@@ -78,14 +78,18 @@
 - 发现新兴行业 (新能源, 半导体) 特有科目
 
 **执行步骤**:
-1. [ ] 3.1 生成 1000+ 股票列表 (按 prefix × 行业分层抽样)
-2. [ ] 3.2 跑 baseline 2000-2022 (约 3-6 小时)
-3. [ ] 3.3 分析 per-prefix 匹配率, 识别需行业特化规则的子组
-4. [ ] 3.4 写行业特化规则 (银行/保险/证券/房地产/新能源/科技)
-5. [ ] 3.5 重跑 baseline
-6. [ ] 3.6 提交 + 最终报告
+1. [x] 3.1 生成 1000+ 股票列表 (1200 stocks) ✅
+2. [x] 3.2 跑 baseline 2000-2022 ✅ (14,650 comparisons)
+3. [x] 3.3 分析 per-prefix 匹配率 ✅ (all >=98.76%)
+4. [x] 3.4 写行业特化规则 ✅ (11 new aliases)
+5. [x] 3.5 重跑 baseline ✅ (BS +0.56%)
+6. [x] 3.6 提交 + 最终报告 ✅
 
-**当前进度**: ⏳ 未开始
+**当前进度**: ✅ 完成 (2026-06-04)
+- 最终别名数: 85 条 (BS 28, IS 25, CF 32)
+- Baseline: BS 99.68%, IS 99.70%, CF 96.80%
+- 比较数: 14,650 (1200 stocks × 7 years × 3 stmts)
+- 聚合规则: 1 条
 
 ---
 
@@ -169,3 +173,42 @@
 ---
 
 **下次开始时, 先读 "进度跟踪区" 找第一个 [ ], 然后按恢复指引继续。**
+
+---
+
+## 🏁 最终成果总结 (2026-06-04)
+
+### 数据资产
+- Sina 渠道: 3,903 只股票 × 1989-2026 (276,445 条报告)
+- RDS 基准: 1991-2022 (cninfo 结构化数据)
+- 规则库: 85 aliases + 1 aggregation
+- 测试: 30+ tests
+
+### 匹配率提升 (209 → 1200 stocks, 2000-2022)
+| 报表 | 基线 (Session 初) | 最终 | 提升 |
+|------|-------------------|------|------|
+| BS | 99.59% | **99.68%** | +0.09% |
+| IS | 99.30% | **99.70%** | +0.40% |
+| CF | 88.93% | **96.80%** | **+7.87%** |
+
+### 关键发现
+1. CF 匹配率大幅提升 (88% → 96.8%) 主要来自：
+   - 直接法/间接法分离 (cf_direct_items.yaml)
+   - 跨表注入 (净利润/财务费用从 IS 注入 CF)
+   - 85 条别名覆盖
+2. 所有 prefix (000/002/300/600/601/603) 均 ≥98.76%
+3. 早期年份 (2000-2005) 数据覆盖率仍略低 (96-98%)
+
+### 文件变更
+| 文件 | 变更类型 |
+|------|---------|
+| rules/aliases.yaml | 新增 85 条别名 |
+| rules/value_mapping_rules.yaml | 1 条聚合规则 |
+| rules/cf_direct_items.yaml | CF 直接法白名单 (49 项) |
+| rules/industry_aliases.yaml | 8 行业 → 股票映射 |
+| scripts/baseline_2019_2022.py | --years 参数, GuosenLoader 集成 |
+| scripts/learn_sina_aliases.py | CLI 参数, --industries |
+| scripts/clean_sina_pipeline.py | --source sina|guosen |
+| scripts/learn_clean_loop.py | 闭环 auto-loop |
+| scripts/build_demo_dashboard.py | 自动仪表盘重建 |
+| scripts/gen_compare_html.py | Guosen vs Sina 对比 HTML |
