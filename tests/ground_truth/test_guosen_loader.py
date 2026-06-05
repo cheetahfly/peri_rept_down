@@ -168,4 +168,4 @@ def test_guosen_get_annual_passes_count_to_api():
     loader = GuosenLoader(api_key="test-key")
     loader._skill_funcs["query_a_stock_balance_sheet"] = fake_query
     loader.get_annual("600519", [2019, 2020, 2021, 2022], "balance_sheet")
-    assert captured["count"] == 5  # 4-year range + 1 buffer year (max-min+2 = 5)
+    assert captured["count"] == 4  # 4 years requested

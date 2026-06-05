@@ -222,8 +222,8 @@ class GuosenLoader:
         if api_name not in self._skill_funcs:
             raise RuntimeError(f"GuosenLoader: skill function {api_name} not loaded")
         fn = self._skill_funcs[api_name]
-        # Request count = max - min + 1 (caller may want more; allow len(target_years) + 1 buffer)
-        count = max(target_years) - min(target_years) + 2
+        # Request count = max - min + 1 (exact span of requested years)
+        count = max(target_years) - min(target_years) + 1
         if kind == "a":
             response = fn(stock_code, market, "Q0", None, count)
         else:
