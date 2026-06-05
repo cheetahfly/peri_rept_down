@@ -291,7 +291,11 @@ def write_to_yaml(
 
 def main() -> int:
     # Resolve stocks/years from CLI
-    years, stocks, industries = _parse_cli_args()
+    years, stocks, industries, min_evidence_override = _parse_cli_args()
+    # Override module-level MIN_EVIDENCE if CLI provided
+    if min_evidence_override is not None:
+        global MIN_EVIDENCE
+        MIN_EVIDENCE = min_evidence_override
     print(f"Learning from {len(stocks)} stocks x {len(years)} years x {len(STATEMENT_TYPES)} types")
     if industries:
         print(f"  industries: {industries}")
@@ -319,6 +323,11 @@ def _parse_cli_args():
     p.add_argument("--rds-dir", default=RDS_DIR)
     args, _unknown = p.parse_known_args()
 
+    # Override module-level MIN_EVIDENCE from CLI if provided
+    global MIN_EVIDENCE
+    if args.min_evidence is not None:
+        MIN_EVIDENCE = args.min_evidence
+
     stocks = args.stocks
     if args.industries and "none" not in args.industries:
         from pathlib import Path
@@ -342,7 +351,7 @@ def _parse_cli_args():
         stocks = resolved or SAMPLE_STOCKS
 
     years = [int(y) for y in args.years] if args.years else YEARS
-    return years, (stocks or SAMPLE_STOCKS), args.industries or []
+    return years, (stocks or SAMPLE_STOCKS), args.industries or [], args.min_evidence
 
 
 if __name__ == "__main__":
