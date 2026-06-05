@@ -925,22 +925,11 @@ value_match_pairs:
   type: value_exact
 sina_aggregations_2019_2022:
   balance_sheet:
-  - target: 非流动资产合计
-    sources:
-    - 非流动资产
-    - 非流动负债
-    - 非流动负债合计
-    op: sum
-    evidence: 4
-  - target: 归属于母公司所有者权益
-    sources:
-    - 归属于母公司股东的权益
-    - 归属于母公司股东权益合计
-    op: sum
-    evidence: 17
-  - target: 归属于母公司所有者权益
-    sources:
-    - 归属于母公司股东权益合计
-    - 归属于母公司股东的权益
-    op: sum
-    evidence: 8
+    - target: "归属于母公司所有者权益"
+      sources:
+        - "归属于母公司股东的权益"
+        - "归属于母公司股东权益合计"
+      op: sum
+      note: "BS 归属权益合并"
+  income_statement: []
+  cash_flow: []

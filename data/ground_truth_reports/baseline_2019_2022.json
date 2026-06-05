@@ -215,17 +215,17 @@
   "by_statement": {
     "balance_sheet": {
       "comparisons": 876,
-      "rds_items": 35726,
-      "matched": 35332,
+      "rds_items": 35730,
+      "matched": 35336,
       "match_rate": 0.989,
-      "avg_value_accuracy": 0.9527
+      "avg_value_accuracy": 0.953
     },
     "income_statement": {
       "comparisons": 893,
       "rds_items": 21745,
-      "matched": 21706,
-      "match_rate": 0.9982,
-      "avg_value_accuracy": 0.8838
+      "matched": 21685,
+      "match_rate": 0.9972,
+      "avg_value_accuracy": 0.8841
     },
     "cash_flow": {
       "comparisons": 876,
