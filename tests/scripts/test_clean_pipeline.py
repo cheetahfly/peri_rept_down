@@ -47,3 +47,25 @@ def test_pipeline_tidy_uses_field_codes():
     sample = df["field_code"].iloc[0]
     assert sample.startswith("F") and sample.endswith("N"), f"unexpected code: {sample}"
     assert df["display_order"].between(0, 110).all()
+
+
+def test_pipeline_runs_with_guosen_source():
+    """Pipeline should accept --source=guosen and call GuosenLoader."""
+    import subprocess
+    import os
+    result = subprocess.run(
+        [
+            sys.executable,
+            os.path.join(PROJECT_ROOT, "scripts", "clean_sina_pipeline.py"),
+            "--source", "guosen",
+            "--stocks", "000001",
+            "--years", "2019", "2020",
+            "--output-dir", os.path.join(PROJECT_ROOT, "data", "exports_v2"),
+        ],
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    # Should fail with GuosenAuthError (no API key), NOT ModuleNotFoundError
+    # or argument error
+    assert "GS_API_KEY" in result.stdout + result.stderr or "guosen" in result.stdout.lower()

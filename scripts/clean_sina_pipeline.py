@@ -23,6 +23,7 @@ import yaml
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from astock_fundamentals.ground_truth.sina_loader import SinaLoader
+from astock_fundamentals.sources.guosen import GuosenLoader, GuosenAuthError
 from astock_fundamentals.ground_truth.rule_cleaner import (
     load_cleaning_rules, rename_columns, convert_values, apply_aggregations,
 )
@@ -32,6 +33,7 @@ DEFAULT_CACHE = os.path.join(BASE, "data", "akshare_bulk")
 DEFAULT_OUTPUT = os.path.join(BASE, "data", "exports_v2")
 DEFAULT_REPORT_DIR = os.path.join(BASE, "data", "ground_truth_reports")
 FIELD_ORDER_PATH = os.path.join(BASE, "rules", "field_order.yaml")
+DEFAULT_SOURCE = "sina"  # or "guosen"
 DECODE_PATH = os.path.join(BASE, "data", "decode_mappings_by_type.json")
 INDUSTRY_ALIASES_PATH = os.path.join(BASE, "rules", "industry_aliases.yaml")
 
@@ -150,6 +152,7 @@ def run_pipeline(
     cache_dir: str,
     output_dir: str,
     report_dir: str,
+    loader=None,
 ) -> None:
     os.makedirs(output_dir, exist_ok=True)
     os.makedirs(report_dir, exist_ok=True)
@@ -164,7 +167,8 @@ def run_pipeline(
         "cash_flow": [],
     }
 
-    loader = SinaLoader(cache_dir)
+    if loader is None:
+        loader = SinaLoader(cache_dir)
     for code in stocks:
         for st in ["balance_sheet", "income_statement", "cash_flow"]:
             try:
@@ -213,7 +217,20 @@ def main() -> int:
     p.add_argument("--cache-dir", default=DEFAULT_CACHE)
     p.add_argument("--output-dir", default=DEFAULT_OUTPUT)
     p.add_argument("--report-dir", default=DEFAULT_REPORT_DIR)
+    p.add_argument("--source", choices=["sina", "guosen"], default=DEFAULT_SOURCE,
+                   help="Data source")
     args = p.parse_args()
+
+    # Build loader based on source
+    loader = None
+    if args.source == "guosen":
+        try:
+            loader = GuosenLoader()
+        except GuosenAuthError as e:
+            print(f"ERROR: {e}")
+            return 1
+    else:
+        loader = SinaLoader(DEFAULT_CACHE)
 
     # Resolve stocks: --industries overrides --stocks if both given
     if args.industries and "none" not in args.industries:
@@ -233,6 +250,7 @@ def main() -> int:
         cache_dir=args.cache_dir,
         output_dir=args.output_dir,
         report_dir=args.report_dir,
+        loader=loader,
     )
     return 0
 
