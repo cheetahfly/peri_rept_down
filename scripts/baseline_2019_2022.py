@@ -18,6 +18,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from astock_fundamentals.sources.rds.rds_loader import RdsLoader
 from astock_fundamentals.ground_truth.sina_loader import SinaLoader
+from astock_fundamentals.sources.guosen import GuosenLoader, GuosenAuthError
 from astock_fundamentals.ground_truth.comparator import compare_stock
 from astock_fundamentals.ground_truth.cf_indirect_calculator import (
     compute_indirect_cf_for_period,
@@ -95,9 +96,25 @@ def _sina_row_to_ext_dict(row) -> Dict[str, float]:
 
 
 def main():
-    decode_maps = _load_decode_map(DECODE_PATH)
-    sina = SinaLoader(CACHE_DIR)
+    import argparse
+    p = argparse.ArgumentParser(description="Baseline Sina vs RDS comparison")
+    p.add_argument("--years", nargs="+", default=[2019, 2020, 2021, 2022],
+                   help="Years to process")
+    p.add_argument("--cache-dir", default=CACHE_DIR)
+    p.add_argument("--source", choices=["sina", "guosen"], default="sina",
+                   help="Data source")
+    args = p.parse_args()
+
+    if args.source == "guosen":
+        try:
+            sina = GuosenLoader()
+        except GuosenAuthError as e:
+            print(f"ERROR: {e}")
+            return 1
+    else:
+        sina = SinaLoader(args.cache_dir)
     rds = RdsLoader(RDS_DIR, decode_map_path=DECODE_PATH)
+    decode_maps = _load_decode_map(DECODE_PATH)
     cf_direct, cf_is_cross = _load_cf_direct_sets()
 
     # Pre-load Sina IS and BS data for CF cross-item injection + indirect calc
