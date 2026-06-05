@@ -45,7 +45,11 @@ def _detect_market(stock_code: str) -> str:
     SZ (Shenzhen): 000xxx, 002xxx, 300xxx
     HK: anything else (caller should validate)
     """
-    code = str(stock_code).zfill(6)
+    code = str(stock_code)
+    # 5-digit HK codes (02020, 00700, 09988, etc.) are always HK
+    if len(code) == 5:
+        return "HK"
+    code = code.zfill(6)
     if code.startswith(("600", "601", "603", "688")):
         return "SH"
     if code.startswith(("000", "002", "300", "200", "080")):
@@ -133,3 +137,69 @@ class GuosenLoader:
             return not df.empty
         except Exception:
             return False
+
+    @staticmethod
+    def _api_response_to_df(response: dict) -> pd.DataFrame:
+        """Convert 国信 API response {result, data} to a wide DataFrame.
+
+        Each row = one reporting period.
+        Columns = the info array's "name" fields (Chinese item names) +
+                  a few meta columns (报告日, 数据源, ...).
+        """
+        result = response.get("result", {}) or {}
+        if result.get("code") != 0:
+            msg = result.get("msg", "unknown error")
+            raise RuntimeError(f"国信 API error: {msg}")
+        data_block = response.get("data", {}) or {}
+        info = data_block.get("info", []) or []
+        data_list = data_block.get("data", []) or []
+        if not data_list:
+            return pd.DataFrame()
+
+        # Build map: name -> {key, values_by_date}
+        name_to_key = {it["name"]: it["key"] for it in info if "name" in it and "key" in it}
+        # Per-name, per-date values
+        per_name = {nm: {} for nm in name_to_key}
+        for row in data_list:
+            d = str(row.get("date", row.get("DECLAREDATE", "")))
+            for nm in name_to_key:
+                v = row.get(nm)
+                if v is not None:
+                    try:
+                        per_name[nm][d] = float(v)
+                    except (TypeError, ValueError):
+                        pass
+
+        # Compose DataFrame: one row per date
+        all_dates = sorted({d for nm in per_name for d in per_name[nm]})
+        rows = []
+        for d in all_dates:
+            row = {"报告日": d}
+            for nm, by_date in per_name.items():
+                row[nm] = by_date.get(d)
+            rows.append(row)
+        df = pd.DataFrame(rows)
+        if "报告日" in df.columns and not df.empty:
+            df["报告日"] = df["报告日"].astype(str)
+        return df
+
+    def read_statement(self, stock_code: str, statement_type: str) -> pd.DataFrame:
+        """Fetch one period (latest) of a single statement type.
+
+        Args:
+            stock_code: 6-digit A-share code (SH/SZ) or 5-digit HK code
+            statement_type: balance_sheet / income_statement / cash_flow
+
+        Returns: DataFrame with one row (or empty if no data)
+        """
+        market = _detect_market(stock_code)
+        kind = "hk" if market == "HK" else "a"
+        api_name = STATEMENT_API[(statement_type, kind)]
+        if api_name not in self._skill_funcs:
+            raise RuntimeError(f"GuosenLoader: skill function {api_name} not loaded")
+        fn = self._skill_funcs[api_name]
+        if kind == "a":
+            response = fn(stock_code, market, "Q0", None, 1)
+        else:
+            response = fn(stock_code, None, None, 1)
+        return self._api_response_to_df(response)
