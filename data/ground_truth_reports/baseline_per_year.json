@@ -1,0 +1,121 @@
+{
+  "2000": {
+    "balance_sheet": {
+      "matched": 3656,
+      "total": 3804,
+      "rate": 0.961093585699264
+    },
+    "income_statement": {
+      "matched": 1335,
+      "total": 1336,
+      "rate": 0.999251497005988
+    },
+    "cash_flow": {
+      "matched": 2137,
+      "total": 2215,
+      "rate": 0.9647855530474041
+    }
+  },
+  "2005": {
+    "balance_sheet": {
+      "matched": 3250,
+      "total": 3324,
+      "rate": 0.9777376654632972
+    },
+    "income_statement": {
+      "matched": 1714,
+      "total": 1714,
+      "rate": 1.0
+    },
+    "cash_flow": {
+      "matched": 2379,
+      "total": 2385,
+      "rate": 0.9974842767295597
+    }
+  },
+  "2010": {
+    "balance_sheet": {
+      "matched": 4895,
+      "total": 4912,
+      "rate": 0.9965390879478827
+    },
+    "income_statement": {
+      "matched": 2827,
+      "total": 2827,
+      "rate": 1.0
+    },
+    "cash_flow": {
+      "matched": 3613,
+      "total": 3623,
+      "rate": 0.9972398564725365
+    }
+  },
+  "2015": {
+    "balance_sheet": {
+      "matched": 7016,
+      "total": 7095,
+      "rate": 0.9888653981677238
+    },
+    "income_statement": {
+      "matched": 4114,
+      "total": 4115,
+      "rate": 0.9997569866342649
+    },
+    "cash_flow": {
+      "matched": 4868,
+      "total": 4922,
+      "rate": 0.9890288500609509
+    }
+  },
+  "2018": {
+    "balance_sheet": {
+      "matched": 8065,
+      "total": 8101,
+      "rate": 0.9955561041846686
+    },
+    "income_statement": {
+      "matched": 5757,
+      "total": 5784,
+      "rate": 0.9953319502074689
+    },
+    "cash_flow": {
+      "matched": 5362,
+      "total": 5396,
+      "rate": 0.9936990363232023
+    }
+  },
+  "2020": {
+    "balance_sheet": {
+      "matched": 8450,
+      "total": 8490,
+      "rate": 0.9952885747938751
+    },
+    "income_statement": {
+      "matched": 5959,
+      "total": 5969,
+      "rate": 0.9983246775004189
+    },
+    "cash_flow": {
+      "matched": 5358,
+      "total": 5400,
+      "rate": 0.9922222222222222
+    }
+  },
+  "2022": {
+    "balance_sheet": {
+      "matched": 0,
+      "total": 0,
+      "rate": 0
+    },
+    "income_statement": {
+      "matched": 0,
+      "total": 0,
+      "rate": 0
+    },
+    "cash_flow": {
+      "matched": 0,
+      "total": 0,
+      "rate": 0
+    }
+  }
+}

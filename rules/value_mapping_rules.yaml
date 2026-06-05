@@ -938,3 +938,9 @@ sina_aggregations_2019_2022:
     - 归属于母公司股东权益合计
     op: sum
     evidence: 17
+  - target: 归属于母公司所有者权益
+    sources:
+    - 归属于母公司股东权益合计
+    - 归属于母公司股东的权益
+    op: sum
+    evidence: 8

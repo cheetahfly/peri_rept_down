@@ -32,7 +32,7 @@ DECODE_PATH = os.path.join(BASE, "data", "decode_mappings_by_type.json")
 CF_DIRECT_PATH = os.path.join(BASE, "rules", "cf_direct_items.yaml")
 OUTPUT = os.path.join(BASE, "data", "ground_truth_reports", "baseline_2019_2022.json")
 
-YEARS = [2019, 2020, 2021, 2022]
+DEFAULT_YEARS = [2019, 2020, 2021, 2022]
 DEFAULT_SAMPLE_STOCKS = ["000001", "600000", "600036", "600519", "000002", "000858"]
 EXPANDED_STOCK_LIST = os.path.join(BASE, "data", "ground_truth_reports", "expanded_stock_list.txt")
 
@@ -104,6 +104,7 @@ def main():
     p.add_argument("--source", choices=["sina", "guosen"], default="sina",
                    help="Data source")
     args = p.parse_args()
+    years = sorted({int(y) for y in args.years})
 
     if args.source == "guosen":
         try:
@@ -123,7 +124,7 @@ def main():
     for code in SAMPLE_STOCKS:
         # IS
         try:
-            is_df = sina.get_annual(code, YEARS, "income_statement")
+            is_df = sina.get_annual(code, years, "income_statement")
         except FileNotFoundError:
             is_df = None
         sina_is_cache[code] = {}
@@ -145,7 +146,7 @@ def main():
 
         # BS — load also prior year (year-1) for delta computation
         try:
-            bs_df = sina.get_annual(code, [y - 1 for y in YEARS] + YEARS, "balance_sheet")
+            bs_df = sina.get_annual(code, [y - 1 for y in years] + years, "balance_sheet")
         except FileNotFoundError:
             bs_df = None
         sina_bs_cache[code] = {}
@@ -169,7 +170,7 @@ def main():
     for code in SAMPLE_STOCKS:
         for st in STATEMENT_TYPES:
             try:
-                sina_df = sina.get_annual(code, YEARS, st)
+                sina_df = sina.get_annual(code, years, st)
             except FileNotFoundError:
                 continue
             if sina_df.empty:
@@ -237,7 +238,7 @@ def main():
         by_stmt[k]["value_acc_n"] += 1
 
     summary = {
-        "scope": f"{len(SAMPLE_STOCKS)} stocks x {YEARS} x {len(STATEMENT_TYPES)}",
+        "scope": f"{len(SAMPLE_STOCKS)} stocks x {years} x {len(STATEMENT_TYPES)}",
         "stocks_sampled": SAMPLE_STOCKS,
         "total_comparisons": len(results),
         "by_statement": {
