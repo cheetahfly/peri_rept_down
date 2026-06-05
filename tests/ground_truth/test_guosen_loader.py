@@ -131,3 +131,41 @@ def test_guosen_read_statement_raises_on_error():
     with pytest.raises(Exception) as excinfo:
         loader.read_statement("600519", "balance_sheet")
     assert "API key 无效" in str(excinfo.value) or "error" in str(excinfo.value).lower()
+
+
+def test_guosen_get_annual_filters_to_target_years():
+    """get_annual should filter API response to 2019-2022 only."""
+    items = [
+        {"key": "F006N", "name": "货币资金", "date": "2018-12-31", "value": 1.0},
+        {"key": "F006N", "name": "货币资金", "date": "2019-12-31", "value": 2.0},
+        {"key": "F006N", "name": "货币资金", "date": "2020-12-31", "value": 3.0},
+        {"key": "F006N", "name": "货币资金", "date": "2021-12-31", "value": 4.0},
+        {"key": "F006N", "name": "货币资金", "date": "2022-12-31", "value": 5.0},
+        {"key": "F006N", "name": "货币资金", "date": "2023-12-31", "value": 6.0},
+    ]
+
+    def fake_query(code, market, report_type="Q0", report_year=None, count=1):
+        return _make_api_response(items)
+
+    loader = GuosenLoader(api_key="test-key")
+    loader._skill_funcs["query_a_stock_balance_sheet"] = fake_query
+    df = loader.get_annual("600519", [2019, 2020, 2021, 2022], "balance_sheet")
+    assert len(df) == 4
+    # 报告日 should be 2019..2022 only
+    periods = set(df["报告日"].astype(str))
+    assert periods == {"2019-12-31", "2020-12-31", "2021-12-31", "2022-12-31"}
+    assert df["货币资金"].tolist() == [2.0, 3.0, 4.0, 5.0]
+
+
+def test_guosen_get_annual_passes_count_to_api():
+    """get_annual should pass count = max(target_years) - min(target_years) + 1."""
+    captured = {}
+
+    def fake_query(code, market, report_type="Q0", report_year=None, count=1):
+        captured["count"] = count
+        return _make_api_response([])
+
+    loader = GuosenLoader(api_key="test-key")
+    loader._skill_funcs["query_a_stock_balance_sheet"] = fake_query
+    loader.get_annual("600519", [2019, 2020, 2021, 2022], "balance_sheet")
+    assert captured["count"] == 5  # 4-year range + 1 buffer year (max-min+2 = 5)

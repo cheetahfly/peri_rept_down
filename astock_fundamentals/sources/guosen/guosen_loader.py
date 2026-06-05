@@ -203,3 +203,39 @@ class GuosenLoader:
         else:
             response = fn(stock_code, None, None, 1)
         return self._api_response_to_df(response)
+
+    def get_annual(
+        self, stock_code: str, target_years: List[int], statement_type: str,
+    ) -> pd.DataFrame:
+        """Fetch multiple years of a single statement type.
+
+        Args:
+            stock_code: 6-digit A-share or 5-digit HK code
+            target_years: e.g. [2019, 2020, 2021, 2022]
+            statement_type: balance_sheet / income_statement / cash_flow
+
+        Returns: DataFrame with one row per year-end reporting date.
+        """
+        market = _detect_market(stock_code)
+        kind = "hk" if market == "HK" else "a"
+        api_name = STATEMENT_API[(statement_type, kind)]
+        if api_name not in self._skill_funcs:
+            raise RuntimeError(f"GuosenLoader: skill function {api_name} not loaded")
+        fn = self._skill_funcs[api_name]
+        # Request count = max - min + 1 (caller may want more; allow len(target_years) + 1 buffer)
+        count = max(target_years) - min(target_years) + 2
+        if kind == "a":
+            response = fn(stock_code, market, "Q0", None, count)
+        else:
+            response = fn(stock_code, None, None, count)
+        df = self._api_response_to_df(response)
+        if df.empty:
+            return df
+        # Filter to rows whose 报告日 year is in target_years
+        target_set = set(target_years)
+        # 报告日 format: "YYYY-MM-DD" or "YYYYMMDD"
+        def _year_of(date_str: str) -> int:
+            s = str(date_str).replace("-", "")
+            return int(s[:4]) if len(s) >= 4 and s[:4].isdigit() else 0
+        df = df[df["报告日"].apply(_year_of).isin(target_set)].copy()
+        return df
