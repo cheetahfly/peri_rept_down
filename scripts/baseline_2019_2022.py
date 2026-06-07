@@ -103,8 +103,17 @@ def main():
     p.add_argument("--cache-dir", default=CACHE_DIR)
     p.add_argument("--source", choices=["sina", "guosen"], default="sina",
                    help="Data source")
+    p.add_argument("--stocks-file", default=None,
+                   help="Path to file with one stock code per line")
     args = p.parse_args()
     years = sorted({int(y) for y in args.years})
+
+    # Override stock list if --stocks-file provided
+    if args.stocks_file and os.path.exists(args.stocks_file):
+        with open(args.stocks_file, 'r', encoding='utf-8') as f:
+            global SAMPLE_STOCKS
+            SAMPLE_STOCKS = [line.strip() for line in f if line.strip()]
+        print(f"Loaded {len(SAMPLE_STOCKS)} stocks from {args.stocks_file}")
 
     if args.source == "guosen":
         try:
