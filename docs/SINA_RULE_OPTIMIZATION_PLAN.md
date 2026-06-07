@@ -90,10 +90,10 @@
 6. [x] 3.6 提交 + 最终报告 ✅
 
 **当前进度**: ✅ 完成 (2026-06-04)
-- 最终别名数: 85 条 (BS 28, IS 25, CF 32)
-- Baseline: BS 99.68%, IS 99.70%, CF 96.80%
-- 比较数: 14,650 (1200 stocks × 7 years × 3 stmts)
-- 聚合规则: 1 条
+- 最终别名数: 100 条 (BS 37, IS 27, CF 36)
+- Baseline (1529 stocks): BS 99.70%, IS 99.72%, CF 96.78%
+- 比较数: 19,554 (1529 stocks × 7 years × 3 stmts)
+- 聚合规则: 3 条
 
 ---
 
@@ -146,7 +146,7 @@
 | `rules/aliases.yaml` | 规则主文件 (sina_aliases_2019_2022 段) |
 | `rules/cf_direct_items.yaml` | CF 直接法白名单 |
 | `rules/industry_aliases.yaml` | 行业股票映射 |
-| `data/ground_truth_reports/expanded_stock_list.txt` | 当前 209 股票列表 |
+| `data/ground_truth_reports/expanded_stock_list.txt` | 当前 1529 股票列表 |
 | `data/ground_truth_reports/baseline_2019_2022.json` | 最新 baseline 结果 |
 | `data/ground_truth_reports/cleaning_progression.md` | 历史进展报告 |
 | `docs/SINA_RULE_OPTIMIZATION_PLAN.md` | **本文档 (主计划)** |
@@ -183,23 +183,24 @@
 ### 数据资产
 - Sina 渠道: 3,903 只股票 × 1989-2026 (276,445 条报告)
 - RDS 基准: 1991-2022 (cninfo 结构化数据)
-- 规则库: 85 aliases + 1 aggregation
+- 规则库: 100 aliases + 3 aggregation
 - 测试: 30+ tests
 
-### 匹配率提升 (209 → 1200 stocks, 2000-2022)
+### 匹配率 (1529 stocks × 7 years, 2000-2022)
 | 报表 | 基线 (Session 初) | 最终 | 提升 |
 |------|-------------------|------|------|
-| BS | 99.59% | **99.68%** | +0.09% |
-| IS | 99.30% | **99.70%** | +0.40% |
-| CF | 88.93% | **96.80%** | **+7.87%** |
+| BS | 99.59% | **99.70%** | +0.11% |
+| IS | 99.30% | **99.72%** | +0.42% |
+| CF | 88.93% | **96.78%** | **+7.85%** |
 
 ### 关键发现
 1. CF 匹配率大幅提升 (88% → 96.8%) 主要来自：
    - 直接法/间接法分离 (cf_direct_items.yaml)
    - 跨表注入 (净利润/财务费用从 IS 注入 CF)
-   - 85 条别名覆盖
+   - 100 条别名覆盖
 2. 所有 prefix (000/002/300/600/601/603) 均 ≥98.76%
 3. 早期年份 (2000-2005) 数据覆盖率仍略低 (96-98%)
+4. 1200→1529 股票扩展: 匹配率完全稳定 (Δ < 0.02%)
 
 ### 文件变更
 | 文件 | 变更类型 |
