@@ -1,0 +1,582 @@
+{
+  "BS": {
+    "name": "资产负债表",
+    "period": "2025-12-31",
+    "rows": [
+      {
+        "key": "PaidInCapital",
+        "name": "#实收资本（或股本）",
+        "sec": "所有者权益（或股东权益）",
+        "order": 137,
+        "unit": "",
+        "value": "1252270215.0000"
+      },
+      {
+        "key": "CapitalReserveFund",
+        "name": "#资本公积",
+        "sec": "所有者权益（或股东权益）",
+        "order": 142,
+        "unit": "",
+        "value": "1577095.1800"
+      },
+      {
+        "key": "SurplusReserveFund",
+        "name": "#盈余公积",
+        "sec": "所有者权益（或股东权益）",
+        "order": 143,
+        "unit": "",
+        "value": "50543176610.9400"
+      },
+      {
+        "key": "RetainedProfit",
+        "name": "#未分配利润",
+        "sec": "所有者权益（或股东权益）",
+        "order": 144,
+        "unit": "",
+        "value": "191905148832.2100"
+      },
+      {
+        "key": "TreasuryStock",
+        "name": "#减：库存股",
+        "sec": "所有者权益（或股东权益）",
+        "order": 145,
+        "unit": "",
+        "value": "120112601.5300"
+      },
+      {
+        "key": "OrdinaryRiskReserveFund",
+        "name": "#一般风险准备",
+        "sec": "所有者权益（或股东权益）",
+        "order": 146,
+        "unit": "",
+        "value": "1061529724.0000"
+      },
+      {
+        "key": "SEWithoutMI",
+        "name": "归属母公司股东权益合计",
+        "sec": "所有者权益（或股东权益）",
+        "order": 155,
+        "unit": "",
+        "value": "244637811032.1800"
+      },
+      {
+        "key": "MinorityInterests",
+        "name": "少数股东权益",
+        "sec": "所有者权益（或股东权益）",
+        "order": 156,
+        "unit": "",
+        "value": "9321442876.8900"
+      },
+      {
+        "key": "TotalShareholderEquity",
+        "name": "所有者权益（或股东权益）合计",
+        "sec": "所有者权益（或股东权益）",
+        "order": 158,
+        "unit": "",
+        "value": "253959253909.0700"
+      },
+      {
+        "key": "AccountsPayable",
+        "name": "##应付账款",
+        "sec": "流动负债",
+        "order": 81,
+        "unit": "",
+        "value": "4007309049.8700"
+      },
+      {
+        "key": "SalariesPayable",
+        "name": "#应付职工薪酬",
+        "sec": "流动负债",
+        "order": 85,
+        "unit": "",
+        "value": "5523447166.5000"
+      },
+      {
+        "key": "TaxsPayable",
+        "name": "#应交税费",
+        "sec": "流动负债",
+        "order": 87,
+        "unit": "",
+        "value": "7697169830.6900"
+      },
+      {
+        "key": "OtherPayable",
+        "name": "#其他应付款",
+        "sec": "流动负债",
+        "order": 89,
+        "unit": "",
+        "value": "5298261266.2200"
+      },
+      {
+        "key": "NonCurrentLiabilityIn1Year",
+        "name": "#一年内到期的非流动负债",
+        "sec": "流动负债",
+        "order": 92,
+        "unit": "",
+        "value": "44206237.0500"
+      },
+      {
+        "key": "OtherCurrentLiability",
+        "name": "#其他流动负债",
+        "sec": "流动负债",
+        "order": 93,
+        "unit": "",
+        "value": "994959710.2400"
+      },
+      {
+        "key": "TotalCurrentLiability",
+        "name": "流动负债合计",
+        "sec": "流动负债",
+        "order": 98,
+        "unit": "",
+        "value": "49610476817.8100"
+      },
+      {
+        "key": "CashEquivalents",
+        "name": "#货币资金/现金及存放中央银行款项",
+        "sec": "流动资产",
+        "order": 1,
+        "unit": "",
+        "value": "51690610946.5000"
+      },
+      {
+        "key": "AccountReceivable",
+        "name": "#应收账款",
+        "sec": "流动资产",
+        "order": 7,
+        "unit": "",
+        "value": "2609048.4900"
+      },
+      {
+        "key": "OtherReceivable",
+        "name": "#其他应收款",
+        "sec": "流动资产",
+        "order": 8,
+        "unit": "",
+        "value": "36281302.9400"
+      },
+      {
+        "key": "AdvancePayment",
+        "name": "#预付款项",
+        "sec": "流动资产",
+        "order": 9,
+        "unit": "",
+        "value": "6637314.3100"
+      },
+      {
+        "key": "Inventories",
+        "name": "#存货",
+        "sec": "流动资产",
+        "order": 12,
+        "unit": "",
+        "value": "61427421796.1800"
+      },
+      {
+        "key": "NonCurrentAssetIn1Year",
+        "name": "#一年内到期的非流动资产",
+        "sec": "流动资产",
+        "order": 15,
+        "unit": "",
+        "value": "26871114612.7100"
+      },
+      {
+        "key": "OtherCurrentAssets",
+        "name": "#其他流动资产",
+        "sec": "流动资产",
+        "order": 16,
+        "unit": "",
+        "value": "51027010.5600"
+      },
+      {
+        "key": "TotalCurrentAssets",
+        "name": "流动资产合计",
+        "sec": "流动资产",
+        "order": 23,
+        "unit": "",
+        "value": "252518662398.5700"
+      },
+      {
+        "key": "TotalLiability",
+        "name": "负债合计",
+        "sec": "负债合计",
+        "order": 136,
+        "unit": "",
+        "value": "49875590112.3700"
+      },
+      {
+        "key": "TotalLiabilityAndEquity",
+        "name": "负债和所有者权益（或股东权益）总计",
+        "sec": "负债和所有者（或股东权益）总计",
+        "order": 161,
+        "unit": "",
+        "value": "303834844021.4400"
+      },
+      {
+        "key": "TotalAssets",
+        "name": "资产总计",
+        "sec": "资产总计",
+        "order": 75,
+        "unit": "",
+        "value": "303834844021.4400"
+      },
+      {
+        "key": "LendCapital",
+        "name": "#拆出资金",
+        "sec": "金融类资产",
+        "order": 56,
+        "unit": "",
+        "value": "99096188059.7500"
+      },
+      {
+        "key": "BoughtSellbackAssets",
+        "name": "#买入返售金融资产",
+        "sec": "金融类资产",
+        "order": 58,
+        "unit": "",
+        "value": "8879708146.9700"
+      },
+      {
+        "key": "LoanAndAdvance",
+        "name": "#发放贷款和垫款",
+        "sec": "金融类资产",
+        "order": 59,
+        "unit": "",
+        "value": "1553536744.7800"
+      },
+      {
+        "key": "DeferredTaxLiability",
+        "name": "#递延所得税负债",
+        "sec": "非流动负债",
+        "order": 108,
+        "unit": "",
+        "value": "75608351.7900"
+      },
+      {
+        "key": "InvestmentProperty",
+        "name": "#投资性房地产",
+        "sec": "非流动资产",
+        "order": 26,
+        "unit": "",
+        "value": "3108042.5600"
+      },
+      {
+        "key": "LongtermEquityInvest",
+        "name": "#长期股权投资",
+        "sec": "非流动资产",
+        "order": 27,
+        "unit": "",
+        "value": "147181873.6700"
+      },
+      {
+        "key": "FixedAssets",
+        "name": "#固定资产",
+        "sec": "非流动资产",
+        "order": 29,
+        "unit": "",
+        "value": "22488122304.3500"
+      },
+      {
+        "key": "ConstruInProcess",
+        "name": "#在建工程",
+        "sec": "非流动资产",
+        "order": 31,
+        "unit": "",
+        "value": "2471886030.5800"
+      },
+      {
+        "key": "IntangibleAssets",
+        "name": "#无形资产",
+        "sec": "非流动资产",
+        "order": 35,
+        "unit": "",
+        "value": "8685618688.5600"
+      },
+      {
+        "key": "LongDeferredExpense",
+        "name": "#长期待摊费用",
+        "sec": "非流动资产",
+        "order": 39,
+        "unit": "",
+        "value": "135324580.0800"
+      },
+      {
+        "key": "DeferredTaxAssets",
+        "name": "#递延所得税资产",
+        "sec": "非流动资产",
+        "order": 40,
+        "unit": "",
+        "value": "6602469151.2200"
+      },
+      {
+        "key": "OtherNonCurrentAssets",
+        "name": "#其他非流动资产",
+        "sec": "非流动资产",
+        "order": 41,
+        "unit": "",
+        "value": "175472981.4200"
+      },
+      {
+        "key": "TotalNonCurrentAssets",
+        "name": "非流动资产合计",
+        "sec": "非流动资产",
+        "order": 50,
+        "unit": "",
+        "value": "51316181622.8700"
+      }
+    ]
+  },
+  "IS": {
+    "name": "利润表",
+    "period": "2025-12-31",
+    "rows": [
+      {
+        "key": "TotalCompositeIncome",
+        "name": "八、综合收益总额",
+        "sec": "其他综合收益",
+        "order": 93,
+        "unit": "",
+        "value": "85310250706.0100"
+      },
+      {
+        "key": "CIParentCompanyOwners",
+        "name": "#归属于母公司所有者的综合收益总额",
+        "sec": "其他综合收益",
+        "order": 94,
+        "unit": "",
+        "value": "82324204482.7500"
+      },
+      {
+        "key": "CIMinorityOwners",
+        "name": "#归属于少数股东的综合收益总额",
+        "sec": "其他综合收益",
+        "order": 95,
+        "unit": "",
+        "value": "2986046223.2600"
+      },
+      {
+        "key": "NetProfit",
+        "name": "六、净利润",
+        "sec": "净利润",
+        "order": 67,
+        "unit": "",
+        "value": "85310324833.6700"
+      },
+      {
+        "key": "NPParentCompanyOwners",
+        "name": "#归属于母公司所有者的净利润",
+        "sec": "净利润",
+        "order": 70,
+        "unit": "",
+        "value": "82320067101.6800"
+      },
+      {
+        "key": "MinorityProfit",
+        "name": "#少数股东损益",
+        "sec": "净利润",
+        "order": 71,
+        "unit": "",
+        "value": "2990257731.9900"
+      },
+      {
+        "key": "TotalProfit",
+        "name": "五、利润总额",
+        "sec": "利润总额",
+        "order": 62,
+        "unit": "",
+        "value": "114755261605.0800"
+      },
+      {
+        "key": "IncomeTaxCost",
+        "name": "#减:所得税费用",
+        "sec": "利润总额",
+        "order": 63,
+        "unit": "",
+        "value": "29444936771.4100"
+      },
+      {
+        "key": "BasicEPS",
+        "name": "基本每股收益",
+        "sec": "每股收益",
+        "order": 97,
+        "unit": "",
+        "value": "65.6600"
+      },
+      {
+        "key": "DilutedEPS",
+        "name": "稀释每股收益",
+        "sec": "每股收益",
+        "order": 98,
+        "unit": "",
+        "value": "65.6600"
+      },
+      {
+        "key": "OtherNetRevenue",
+        "name": "三、非经营性净收益(其他经营收益)",
+        "sec": "特别收益/收入",
+        "order": 45,
+        "unit": "",
+        "value": "125596307.6600"
+      },
+      {
+        "key": "FairValueChangeIncome",
+        "name": "#公允价值变动净收益",
+        "sec": "特别收益/收入",
+        "order": 46,
+        "unit": "",
+        "value": "76162597.6600"
+      },
+      {
+        "key": "InvestIncome",
+        "name": "#投资净收益",
+        "sec": "特别收益/收入",
+        "order": 47,
+        "unit": "",
+        "value": "561176.1400"
+      },
+      {
+        "key": "InvestIncomeAssociates",
+        "name": "##其中:对联营合营企业的投资收益",
+        "sec": "特别收益/收入",
+        "order": 48,
+        "unit": "",
+        "value": "181873.6700"
+      },
+      {
+        "key": "AssetDealIncome",
+        "name": "#资产处置收益",
+        "sec": "特别收益/收入",
+        "order": 50,
+        "unit": "",
+        "value": "3106625.19"
+      },
+      {
+        "key": "OperatingProfit",
+        "name": "四、营业利润",
+        "sec": "营业利润",
+        "order": 56,
+        "unit": "",
+        "value": "114808950164.2400"
+      },
+      {
+        "key": "NonoperatingIncome",
+        "name": "#加:营业外收入",
+        "sec": "营业利润",
+        "order": 57,
+        "unit": "",
+        "value": "74947039.7000"
+      },
+      {
+        "key": "NonoperatingExpense",
+        "name": "#减:营业外支出",
+        "sec": "营业利润",
+        "order": 58,
+        "unit": "",
+        "value": "128635598.8600"
+      },
+      {
+        "key": "TotalOperatingCost",
+        "name": "二、营业总成本",
+        "sec": "营业支出",
+        "order": 20,
+        "unit": "",
+        "value": "57370818034.3300"
+      },
+      {
+        "key": "OperatingCost",
+        "name": "#营业成本",
+        "sec": "营业支出",
+        "order": 21,
+        "unit": "",
+        "value": "14892277570.9100"
+      },
+      {
+        "key": "OperatingTaxSurcharges",
+        "name": "#营业税金及附加",
+        "sec": "营业支出",
+        "order": 34,
+        "unit": "",
+        "value": "27354227684.8800"
+      },
+      {
+        "key": "OperatingExpense",
+        "name": "#销售费用",
+        "sec": "营业支出",
+        "order": 35,
+        "unit": "",
+        "value": "7253499600.6800"
+      },
+      {
+        "key": "AdministrationExpense",
+        "name": "#管理费用",
+        "sec": "营业支出",
+        "order": 36,
+        "unit": "",
+        "value": "8320061659.6600"
+      },
+      {
+        "key": "FinancialExpense",
+        "name": "#财务费用",
+        "sec": "营业支出",
+        "order": 37,
+        "unit": "",
+        "value": "-815240284.7200"
+      },
+      {
+        "key": "InterestFinExp",
+        "name": "##其中：利息费用",
+        "sec": "营业支出",
+        "order": 38,
+        "unit": "",
+        "value": "28734948.29"
+      },
+      {
+        "key": "InterestIncomeFin",
+        "name": "##其中 ：利息收入",
+        "sec": "营业支出",
+        "order": 39,
+        "unit": "",
+        "value": "-842988240.60"
+      },
+      {
+        "key": "ReseDevExpense",
+        "name": "#研发费用",
+        "sec": "营业支出",
+        "order": 40,
+        "unit": "",
+        "value": "190112246.58"
+      },
+      {
+        "key": "TotalOperatingRevenue",
+        "name": "一、营业总收入",
+        "sec": "营业收入",
+        "order": 1,
+        "unit": "",
+        "value": "172054171890.9100"
+      },
+      {
+        "key": "OperatingRevenue",
+        "name": "#营业收入",
+        "sec": "营业收入",
+        "order": 2,
+        "unit": "",
+        "value": "168838102514.7900"
+      },
+      {
+        "key": "NetInterestIncome",
+        "name": "#利息净收入",
+        "sec": "营业收入",
+        "order": 3,
+        "unit": "",
+        "value": "3216069376.1200"
+      },
+      {
+        "key": "InterestIncome",
+        "name": "##其中:利息收入",
+        "sec": "营业收入",
+        "order": 4,
+        "unit": "",
+        "value": "3216069376.1200"
+      }
+    ]
+  }
+}
