@@ -239,8 +239,11 @@ class RdsLoader:
                 except (ValueError, TypeError):
                     pass
 
-        # Sort by display_order
+        # Sort by display_order, then renumber sequentially 0..N-1
+        # (canonical field_order values may have gaps when fields are missing)
         result.sort(key=lambda x: x["display_order"])
+        for i, item in enumerate(result):
+            item["display_order"] = i
         return result
 
     def _date_to_report_type(self, month: int) -> str:
