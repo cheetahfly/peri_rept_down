@@ -105,3 +105,13 @@ def test_sina_aliases_2019_2022_loaded_into_balance_sheet():
     # After Task 7 added the sina_aliases_2019_2022 block,
     # load_cleaning_rules should merge it into rules.aliases[statement_type]
     assert "balance_sheet" in rules.aliases
+
+
+def test_build_reverse_alias_map_does_not_use_period_as_canonical():
+    """P0-1a regression: reverse map must NOT map aliases to 'annual'/'quarter_q3'."""
+    rules = load_cleaning_rules()
+    from astock_fundamentals.ground_truth.rule_cleaner import _build_reverse_alias_map
+    for st in ("balance_sheet", "income_statement", "cash_flow"):
+        rev = _build_reverse_alias_map(st, rules)
+        bad = {k: v for k, v in rev.items() if v in ("annual", "half_year", "quarter_q1", "quarter_q3")}
+        assert not bad, f"{st}: aliases wrongly mapped to period names: {list(bad.items())[:3]}"

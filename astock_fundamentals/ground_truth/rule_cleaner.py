@@ -100,18 +100,39 @@ def load_cleaning_rules(
 
 
 def _build_reverse_alias_map(statement_type: str, rules: CleaningRules) -> Dict[str, str]:
-    """Build {sina_name: rds_standard_name} for one statement type."""
+    """Build {sina_name: rds_standard_name} for one statement type.
+
+    aliases.yaml uses nested period structure:
+        {statement_type: {period: {canonical: [aliases]}}}
+    Tolerates legacy flat structure (e.g. test SAMPLE, extra_aliases_text):
+        {statement_type: {canonical: [aliases]}}
+    """
     reverse: Dict[str, str] = {}
-    for canonical, alts in rules.aliases.get(statement_type, {}).items():
-        for alt in alts or []:
-            reverse[alt] = canonical
+    for key, value in (rules.aliases.get(statement_type) or {}).items():
+        if isinstance(value, list):
+            # Legacy flat format: key is canonical, value is aliases
+            for alt in value:
+                reverse[alt] = key
+        elif isinstance(value, dict):
+            # Period format: key is period, value is {canonical: [aliases]}
+            for canonical, alts in value.items():
+                for alt in alts or []:
+                    reverse[alt] = canonical
     return reverse
 
 
 def rename_columns(df: pd.DataFrame, statement_type: str, rules: CleaningRules) -> pd.DataFrame:
-    """Rename Sina columns to RDS canonical names. Unknown columns kept as-is."""
+    """Rename Sina columns to RDS canonical names. Unknown columns kept as-is.
+
+    When multiple Sina columns map to the same canonical, keep the first
+    (the one whose original name equals the canonical, when present).
+    """
     reverse = _build_reverse_alias_map(statement_type, rules)
-    return df.rename(columns={k: v for k, v in reverse.items() if k in df.columns})
+    rename_map = {k: v for k, v in reverse.items() if k in df.columns}
+    out = df.rename(columns=rename_map)
+    # Drop duplicate columns created when multiple Sina names share a canonical.
+    out = out.loc[:, ~out.columns.duplicated()]
+    return out
 
 
 _UNIT_MULTIPLIERS = {
