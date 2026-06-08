@@ -46,6 +46,7 @@ A股财务数据多源清洗流水线 — Sina (AKShare) ↔ RDS (cninfo) ↔ Gu
 - [x] 交互式成果仪表盘 (ECharts HTML)
 - [x] Guosen 第三方数据源接入
 - [x] display_order sequential bug 修复 (2026-06-08)
+- [x] **P0-1a `rule_cleaner` rename_columns bug 修复 (2026-06-08)** — CF 银行专项恢复
 
 ### 匹配率迭代历史
 
@@ -90,7 +91,7 @@ Sina (AKShare)                    RDS (cninfo)
 
 | 优先级 | 项目 | 预估影响 | 状态 |
 |--------|------|----------|------|
-| **P0-1a** | `rule_cleaner._build_reverse_alias_map` bug | 清洗输出缩水 | 🔴 **新发现 2026-06-08** |
+| **P0-1a** | `rule_cleaner._build_reverse_alias_map` bug | 清洗输出缩水 | ✅ **已修复 2026-06-08 (56d03e7c)** |
 | P0-2a | 13 PDF 测试因 `data/by_code/600016/` 缺失失败 | 整套 PDF 测试不可信 | 待重下数据 |
 | P0-2c | `test_expansion.py::test_stock` fixture 错误 | 扩展测试不可用 | 15 min 修复 |
 | P0-4 | `baseline_per_year.json` 2022 数据全 0 | 报告不可信 | 待决策 |
@@ -117,7 +118,7 @@ Sina (AKShare)                    RDS (cninfo)
 - RDS 2021 bank 数据异常 (与 Sina 同科目值差 >35%)
 - `baseline_per_year.json` 2022 数据全为 0 (scope 声明包含 2022 但实际未跑)
 - `data/akshare_bulk/` (1.9 GB) 已在 .gitignore, 保留于磁盘
-- **P0-1a bug**: `rule_cleaner._build_reverse_alias_map` 误把 period 当 canonical，导致清洗输出 IS 仅 3 字段、CF 仅 9 字段（实际应有 30+ 字段）
+- **P0-1a bug** ✅ 已修复: `rule_cleaner._build_reverse_alias_map` 误把 period 当 canonical (修复于 56d03e7c)，修复后 IS 17 字段、CF 34 字段、BS 32 字段 (清洗输出从 49/24/66 行扩到 231/128/244 行)
 
 ### 开发历史 (本会话累计)
 

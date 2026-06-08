@@ -215,7 +215,7 @@
 | # | 缺口 | 影响 | 建议 | 工作量 |
 |---|------|------|------|--------|
 | P0-1 | `data/exports_v2/*.csv` 3 个文件未提交 (含 82 行变更) | 团队同步不一致 | **✅ 已回滚到 f7dbbf8a 状态** | 5 min |
-| **P0-1a** ⚠ | `rule_cleaner._build_reverse_alias_map` 将 period 当 canonical — **多数 Sina 列被错误重命名为 'annual'/'quarter_q3'** | **清洗输出严重缩水** (IS 仅 3 字段、CF 9 字段)，影响所有后续指标 | 修复 `_build_reverse_alias_map` 迭代逻辑 (2-3 行代码) | 30 min + 重跑清洗流水线 |
+| **P0-1a** ✅ | `rule_cleaner._build_reverse_alias_map` 将 period 当 canonical — **多数 Sina 列被错误重命名为 'annual'/'quarter_q3'** | **清洗输出严重缩水** (IS 仅 3 字段、CF 9 字段)，影响所有后续指标 | **✅ 已修复 (commit 56d03e7c)**：正确迭代 period → canonical → alias, 增加去重 | 30 min + 重跑清洗流水线 |
 | P0-2 | 测试套件 14 失败 + 1 错误 | CI 不可信 | 见 P0-2a/2b/2c 拆解 | — |
 | P0-2a | `test_word_recovery` 13 失败 (PDF 缺失) | 整套 PDF 测试不可信 | 重新下载 600016 PDF 或 `@pytest.mark.skip` | 30 min |
 | P0-2b | `test_tidy_data_pipeline::test_display_order_sequential` 失败 | 数据规整有 bug | 检查 `tidy_data.py` 中 display_order 计算逻辑 | 1-2 h |
