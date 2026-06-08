@@ -1,0 +1,28 @@
+{
+  "scope": "200 stocks x 7 years x 3 statements",
+  "source": "sina_cleaned_*.csv from clean_sina_pipeline.py (P0-1a fixed)",
+  "total_comparisons": 4121,
+  "by_statement": {
+    "balance_sheet": {
+      "comparisons": 1374,
+      "total_fields": 47628,
+      "matched": 20206,
+      "value_diffs": 25200,
+      "match_rate": 0.4242
+    },
+    "income_statement": {
+      "comparisons": 1374,
+      "total_fields": 19611,
+      "matched": 6454,
+      "value_diffs": 12090,
+      "match_rate": 0.3291
+    },
+    "cash_flow": {
+      "comparisons": 1373,
+      "total_fields": 40374,
+      "matched": 23894,
+      "value_diffs": 13706,
+      "match_rate": 0.5918
+    }
+  }
+}

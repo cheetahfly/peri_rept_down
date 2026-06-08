@@ -1,0 +1,28 @@
+{
+  "scope": "200 stocks x 4 years x 3 statements",
+  "source": "Sina via full_rules + RDS ground truth",
+  "total_comparisons": 2367,
+  "by_statement": {
+    "balance_sheet": {
+      "comparisons": 789,
+      "gt_items": 35316,
+      "matched": 32876,
+      "match_rate": 0.9309,
+      "avg_value_accuracy": 0.5402
+    },
+    "income_statement": {
+      "comparisons": 789,
+      "gt_items": 21929,
+      "matched": 20867,
+      "match_rate": 0.9516,
+      "avg_value_accuracy": 0.0135
+    },
+    "cash_flow": {
+      "comparisons": 789,
+      "gt_items": 20989,
+      "matched": 14027,
+      "match_rate": 0.6683,
+      "avg_value_accuracy": 0.1377
+    }
+  }
+}

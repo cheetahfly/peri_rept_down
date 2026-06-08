@@ -66,20 +66,23 @@
 
 ---
 
-### 2.4 P1-1: IS 值准确率提升 (2-3 h)
+### 2.4 P1-1: IS 值准确率提升 (4-6 h)
 
-**根因**: 银行 IS 2021 已知差异 (35%)，银行专项规则未完善。
+**根因**: 银行 IS 数据结构与非银行完全不同，导致 compare_stock 匹配策略失效。
+
+**具体问题**:
+1. **别名冲突**: `其中：利息收入` 在 normalize_name 后变成 `利息收入`，与 `利息收入` 的别名冲突
+2. **重复匹配**: `销售费用` 和 `管理费用` 都映射到 `业务及管理费`，导致同一 Sina 字段被匹配两次
+3. **过于激进的匹配**: `cid_value` 和 `value_exact` 策略会根据值的大小匹配不相关的字段
+4. **影响**: 000001 IS 值准确率仅 11.1%，而 600519 IS 值准确率 96.7%
 
 **修复步骤**:
-1. 分析 IS 失败值分布：
-   ```bash
-   python -c "import json; data = json.load(open('data/ground_truth_reports/baseline_2019_2022.json')); print(data['by_statement']['income_statement'])"
-   ```
-2. 完善 `rules/value_mapping_rules.yaml` 中的 `financial_sector_rules.banking` 规则
-3. 添加银行专项的值映射规则
-4. 重新运行 baseline 验证 IS 值准确率提升
+1. 重构 `compare_stock` 函数的匹配策略，增加银行专项的匹配规则
+2. 为银行和非银行定义不同的 `alias_map`
+3. 修复 `get_aliases` 中的别名克隆逻辑，避免重复匹配
+4. 添加更严格的价值匹配阈值
 
-**预期结果**: IS 值准确率从 62% 提升到 90%+
+**预期结果**: 银行 IS 值准确率从 11% 提升到 80%+，整体 IS 值准确率从 62% 提升到 90%+
 
 ## 3. 验证检查点
 
