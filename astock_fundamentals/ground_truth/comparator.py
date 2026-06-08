@@ -295,14 +295,14 @@ def compare_stock(
     fuzzy_tol = (get_tolerance_for_year(year) * 100.0) if year else 10.0
     keyword_tol = 5.0
     value_exact_tol = 0.001
-    cid_tol = 1.0
+    cid_tol = 0.01  # Tightened: was 1.0% — prevents spurious value-based matches
     _STRATEGY = [
         ("exact_original", lambda n,v,ng,ee,ne,mk:
             (n,ee[n],"exact") if n in ee and _compare_values(v,ee[n]) is not None and _compare_values(v,ee[n])<10 else None),
         ("exact_norm", lambda n,v,ng,ee,ne,mk:
             (ne[ng][0],ne[ng][1],"exact") if ng in ne and _compare_values(v,ne[ng][1]) is not None and _compare_values(v,ne[ng][1])<10 else None),
         ("alias", lambda n,v,ng,ee,ne,mk:
-            next(((va,ne[_mv(va)][1],"alias") for va in alias_map.get(ng,[]) if (_mv:=normalize_name)(va) in ne),None) if ng in alias_map else None),
+            next(((va,ne[_mv(va)][1],"alias") for va in alias_map.get(ng,[]) if (_mv:=normalize_name)(va) in ne and _compare_values(v,ne[_mv(va)][1]) is not None and _compare_values(v,ne[_mv(va)][1])<10),None) if ng in alias_map else None),
         ("reverse_alias", lambda n,v,ng,ee,ne,mk:
             (ne[_ms(s)][0],ne[_ms(s)][1],"alias") if (s:=reverse_aliases.get(ng)) and (_ms:=normalize_name)(s) in ne else None),
         ("fuzzy", lambda n,v,ng,ee,ne,mk:

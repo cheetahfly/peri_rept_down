@@ -138,10 +138,13 @@ def get_aliases(statement_type: str, report_type: str = "annual") -> Dict[str, L
     # Clone entries under their normalize_name-stripped keys so that
     # comparator's prefix-stripping (其中：/减：/加：) doesn't miss matches.
     # e.g. 其中：营业成本 -> dup to 营业成本
+    # BUT: skip cloning if the stripped key already exists as a different
+    # canonical (e.g. 利息收入 already exists, don't merge 其中：利息收入 into it).
+    existing_canonicals = set(annual_with_sina.keys())
     extras: Dict[str, List[str]] = {}
     for canonical, aliases in list(annual_with_sina.items()):
         stripped = _normalize_alias_key(canonical)
-        if stripped and stripped != canonical:
+        if stripped and stripped != canonical and stripped not in existing_canonicals:
             existing = extras.setdefault(stripped, [])
             for a in aliases or []:
                 if a not in existing:
