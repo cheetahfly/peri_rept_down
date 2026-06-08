@@ -117,5 +117,6 @@
       "total": 0,
       "rate": 0
     }
-  }
+  },
+  "_note": "2022 data: RDS only has Q1 (2022-03-31), no annual (2022-12-31). Baseline cannot match 2022 annual data."
 }
