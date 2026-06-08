@@ -127,6 +127,10 @@ class TestClusterXPositions:
         assert len(result) == 1
 
 
+@pytest.mark.skipif(
+    not os.path.exists("data/by_code/600016/600016_民生银行_2024_年报.pdf"),
+    reason="PDF data file missing: data/by_code/600016/600016_民生银行_2024_年报.pdf"
+)
 class TestExtractStructuredNumeric:
     """Tests for extract_structured_numeric on real PDFs."""
 
@@ -190,6 +194,10 @@ class TestExtractStructuredNumeric:
         assert result["rows"] == []
 
 
+@pytest.mark.skipif(
+    not os.path.exists("data/by_code/600016/600016_民生银行_2024_年报.pdf"),
+    reason="PDF data file missing: data/by_code/600016/600016_民生银行_2024_年报.pdf"
+)
 class TestFindDataPages:
     """Tests for find_data_pages function."""
 
@@ -207,6 +215,10 @@ class TestFindDataPages:
         assert pages == []
 
 
+@pytest.mark.skipif(
+    not os.path.exists("data/by_code/600016/600016_民生银行_2024_年报.pdf"),
+    reason="PDF data file missing: data/by_code/600016/600016_民生银行_2024_年报.pdf"
+)
 class TestRecoverStatement:
     """Tests for recover_statement function."""
 
