@@ -204,8 +204,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    # Smoke test
-    stocks = load_stocks()
-    print(f"Loaded {len(stocks)} stocks")
-    print(f"INDIRECT_FIELDS has {len(INDIRECT_FIELDS)} entries")
-    print(f"Output dir: {OUTPUT_DIR}")
+    raise SystemExit(main())
