@@ -30,24 +30,23 @@ LOG_FILE = os.path.join(BASE, "data", "ground_truth_reports", "indirect_cf_downl
 # Years to download (annual reports only)
 YEARS = [2020, 2021, 2022]
 
-# Column index → (F-code, display_order, chinese_name)
-# NOTE: F123N-F137N used instead of F057N-F071N to avoid duplicate keys
-INDIRECT_FIELDS = {
-    47: ("F123N", 85, "净利润"),
-    48: ("F124N", 86, "资产减值准备"),
-    49: ("F125N", 87, "固定资产折旧"),
-    50: ("F126N", 88, "无形资产摊销"),
-    51: ("F127N", 89, "长期待摊费用摊销"),
-    52: ("F128N", 90, "处置固定资产损失"),
-    53: ("F129N", 91, "固定资产报废损失"),
-    54: ("F130N", 92, "公允价值变动损失"),
-    56: ("F131N", 93, "投资损失"),
-    57: ("F132N", 94, "递延所得税资产减少"),
-    58: ("F133N", 95, "递延所得税负债增加"),
-    59: ("F134N", 96, "存货的减少"),
-    60: ("F135N", 97, "经营性应收项目的减少"),
-    61: ("F136N", 98, "经营性应付项目的增加"),
-    62: ("F137N", 99, "其他"),
+# Column-NAME-based mapping (not index — column indices vary across stocks)
+# Keys are AKShare column names; values are (F-code, display_order, short_name)
+FIELD_NAME_MAP = {
+    "净利润": ("F123N", 85, "净利润"),
+    "加：资产减值准备": ("F124N", 86, "资产减值准备"),
+    "固定资产折旧、油气资产折耗、生产性生物资产折旧": ("F125N", 87, "固定资产折旧"),
+    "无形资产摊销": ("F126N", 88, "无形资产摊销"),
+    "长期待摊费用摊销": ("F127N", 89, "长期待摊费用摊销"),
+    "处置固定资产、无形资产和其他长期资产的损失": ("F128N", 90, "处置固定资产损失"),
+    "固定资产报废损失": ("F129N", 91, "固定资产报废损失"),
+    "公允价值变动损失": ("F130N", 92, "公允价值变动损失"),
+    "投资损失": ("F131N", 93, "投资损失"),
+    "递延所得税资产减少": ("F132N", 94, "递延所得税资产减少"),
+    "递延所得税负债增加": ("F133N", 95, "递延所得税负债增加"),
+    "存货的减少": ("F134N", 96, "存货的减少"),
+    "经营性应收项目的减少": ("F135N", 97, "经营性应收项目的减少"),
+    "经营性应付项目的增加": ("F136N", 98, "经营性应付项目的增加"),
 }
 
 MAX_RETRIES = 3
@@ -117,6 +116,8 @@ def fetch_indirect_cf(stock_code: str) -> Optional[pd.DataFrame]:
 def parse_to_tidy(df: pd.DataFrame, stock_code: str) -> pd.DataFrame:
     """Parse AKShare DataFrame to Tidy format for 2020-2022 annual reports.
 
+    Uses column names (not indices) to extract indirect cash flow fields,
+    because column positions vary across different stocks (e.g. bank vs real estate).
     Values may have Chinese unit suffix "亿" (100 million) — convert to raw number.
     """
     rows = []
@@ -135,10 +136,10 @@ def parse_to_tidy(df: pd.DataFrame, stock_code: str) -> pd.DataFrame:
         if "-12-31" not in report_date:
             continue
 
-        for col_idx, (fcode, order, name) in INDIRECT_FIELDS.items():
-            if col_idx >= len(df.columns):
+        for col_name, (fcode, order, short_name) in FIELD_NAME_MAP.items():
+            if col_name not in df.columns:
                 continue
-            val = row.iloc[col_idx]
+            val = row[col_name]
             if val is None or str(val) == "False" or str(val) == "nan" or str(val).strip() == "":
                 continue
             try:
@@ -156,7 +157,7 @@ def parse_to_tidy(df: pd.DataFrame, stock_code: str) -> pd.DataFrame:
                 "period": "annual",
                 "statement_type": "cash_flow",
                 "field_code": fcode,
-                "field_name": name,
+                "field_name": short_name,
                 "value": fvalue,
                 "display_order": order,
             })
