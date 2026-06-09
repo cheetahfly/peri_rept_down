@@ -1,0 +1,3 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+600768,2022,annual,cash_flow,F126N,无形资产摊销,172000000.0,88
+600768,2022,annual,cash_flow,F132N,递延所得税资产减少,-231000000.0,94

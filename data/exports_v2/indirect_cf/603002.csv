@@ -1,0 +1,11 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+603002,2022,annual,cash_flow,F127N,长期待摊费用摊销,-484999999.99999994,89
+603002,2022,annual,cash_flow,F133N,递延所得税负债增加,105000000.0,95
+603002,2022,annual,cash_flow,F134N,存货的减少,721000000.0,96
+603002,2022,annual,cash_flow,F135N,经营性应收项目的减少,-968000000.0,97
+603002,2021,annual,cash_flow,F134N,存货的减少,-807000000.0,96
+603002,2021,annual,cash_flow,F135N,经营性应收项目的减少,810000000.0,97
+603002,2021,annual,cash_flow,F137N,其他,337000000.0,99
+603002,2020,annual,cash_flow,F134N,存货的减少,-177000000.0,96
+603002,2020,annual,cash_flow,F135N,经营性应收项目的减少,313000000.0,97
+603002,2020,annual,cash_flow,F137N,其他,322000000.0,99

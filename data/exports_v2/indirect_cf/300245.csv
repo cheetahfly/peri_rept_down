@@ -1,0 +1,4 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+300245,2022,annual,cash_flow,F123N,净利润,698000000.0,85
+300245,2021,annual,cash_flow,F123N,净利润,878999999.9999999,85
+300245,2020,annual,cash_flow,F123N,净利润,848000000.0,85

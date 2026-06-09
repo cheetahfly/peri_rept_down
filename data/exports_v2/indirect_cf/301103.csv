@@ -1,0 +1,7 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+301103,2022,annual,cash_flow,F134N,存货的减少,148000000.0,96
+301103,2022,annual,cash_flow,F137N,其他,1638000000.0,99
+301103,2021,annual,cash_flow,F134N,存货的减少,214000000.0,96
+301103,2021,annual,cash_flow,F137N,其他,698000000.0,99
+301103,2020,annual,cash_flow,F134N,存货的减少,170000000.0,96
+301103,2020,annual,cash_flow,F137N,其他,613000000.0,99

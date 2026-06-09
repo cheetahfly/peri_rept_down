@@ -1,0 +1,4 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+000025,2022,annual,cash_flow,F137N,其他,-109000000.00000001,99
+000025,2021,annual,cash_flow,F125N,固定资产折旧,132000000.0,87
+000025,2021,annual,cash_flow,F134N,存货的减少,-700.0,96

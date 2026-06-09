@@ -1,0 +1,3 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+300189,2020,annual,cash_flow,F125N,固定资产折旧,-122000000.0,87
+300189,2020,annual,cash_flow,F126N,无形资产摊销,106000000.0,88

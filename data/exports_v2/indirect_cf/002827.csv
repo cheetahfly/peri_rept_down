@@ -1,0 +1,4 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+002827,2022,annual,cash_flow,F130N,公允价值变动损失,9800.0,92
+002827,2022,annual,cash_flow,F137N,其他,-240000000.0,99
+002827,2021,annual,cash_flow,F137N,其他,-102000000.0,99

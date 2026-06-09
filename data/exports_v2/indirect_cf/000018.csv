@@ -1,0 +1,8 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+000018,2022,annual,cash_flow,F126N,无形资产摊销,-1510000000.0,88
+000018,2022,annual,cash_flow,F133N,递延所得税负债增加,1580000000.0,95
+000018,2021,annual,cash_flow,F126N,无形资产摊销,882000000.0,88
+000018,2021,annual,cash_flow,F134N,存货的减少,-3261000000.0,96
+000018,2020,annual,cash_flow,F126N,无形资产摊销,-2155000000.0,88
+000018,2020,annual,cash_flow,F127N,长期待摊费用摊销,166000000.0,89
+000018,2020,annual,cash_flow,F132N,递延所得税资产减少,663000000.0,94

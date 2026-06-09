@@ -1,0 +1,5 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+300711,2022,annual,cash_flow,F133N,递延所得税负债增加,-9700.0,95
+300711,2022,annual,cash_flow,F135N,经营性应收项目的减少,-243000000.00000003,97
+300711,2022,annual,cash_flow,F136N,经营性应付项目的增加,225999999.99999997,98
+300711,2020,annual,cash_flow,F133N,递延所得税负债增加,-4300.0,95

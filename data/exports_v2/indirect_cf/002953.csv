@@ -1,0 +1,6 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+002953,2022,annual,cash_flow,F137N,其他,-195000000.0,99
+002953,2021,annual,cash_flow,F125N,固定资产折旧,126000000.0,87
+002953,2021,annual,cash_flow,F137N,其他,-125000000.0,99
+002953,2020,annual,cash_flow,F125N,固定资产折旧,105000000.0,87
+002953,2020,annual,cash_flow,F137N,其他,-177000000.0,99

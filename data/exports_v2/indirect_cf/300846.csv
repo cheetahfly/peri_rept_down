@@ -1,0 +1,6 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+300846,2022,annual,cash_flow,F123N,净利润,341000000.0,85
+300846,2022,annual,cash_flow,F126N,无形资产摊销,-200000000.0,88
+300846,2022,annual,cash_flow,F128N,处置固定资产损失,268000000.00000003,90
+300846,2021,annual,cash_flow,F128N,处置固定资产损失,188000000.0,90
+300846,2020,annual,cash_flow,F123N,净利润,170000000.0,85

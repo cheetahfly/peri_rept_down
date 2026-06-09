@@ -1,0 +1,8 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+600719,2022,annual,cash_flow,F124N,资产减值准备,100000000.0,86
+600719,2022,annual,cash_flow,F132N,递延所得税资产减少,132000000.0,94
+600719,2022,annual,cash_flow,F133N,递延所得税负债增加,114999999.99999999,95
+600719,2022,annual,cash_flow,F136N,经营性应付项目的增加,333000000.0,98
+600719,2021,annual,cash_flow,F132N,递延所得税资产减少,-106000000.0,94
+600719,2021,annual,cash_flow,F134N,存货的减少,184000000.0,96
+600719,2020,annual,cash_flow,F136N,经营性应付项目的增加,155000000.0,98

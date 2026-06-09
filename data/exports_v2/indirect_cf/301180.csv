@@ -1,0 +1,8 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+301180,2022,annual,cash_flow,F123N,净利润,186000000.0,85
+301180,2022,annual,cash_flow,F134N,存货的减少,131000000.0,96
+301180,2022,annual,cash_flow,F137N,其他,335000000.0,99
+301180,2021,annual,cash_flow,F123N,净利润,176000000.0,85
+301180,2021,annual,cash_flow,F133N,递延所得税负债增加,-138000000.0,95
+301180,2020,annual,cash_flow,F123N,净利润,117000000.0,85
+301180,2020,annual,cash_flow,F134N,存货的减少,-193000000.0,96

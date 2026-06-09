@@ -1,0 +1,5 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+301019,2022,annual,cash_flow,F137N,其他,504000000.0,99
+301019,2021,annual,cash_flow,F127N,长期待摊费用摊销,-8600.0,89
+301019,2021,annual,cash_flow,F134N,存货的减少,123000000.0,96
+301019,2021,annual,cash_flow,F137N,其他,530000000.0,99

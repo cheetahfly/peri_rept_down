@@ -1,0 +1,4 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+600793,2022,annual,cash_flow,F126N,无形资产摊销,156000000.0,88
+600793,2021,annual,cash_flow,F126N,无形资产摊销,152000000.0,88
+600793,2020,annual,cash_flow,F126N,无形资产摊销,147000000.0,88

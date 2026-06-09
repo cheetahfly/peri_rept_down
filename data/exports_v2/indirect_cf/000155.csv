@@ -1,0 +1,17 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+000155,2022,annual,cash_flow,F123N,净利润,3106000000.0,85
+000155,2022,annual,cash_flow,F126N,无形资产摊销,1284000000.0,88
+000155,2022,annual,cash_flow,F128N,处置固定资产损失,401000000.0,90
+000155,2022,annual,cash_flow,F129N,固定资产报废损失,134000000.00000001,91
+000155,2022,annual,cash_flow,F133N,递延所得税负债增加,345000000.0,95
+000155,2021,annual,cash_flow,F123N,净利润,2851000000.0,85
+000155,2021,annual,cash_flow,F126N,无形资产摊销,686000000.0,88
+000155,2021,annual,cash_flow,F128N,处置固定资产损失,338000000.0,90
+000155,2021,annual,cash_flow,F129N,固定资产报废损失,126000000.0,91
+000155,2021,annual,cash_flow,F133N,递延所得税负债增加,386000000.0,95
+000155,2021,annual,cash_flow,F137N,其他,440000000.00000006,99
+000155,2020,annual,cash_flow,F123N,净利润,1485000000.0,85
+000155,2020,annual,cash_flow,F126N,无形资产摊销,534000000.0,88
+000155,2020,annual,cash_flow,F128N,处置固定资产损失,198000000.0,90
+000155,2020,annual,cash_flow,F133N,递延所得税负债增加,221000000.0,95
+000155,2020,annual,cash_flow,F137N,其他,-195000000.0,99

@@ -1,0 +1,7 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+000038,2021,annual,cash_flow,F125N,固定资产折旧,-688000000.0,87
+000038,2021,annual,cash_flow,F126N,无形资产摊销,436000000.00000006,88
+000038,2021,annual,cash_flow,F130N,公允价值变动损失,3200.0,92
+000038,2021,annual,cash_flow,F136N,经营性应付项目的增加,114999999.99999999,98
+000038,2021,annual,cash_flow,F137N,其他,-256999999.99999997,99
+000038,2020,annual,cash_flow,F137N,其他,-523000000.00000006,99

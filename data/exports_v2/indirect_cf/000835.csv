@@ -1,0 +1,5 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+000835,2021,annual,cash_flow,F126N,无形资产摊销,-454000000.0,88
+000835,2021,annual,cash_flow,F127N,长期待摊费用摊销,303000000.0,89
+000835,2020,annual,cash_flow,F126N,无形资产摊销,-202999999.99999997,88
+000835,2020,annual,cash_flow,F131N,投资损失,2800.0,93

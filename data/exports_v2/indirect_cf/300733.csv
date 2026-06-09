@@ -1,0 +1,4 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+300733,2022,annual,cash_flow,F126N,无形资产摊销,121000000.0,88
+300733,2022,annual,cash_flow,F136N,经营性应付项目的增加,-204000000.0,98
+300733,2020,annual,cash_flow,F130N,公允价值变动损失,-800.0,92

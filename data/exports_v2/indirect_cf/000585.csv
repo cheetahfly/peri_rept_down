@@ -1,0 +1,4 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+000585,2022,annual,cash_flow,F130N,公允价值变动损失,5100.0,92
+000585,2020,annual,cash_flow,F126N,无形资产摊销,-8200.0,88
+000585,2020,annual,cash_flow,F132N,递延所得税资产减少,-130000000.0,94

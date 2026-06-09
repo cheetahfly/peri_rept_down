@@ -1,0 +1,13 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+002935,2022,annual,cash_flow,F131N,投资损失,261000000.0,93
+002935,2022,annual,cash_flow,F133N,递延所得税负债增加,221000000.0,95
+002935,2022,annual,cash_flow,F136N,经营性应付项目的增加,788000000.0,98
+002935,2022,annual,cash_flow,F137N,其他,411000000.00000006,99
+002935,2021,annual,cash_flow,F125N,固定资产折旧,-3600.0,87
+002935,2021,annual,cash_flow,F133N,递延所得税负债增加,109000000.00000001,95
+002935,2021,annual,cash_flow,F136N,经营性应付项目的增加,411000000.00000006,98
+002935,2021,annual,cash_flow,F137N,其他,383000000.0,99
+002935,2020,annual,cash_flow,F125N,固定资产折旧,-4400.0,87
+002935,2020,annual,cash_flow,F130N,公允价值变动损失,-135000000.0,92
+002935,2020,annual,cash_flow,F136N,经营性应付项目的增加,383000000.0,98
+002935,2020,annual,cash_flow,F137N,其他,363000000.0,99

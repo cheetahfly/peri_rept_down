@@ -1,0 +1,11 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+300506,2022,annual,cash_flow,F125N,固定资产折旧,-475000000.0,87
+300506,2022,annual,cash_flow,F126N,无形资产摊销,249000000.00000003,88
+300506,2022,annual,cash_flow,F137N,其他,196000000.0,99
+300506,2021,annual,cash_flow,F125N,固定资产折旧,-542000000.0,87
+300506,2021,annual,cash_flow,F126N,无形资产摊销,186000000.0,88
+300506,2021,annual,cash_flow,F131N,投资损失,126000000.0,93
+300506,2021,annual,cash_flow,F137N,其他,409000000.0,99
+300506,2020,annual,cash_flow,F125N,固定资产折旧,-337000000.0,87
+300506,2020,annual,cash_flow,F126N,无形资产摊销,241000000.0,88
+300506,2020,annual,cash_flow,F137N,其他,252000000.0,99

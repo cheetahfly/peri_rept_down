@@ -1,0 +1,4 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+002880,2022,annual,cash_flow,F133N,递延所得税负债增加,-184000000.0,95
+002880,2021,annual,cash_flow,F137N,其他,247000000.00000003,99
+002880,2020,annual,cash_flow,F137N,其他,304000000.0,99

@@ -1,0 +1,4 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+002879,2021,annual,cash_flow,F124N,资产减值准备,140000000.0,86
+002879,2020,annual,cash_flow,F124N,资产减值准备,162000000.0,86
+002879,2020,annual,cash_flow,F136N,经营性应付项目的增加,-132000000.0,98

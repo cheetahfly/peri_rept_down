@@ -1,0 +1,4 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+600747,2021,annual,cash_flow,F127N,长期待摊费用摊销,-395000000.0,89
+600747,2020,annual,cash_flow,F127N,长期待摊费用摊销,-361000000.0,89
+600747,2020,annual,cash_flow,F132N,递延所得税资产减少,-600.0,94

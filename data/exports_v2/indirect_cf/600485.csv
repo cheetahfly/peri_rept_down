@@ -1,0 +1,4 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+600485,2020,annual,cash_flow,F126N,无形资产摊销,-3497999999.9999995,88
+600485,2020,annual,cash_flow,F133N,递延所得税负债增加,935000000.0,95
+600485,2020,annual,cash_flow,F134N,存货的减少,553000000.0,96

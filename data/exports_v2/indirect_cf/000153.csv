@@ -1,0 +1,7 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+000153,2022,annual,cash_flow,F125N,固定资产折旧,151000000.0,87
+000153,2022,annual,cash_flow,F127N,长期待摊费用摊销,113999999.99999999,89
+000153,2021,annual,cash_flow,F125N,固定资产折旧,118000000.0,87
+000153,2021,annual,cash_flow,F127N,长期待摊费用摊销,108000000.0,89
+000153,2021,annual,cash_flow,F137N,其他,-113999999.99999999,99
+000153,2020,annual,cash_flow,F125N,固定资产折旧,102000000.0,87

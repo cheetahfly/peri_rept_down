@@ -1,0 +1,4 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+002477,2020,annual,cash_flow,F127N,长期待摊费用摊销,-2582000000.0,89
+002477,2020,annual,cash_flow,F129N,固定资产报废损失,141000000.0,91
+002477,2020,annual,cash_flow,F134N,存货的减少,710000000.0,96

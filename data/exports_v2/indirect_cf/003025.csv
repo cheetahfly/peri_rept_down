@@ -1,0 +1,4 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+003025,2021,annual,cash_flow,F132N,递延所得税资产减少,-103000000.0,94
+003025,2021,annual,cash_flow,F136N,经营性应付项目的增加,131000000.0,98
+003025,2020,annual,cash_flow,F136N,经营性应付项目的增加,123000000.0,98

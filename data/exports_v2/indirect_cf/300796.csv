@@ -1,0 +1,4 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+300796,2022,annual,cash_flow,F125N,固定资产折旧,157000000.0,87
+300796,2021,annual,cash_flow,F130N,公允价值变动损失,-2700.0,92
+300796,2020,annual,cash_flow,F130N,公允价值变动损失,-9400.0,92

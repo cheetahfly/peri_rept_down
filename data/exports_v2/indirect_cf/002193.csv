@@ -1,0 +1,9 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+002193,2022,annual,cash_flow,F123N,净利润,-877000000.0,85
+002193,2022,annual,cash_flow,F124N,资产减值准备,703000000.0,86
+002193,2022,annual,cash_flow,F135N,经营性应收项目的减少,-100000000.0,97
+002193,2022,annual,cash_flow,F136N,经营性应付项目的增加,101000000.0,98
+002193,2021,annual,cash_flow,F135N,经营性应收项目的减少,-498000000.00000006,97
+002193,2021,annual,cash_flow,F136N,经营性应付项目的增加,112999999.99999999,98
+002193,2020,annual,cash_flow,F135N,经营性应收项目的减少,-262000000.0,97
+002193,2020,annual,cash_flow,F136N,经营性应付项目的增加,162000000.0,98

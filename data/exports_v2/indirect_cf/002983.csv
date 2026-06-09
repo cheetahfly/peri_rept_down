@@ -1,0 +1,6 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+002983,2022,annual,cash_flow,F137N,其他,121000000.0,99
+002983,2021,annual,cash_flow,F133N,递延所得税负债增加,-102000000.0,95
+002983,2021,annual,cash_flow,F134N,存货的减少,-178000000.0,96
+002983,2020,annual,cash_flow,F127N,长期待摊费用摊销,7200.0,89
+002983,2020,annual,cash_flow,F137N,其他,130000000.0,99

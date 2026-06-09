@@ -1,0 +1,11 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+002225,2022,annual,cash_flow,F123N,净利润,330000000.0,85
+002225,2022,annual,cash_flow,F124N,资产减值准备,229999999.99999997,86
+002225,2022,annual,cash_flow,F127N,长期待摊费用摊销,215000000.0,89
+002225,2022,annual,cash_flow,F129N,固定资产报废损失,124000000.0,91
+002225,2021,annual,cash_flow,F123N,净利润,262000000.0,85
+002225,2021,annual,cash_flow,F124N,资产减值准备,330000000.0,86
+002225,2021,annual,cash_flow,F129N,固定资产报废损失,112000000.00000001,91
+002225,2020,annual,cash_flow,F123N,净利润,301000000.0,85
+002225,2020,annual,cash_flow,F124N,资产减值准备,262000000.0,86
+002225,2020,annual,cash_flow,F127N,长期待摊费用摊销,309000000.0,89
