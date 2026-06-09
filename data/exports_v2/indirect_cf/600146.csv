@@ -1,2 +1,2 @@
 ﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
-600146,2020,annual,cash_flow,F126N,无形资产摊销,-443000000.0,88
+600146,2020,annual,cash_flow,F123N,净利润,-443000000.0,85

@@ -1,2 +1,2 @@
 ﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
-301025,2021,annual,cash_flow,F127N,长期待摊费用摊销,2000.0,89
+301025,2021,annual,cash_flow,F129N,固定资产报废损失,2000.0,91

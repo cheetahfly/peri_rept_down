@@ -1,2 +1,4 @@
 ﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
-301188,2022,annual,cash_flow,F126N,无形资产摊销,7900.0,88
+301188,2022,annual,cash_flow,F123N,净利润,117000000.0,85
+301188,2022,annual,cash_flow,F129N,固定资产报废损失,7900.0,91
+301188,2021,annual,cash_flow,F123N,净利润,125000000.0,85

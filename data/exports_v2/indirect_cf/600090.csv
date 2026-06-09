@@ -1,5 +1,7 @@
 ﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
-600090,2020,annual,cash_flow,F127N,长期待摊费用摊销,-2334000000.0,89
-600090,2020,annual,cash_flow,F128N,处置固定资产损失,1304000000.0,90
-600090,2020,annual,cash_flow,F135N,经营性应收项目的减少,-361000000.0,97
-600090,2020,annual,cash_flow,F137N,其他,754000000.0,99
+600090,2020,annual,cash_flow,F123N,净利润,-2334000000.0,85
+600090,2020,annual,cash_flow,F124N,资产减值准备,1304000000.0,86
+600090,2020,annual,cash_flow,F132N,递延所得税资产减少,-361000000.0,94
+600090,2020,annual,cash_flow,F134N,存货的减少,754000000.0,96
+600090,2020,annual,cash_flow,F135N,经营性应收项目的减少,1137000000.0,97
+600090,2020,annual,cash_flow,F136N,经营性应付项目的增加,-908000000.0,98

@@ -1,7 +1,8 @@
 ﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
-002847,2022,annual,cash_flow,F125N,固定资产折旧,302000000.0,87
-002847,2022,annual,cash_flow,F127N,长期待摊费用摊销,139000000.0,89
-002847,2022,annual,cash_flow,F136N,经营性应付项目的增加,-194000000.0,98
-002847,2021,annual,cash_flow,F125N,固定资产折旧,154000000.0,87
-002847,2021,annual,cash_flow,F127N,长期待摊费用摊销,123000000.0,89
-002847,2020,annual,cash_flow,F125N,固定资产折旧,242000000.0,87
+002847,2022,annual,cash_flow,F123N,净利润,302000000.0,85
+002847,2022,annual,cash_flow,F125N,固定资产折旧,139000000.0,87
+002847,2022,annual,cash_flow,F134N,存货的减少,-194000000.0,96
+002847,2022,annual,cash_flow,F136N,经营性应付项目的增加,134000000.00000001,98
+002847,2021,annual,cash_flow,F123N,净利润,154000000.0,85
+002847,2021,annual,cash_flow,F125N,固定资产折旧,123000000.0,87
+002847,2020,annual,cash_flow,F123N,净利润,242000000.0,85

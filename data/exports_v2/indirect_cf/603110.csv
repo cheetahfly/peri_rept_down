@@ -1,4 +1,4 @@
 ﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
-603110,2022,annual,cash_flow,F127N,长期待摊费用摊销,5100.0,89
-603110,2022,annual,cash_flow,F129N,固定资产报废损失,-4600.0,91
-603110,2020,annual,cash_flow,F131N,投资损失,300.0,93
+603110,2022,annual,cash_flow,F128N,处置固定资产损失,5100.0,90
+603110,2022,annual,cash_flow,F130N,公允价值变动损失,-4600.0,92
+603110,2020,annual,cash_flow,F132N,递延所得税资产减少,300.0,94

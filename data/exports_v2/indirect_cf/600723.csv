@@ -1,2 +1,3 @@
 ﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
-600723,2020,annual,cash_flow,F136N,经营性应付项目的增加,137000000.0,98
+600723,2020,annual,cash_flow,F134N,存货的减少,137000000.0,96
+600723,2020,annual,cash_flow,F136N,经营性应付项目的增加,-356000000.0,98

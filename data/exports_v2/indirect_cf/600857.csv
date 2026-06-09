@@ -1,4 +1,6 @@
 ﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
-600857,2022,annual,cash_flow,F125N,固定资产折旧,362000000.0,87
-600857,2022,annual,cash_flow,F130N,公允价值变动损失,1900.0,92
-600857,2020,annual,cash_flow,F130N,公允价值变动损失,3200.0,92
+600857,2022,annual,cash_flow,F123N,净利润,362000000.0,85
+600857,2022,annual,cash_flow,F128N,处置固定资产损失,1900.0,90
+600857,2022,annual,cash_flow,F136N,经营性应付项目的增加,-335000000.0,98
+600857,2020,annual,cash_flow,F128N,处置固定资产损失,3200.0,90
+600857,2020,annual,cash_flow,F136N,经营性应付项目的增加,-106000000.0,98

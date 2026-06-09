@@ -1,5 +1,5 @@
 ﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
-002553,2021,annual,cash_flow,F125N,固定资产折旧,195000000.0,87
-002553,2021,annual,cash_flow,F133N,递延所得税负债增加,-125000000.0,95
-002553,2020,annual,cash_flow,F125N,固定资产折旧,394000000.0,87
-002553,2020,annual,cash_flow,F131N,投资损失,-371000000.0,93
+002553,2021,annual,cash_flow,F123N,净利润,195000000.0,85
+002553,2021,annual,cash_flow,F131N,投资损失,-125000000.0,93
+002553,2020,annual,cash_flow,F123N,净利润,394000000.0,85
+002553,2020,annual,cash_flow,F130N,公允价值变动损失,-371000000.0,92

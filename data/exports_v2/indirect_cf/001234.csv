@@ -1,4 +1,0 @@
-﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
-001234,2022,annual,cash_flow,F137N,其他,137000000.0,99
-001234,2021,annual,cash_flow,F137N,其他,103000000.0,99
-001234,2020,annual,cash_flow,F137N,其他,109000000.00000001,99

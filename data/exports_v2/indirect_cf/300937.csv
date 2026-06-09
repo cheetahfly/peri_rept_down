@@ -1,5 +1,3 @@
 ﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
-300937,2022,annual,cash_flow,F123N,净利润,335000000.0,85
-300937,2021,annual,cash_flow,F123N,净利润,135000000.0,85
-300937,2021,annual,cash_flow,F131N,投资损失,400.0,93
-300937,2021,annual,cash_flow,F136N,经营性应付项目的增加,-133000000.0,98
+300937,2021,annual,cash_flow,F129N,固定资产报废损失,400.0,91
+300937,2021,annual,cash_flow,F134N,存货的减少,-133000000.0,96

@@ -1,3 +1,2 @@
 ﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
-300823,2021,annual,cash_flow,F131N,投资损失,7300.0,93
-300823,2021,annual,cash_flow,F132N,递延所得税资产减少,-1.0,94
+300823,2021,annual,cash_flow,F131N,投资损失,-1.0,93

@@ -1,0 +1,4 @@
+﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
+301075,2022,annual,cash_flow,F129N,固定资产报废损失,6000.0,91
+301075,2021,annual,cash_flow,F129N,固定资产报废损失,600.0,91
+301075,2020,annual,cash_flow,F129N,固定资产报废损失,1000.0,91

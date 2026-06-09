@@ -1,5 +1,5 @@
 ﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
-000780,2020,annual,cash_flow,F124N,资产减值准备,-761000000.0,86
-000780,2020,annual,cash_flow,F125N,固定资产折旧,297000000.0,87
-000780,2020,annual,cash_flow,F127N,长期待摊费用摊销,107000000.0,89
+000780,2020,annual,cash_flow,F123N,净利润,-761000000.0,85
+000780,2020,annual,cash_flow,F124N,资产减值准备,297000000.0,86
+000780,2020,annual,cash_flow,F126N,无形资产摊销,107000000.0,88
 000780,2020,annual,cash_flow,F136N,经营性应付项目的增加,174000000.0,98

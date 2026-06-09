@@ -1,3 +1,6 @@
 ﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
-000548,2022,annual,cash_flow,F136N,经营性应付项目的增加,-313000000.0,98
-000548,2021,annual,cash_flow,F136N,经营性应付项目的增加,-491000000.0,98
+000548,2022,annual,cash_flow,F134N,存货的减少,-313000000.0,96
+000548,2022,annual,cash_flow,F136N,经营性应付项目的增加,774000000.0,98
+000548,2021,annual,cash_flow,F134N,存货的减少,-491000000.0,96
+000548,2020,annual,cash_flow,F129N,固定资产报废损失,5000.0,91
+000548,2020,annual,cash_flow,F136N,经营性应付项目的增加,-202000000.0,98

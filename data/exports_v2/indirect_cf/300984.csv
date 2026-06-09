@@ -1,2 +1,2 @@
 ﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
-300984,2021,annual,cash_flow,F131N,投资损失,-175000000.0,93
+300984,2021,annual,cash_flow,F134N,存货的减少,-175000000.0,96

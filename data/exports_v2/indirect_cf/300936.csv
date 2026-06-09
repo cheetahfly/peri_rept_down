@@ -1,6 +1,6 @@
 ﻿stock_code,year,period,statement_type,field_code,field_name,value,display_order
-300936,2021,annual,cash_flow,F127N,长期待摊费用摊销,2700.0,89
-300936,2021,annual,cash_flow,F128N,处置固定资产损失,-2400.0,90
-300936,2021,annual,cash_flow,F131N,投资损失,400.0,93
-300936,2021,annual,cash_flow,F134N,存货的减少,-600.0,96
-300936,2020,annual,cash_flow,F131N,投资损失,-1600.0,93
+300936,2021,annual,cash_flow,F128N,处置固定资产损失,2700.0,90
+300936,2021,annual,cash_flow,F130N,公允价值变动损失,-2400.0,92
+300936,2021,annual,cash_flow,F133N,递延所得税负债增加,400.0,95
+300936,2021,annual,cash_flow,F136N,经营性应付项目的增加,-600.0,98
+300936,2020,annual,cash_flow,F133N,递延所得税负债增加,-1600.0,95
