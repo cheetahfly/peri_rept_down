@@ -69,11 +69,26 @@ def load_progress() -> Dict[str, str]:
 
 
 def save_progress(progress: Dict[str, str]) -> None:
-    """Save progress checkpoint atomically."""
+    """Save progress checkpoint atomically (Windows-friendly)."""
     tmp = PROGRESS_FILE + ".tmp"
+    # Remove stale .tmp from previous failed write
+    if os.path.exists(tmp):
+        try:
+            os.remove(tmp)
+        except OSError:
+            pass
     with open(tmp, "w", encoding="utf-8") as f:
         json.dump(progress, f, ensure_ascii=False, indent=2)
-    os.replace(tmp, PROGRESS_FILE)
+    # On Windows, os.replace can fail if target is open. Retry once.
+    for attempt in range(3):
+        try:
+            if os.path.exists(PROGRESS_FILE):
+                os.remove(PROGRESS_FILE)
+            os.rename(tmp, PROGRESS_FILE)
+            return
+        except OSError:
+            time.sleep(0.1 * (attempt + 1))
+    raise OSError(f"Failed to save progress to {PROGRESS_FILE}")
 
 
 def log(message: str) -> None:
