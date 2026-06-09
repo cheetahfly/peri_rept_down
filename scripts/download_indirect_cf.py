@@ -100,7 +100,10 @@ def fetch_indirect_cf(stock_code: str) -> Optional[pd.DataFrame]:
 
 
 def parse_to_tidy(df: pd.DataFrame, stock_code: str) -> pd.DataFrame:
-    """Parse AKShare DataFrame to Tidy format for 2020-2022 annual reports."""
+    """Parse AKShare DataFrame to Tidy format for 2020-2022 annual reports.
+
+    Values may have Chinese unit suffix "亿" (100 million) — convert to raw number.
+    """
     rows = []
     for _, row in df.iterrows():
         # First column is report date
@@ -121,10 +124,15 @@ def parse_to_tidy(df: pd.DataFrame, stock_code: str) -> pd.DataFrame:
             if col_idx >= len(df.columns):
                 continue
             val = row.iloc[col_idx]
-            if val is None or str(val) == "False" or str(val) == "nan":
+            if val is None or str(val) == "False" or str(val) == "nan" or str(val).strip() == "":
                 continue
             try:
-                fvalue = float(val)
+                # Handle "亿" suffix: "8542.40亿" → 854240000000
+                val_str = str(val).strip()
+                if val_str.endswith("亿"):
+                    fvalue = float(val_str[:-1]) * 1e8
+                else:
+                    fvalue = float(val_str)
             except (ValueError, TypeError):
                 continue
             rows.append({
