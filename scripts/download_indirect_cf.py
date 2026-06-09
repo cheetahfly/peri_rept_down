@@ -83,6 +83,63 @@ def log(message: str) -> None:
         f.write(f"[{ts}] {message}\n")
 
 
+def fetch_indirect_cf(stock_code: str) -> Optional[pd.DataFrame]:
+    """Fetch indirect CF data from AKShare with retry logic."""
+    import akshare as ak
+
+    for attempt in range(MAX_RETRIES):
+        try:
+            df = ak.stock_financial_cash_ths(symbol=stock_code)
+            time.sleep(REQUEST_DELAY)
+            return df
+        except Exception as e:
+            log(f"  Retry {attempt + 1}/{MAX_RETRIES} for {stock_code}: {e}")
+            time.sleep(2 ** attempt)
+    log(f"  FAILED after {MAX_RETRIES} retries: {stock_code}")
+    return None
+
+
+def parse_to_tidy(df: pd.DataFrame, stock_code: str) -> pd.DataFrame:
+    """Parse AKShare DataFrame to Tidy format for 2020-2022 annual reports."""
+    rows = []
+    for _, row in df.iterrows():
+        # First column is report date
+        report_date = str(row.iloc[0])
+        if not report_date.startswith("202"):
+            continue
+        try:
+            year = int(report_date[:4])
+        except (ValueError, TypeError):
+            continue
+        if year not in YEARS:
+            continue
+        # Only annual reports (12-31)
+        if "-12-31" not in report_date:
+            continue
+
+        for col_idx, (fcode, order, name) in INDIRECT_FIELDS.items():
+            if col_idx >= len(df.columns):
+                continue
+            val = row.iloc[col_idx]
+            if val is None or str(val) == "False" or str(val) == "nan":
+                continue
+            try:
+                fvalue = float(val)
+            except (ValueError, TypeError):
+                continue
+            rows.append({
+                "stock_code": stock_code,
+                "year": year,
+                "period": "annual",
+                "statement_type": "cash_flow",
+                "field_code": fcode,
+                "field_name": name,
+                "value": fvalue,
+                "display_order": order,
+            })
+    return pd.DataFrame(rows)
+
+
 if __name__ == "__main__":
     # Smoke test
     stocks = load_stocks()
