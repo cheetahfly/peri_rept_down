@@ -140,6 +140,61 @@ def parse_to_tidy(df: pd.DataFrame, stock_code: str) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def process_single_stock(stock_code: str) -> str:
+    """Process one stock. Returns status: 'done', 'no_data', or 'failed'."""
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    output_path = os.path.join(OUTPUT_DIR, f"{stock_code}.csv")
+
+    # Skip if already exists with content
+    if os.path.exists(output_path):
+        existing = pd.read_csv(output_path, encoding="utf-8-sig")
+        if len(existing) > 0:
+            return "done"
+
+    df = fetch_indirect_cf(stock_code)
+    if df is None or len(df) == 0:
+        return "no_data"
+
+    tidy_df = parse_to_tidy(df, stock_code)
+    if len(tidy_df) == 0:
+        return "no_data"
+
+    tidy_df.to_csv(output_path, index=False, encoding="utf-8-sig")
+    return "done"
+
+
+def main() -> int:
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    os.makedirs(os.path.dirname(PROGRESS_FILE), exist_ok=True)
+
+    stocks = load_stocks()
+    progress = load_progress()
+
+    total = len(stocks)
+    done = sum(1 for v in progress.values() if v == "done")
+    no_data = sum(1 for v in progress.values() if v == "no_data")
+    failed = sum(1 for v in progress.values() if v == "failed")
+    print(f"Total: {total} | Done: {done} | NoData: {no_data} | Failed: {failed}")
+
+    for i, code in enumerate(stocks):
+        if progress.get(code) in ("done", "no_data"):
+            continue
+
+        status = process_single_stock(code)
+        progress[code] = status
+        save_progress(progress)
+
+        if (i + 1) % 50 == 0:
+            print(f"  [{i + 1}/{total}] {code}: {status}")
+
+    # Final summary
+    done = sum(1 for v in progress.values() if v == "done")
+    no_data = sum(1 for v in progress.values() if v == "no_data")
+    failed = sum(1 for v in progress.values() if v == "failed")
+    print(f"\nFinal: Done: {done} | NoData: {no_data} | Failed: {failed}")
+    return 0
+
+
 if __name__ == "__main__":
     # Smoke test
     stocks = load_stocks()
