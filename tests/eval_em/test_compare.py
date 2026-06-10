@@ -79,3 +79,39 @@ def test_compare_em_rds_partial_match():
     assert result["matched"] == 1
     assert result["unmatched"] == 1
     assert result["match_rate"] == 0.5
+
+
+# ---- build_conclusion ----
+
+from scripts.eval_em_lib import build_conclusion
+
+
+def test_build_conclusion_recommend_main(tmp_path):
+    """coverage > 95%, match_rate > 95% → recommend main。"""
+    completeness = {
+        "total_stocks": 200, "stocks_with_data": 198, "complete_stocks": 195,
+        "coverage_rate": 0.99, "completeness_rate": 0.975,
+    }
+    compare = {
+        "summary": {"total_matched": 9500, "total_common_fields": 10000, "overall_match_rate": 0.95}
+    }
+    historical = {"anomalies_count": 100, "em_matched": 80, "match_rate": 0.8}
+
+    conclusion = build_conclusion(completeness, compare, historical)
+    assert conclusion["recommendation"] == "main"
+    assert "主力" in conclusion["text"] or "main" in conclusion["text"].lower()
+
+
+def test_build_conclusion_recommend_assist(tmp_path):
+    """中等 → assist。"""
+    completeness = {
+        "total_stocks": 200, "stocks_with_data": 150, "complete_stocks": 100,
+        "coverage_rate": 0.75, "completeness_rate": 0.5,
+    }
+    compare = {
+        "summary": {"total_matched": 7000, "total_common_fields": 10000, "overall_match_rate": 0.7}
+    }
+    historical = {"anomalies_count": 100, "em_matched": 50, "match_rate": 0.5}
+
+    conclusion = build_conclusion(completeness, compare, historical)
+    assert conclusion["recommendation"] in ("assist", "reject")

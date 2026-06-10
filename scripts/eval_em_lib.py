@@ -682,3 +682,36 @@ def recheck_with_em(anomalies: list, output_root: str, tolerance: float = 1.0) -
         "improvement": em_matched / total if total else 0,
         "details": details,
     }
+
+
+# ----- 结论聚合器 -----
+
+def build_conclusion(completeness: dict, compare: dict, historical: dict) -> dict:
+    """Build final recommendation based on metrics.
+
+    Decision rules:
+    - coverage_rate >= 0.95 AND match_rate >= 0.95 → 'main' (主力)
+    - coverage_rate >= 0.7 AND match_rate >= 0.7  → 'assist' (辅助)
+    - else → 'reject' (不建议)
+    """
+    cov = completeness.get("coverage_rate", 0)
+    match = compare.get("summary", {}).get("overall_match_rate", 0)
+    improve = historical.get("match_rate", 0)
+
+    if cov >= 0.95 and match >= 0.95:
+        rec = "main"
+        text = "EM 渠道可作为主力数据来源"
+    elif cov >= 0.7 and match >= 0.7:
+        rec = "assist"
+        text = "EM 渠道建议作为辅助渠道"
+    else:
+        rec = "reject"
+        text = "EM 渠道不建议使用"
+
+    return {
+        "recommendation": rec,
+        "text": text,
+        "coverage_rate": cov,
+        "match_rate": match,
+        "improvement_rate": improve,
+    }
