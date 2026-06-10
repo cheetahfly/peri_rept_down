@@ -455,3 +455,99 @@ def check_completeness(sample: dict, output_root: str) -> dict:
         "per_board": per_board,
         "per_statement": per_statement,
     }
+
+
+# ----- EM tidy CSV 加载 -----
+
+def load_em_tidy(stock_code: str, statement_type: str, year: int, period: str, output_root: str) -> dict:
+    """Load EM tidy CSV and pivot to {field_name: value}."""
+    path = os.path.join(output_root, statement_type, f"{stock_code}.csv")
+    if not os.path.exists(path):
+        return {}
+    df = pd.read_csv(path, encoding="utf-8-sig", dtype={"stock_code": str})
+    df = df[(df["year"] == year) & (df["period"] == period)]
+    return dict(zip(df["field_name"], df["value"]))
+
+
+# ----- EM vs RDS 批量比对 -----
+
+def compare_em_rds_batch(
+    sample: dict,
+    rds_loader,
+    output_root: str,
+    year: int = 2022,
+    periods: Tuple[str, ...] = ("Q1", "half_year", "Q3", "annual"),
+) -> dict:
+    """Batch compare EM vs RDS for sample stocks across all periods and statements.
+
+    Args:
+        sample: dict with 'all_codes' and 'boards'.
+        rds_loader: RdsLoader instance.
+        output_root: EM data root.
+        year: target year.
+        periods: tuple of periods to compare.
+
+    Returns:
+        {
+            "summary": {total_comparisons, total_matched, total_unmatched, ...},
+            "per_stock": [compare_em_rds_one_stock result],
+            "per_statement": {stmt: stats},
+            "per_board": {board: stats},
+        }
+    """
+    STATEMENTS = ("balance_sheet", "income_statement", "cash_flow")
+    all_results = []
+    per_statement = {s: {"matched": 0, "unmatched": 0, "common": 0} for s in STATEMENTS}
+    per_board = {}
+
+    for board, codes in sample.get("boards", {}).items():
+        per_board[board] = {"matched": 0, "unmatched": 0, "common": 0, "stocks": 0}
+
+    for stock_code in sample["all_codes"]:
+        for stmt_type in STATEMENTS:
+            for period in periods:
+                em_data = load_em_tidy(stock_code, stmt_type, year, period, output_root)
+                if not em_data:
+                    continue
+                rds_data = rds_loader.load_stock_data(stock_code, year, stmt_type)
+                if not rds_data:
+                    continue
+                result = compare_em_rds_one_stock(
+                    em_data, rds_data, stmt_type, stock_code, year, period,
+                )
+                all_results.append(result)
+                per_statement[stmt_type]["matched"] += result["matched"]
+                per_statement[stmt_type]["unmatched"] += result["unmatched"]
+                per_statement[stmt_type]["common"] += result["common_fields"]
+
+    for stock_code in sample["all_codes"]:
+        board = "unknown"
+        for b, codes in sample.get("boards", {}).items():
+            if stock_code in codes:
+                board = b
+                break
+        for r in all_results:
+            if r["stock_code"] == stock_code:
+                per_board[board]["matched"] += r["matched"]
+                per_board[board]["unmatched"] += r["unmatched"]
+                per_board[board]["common"] += r["common_fields"]
+                per_board[board]["stocks"] += 1
+                break
+
+    total_matched = sum(per_statement[s]["matched"] for s in STATEMENTS)
+    total_unmatched = sum(per_statement[s]["unmatched"] for s in STATEMENTS)
+    total_common = sum(per_statement[s]["common"] for s in STATEMENTS)
+    total_comparisons = len(all_results)
+
+    return {
+        "summary": {
+            "total_comparisons": total_comparisons,
+            "total_matched": total_matched,
+            "total_unmatched": total_unmatched,
+            "total_common_fields": total_common,
+            "overall_match_rate": total_matched / total_common if total_common else 0,
+        },
+        "per_statement": per_statement,
+        "per_board": per_board,
+        "per_stock": all_results,
+    }
