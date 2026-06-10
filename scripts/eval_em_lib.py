@@ -13,6 +13,8 @@ from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 warnings.filterwarnings("ignore")
 
 # ----- 板块代码前缀映射 -----
@@ -223,3 +225,47 @@ def fetch_em_income_statement(stock_code: str):
 def fetch_em_cash_flow(stock_code: str):
     """Fetch cash flow statement from AKShare EM API. Returns DataFrame or None."""
     return _em_api_call("stock_cash_flow_sheet_by_report_em", _to_em_symbol(stock_code))
+
+
+# ----- 字段映射表加载 -----
+
+def load_field_map(statement_type: str) -> Dict[str, Tuple[str, int, str]]:
+    """Load F-code field mapping for a statement type from project decode_mappings.
+
+    Args:
+        statement_type: 'balance_sheet' / 'income_statement' / 'cash_flow'.
+
+    Returns:
+        {em_column_name: (F-code, display_order, short_name)}.
+        Empty dict if not found.
+    """
+    decode_path = os.path.join(BASE_DIR, "data", "decode_mappings_by_type.json")
+    if not os.path.exists(decode_path):
+        return {}
+    with open(decode_path, "r", encoding="utf-8") as f:
+        all_maps = json.load(f)
+    fcode_to_name = all_maps.get(statement_type, {})
+    if not fcode_to_name:
+        return {}
+    # Load display_order from rules/
+    rules_dir = os.path.join(BASE_DIR, "rules")
+    fcode_to_order: Dict[str, int] = {}
+    if os.path.isdir(rules_dir):
+        for fname in os.listdir(rules_dir):
+            if fname.endswith(".yaml") or fname.endswith(".yml"):
+                try:
+                    import yaml
+                    with open(os.path.join(rules_dir, fname), "r", encoding="utf-8") as f:
+                        rule = yaml.safe_load(f)
+                    if rule and "fields" in rule:
+                        for fcode, info in rule["fields"].items():
+                            if isinstance(info, dict) and "display_order" in info:
+                                fcode_to_order[fcode] = info["display_order"]
+                except Exception:
+                    pass
+
+    field_map: Dict[str, Tuple[str, int, str]] = {}
+    for fcode, name in fcode_to_name.items():
+        order = fcode_to_order.get(fcode, 999)
+        field_map[name] = (fcode, order, name)
+    return field_map
