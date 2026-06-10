@@ -614,3 +614,71 @@ def scan_sina_anomalies(
             })
 
     return anomalies
+
+
+# ----- EM 重测历史异常 -----
+
+def recheck_with_em(anomalies: list, output_root: str, tolerance: float = 1.0) -> dict:
+    """Re-check historical anomalies using EM data.
+
+    For each sina anomaly, look up the EM value for the same (code, year, period, stmt, field)
+    and compare against RDS.
+
+    Returns:
+        {
+            "anomalies_count": int,
+            "em_matched": int,
+            "em_unmatched": int,
+            "em_no_data": int,
+            "match_rate": float,
+            "improvement": float,
+            "details": [{..., "em_val": float|None, "em_severity": str}],
+        }
+    """
+    STATEMENT_TO_FETCH = {
+        "balance_sheet": fetch_em_balance_sheet,
+        "income_statement": fetch_em_income_statement,
+        "cash_flow": fetch_em_cash_flow,
+    }
+
+    details = []
+    em_matched = 0
+    em_unmatched = 0
+    em_no_data = 0
+
+    for anom in anomalies:
+        code = anom["stock_code"]
+        year = anom["year"]
+        period = anom["period"]
+        stmt = anom["statement_type"]
+        field = anom["field_name"]
+
+        em_data = load_em_tidy(code, stmt, year, period, output_root)
+        em_val = em_data.get(field)
+
+        if em_val is None:
+            em_severity = "no_data"
+            em_no_data += 1
+        else:
+            em_severity, em_diff = compare_values(em_val, anom["rds_val"])
+            if em_severity in ("perfect", "good"):
+                em_matched += 1
+            else:
+                em_unmatched += 1
+
+        details.append({
+            **anom,
+            "em_val": em_val,
+            "em_severity": em_severity,
+        })
+
+    total = len(anomalies)
+    return {
+        "anomalies_count": total,
+        "em_matched": em_matched,
+        "em_unmatched": em_unmatched,
+        "em_no_data": em_no_data,
+        "match_rate": em_matched / total if total else 0,
+        "improvement": em_matched / total if total else 0,
+        "details": details,
+    }
