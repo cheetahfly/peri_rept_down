@@ -32,6 +32,11 @@ REPORT_PATH = os.path.join(OUTPUT_ROOT, "compare_rds_report.json")
 
 
 def main() -> int:
+    import argparse
+    p = argparse.ArgumentParser()
+    p.add_argument("--year", type=int, default=2022, help="Year (default 2022; use 2021 for RDS comparison)")
+    args = p.parse_args()
+
     if not os.path.exists(SAMPLE_PATH):
         print(f"ERROR: Sample not found: {SAMPLE_PATH}")
         return 1
@@ -43,8 +48,8 @@ def main() -> int:
     rds = RdsLoader(RDS_DIR, decode_map_path=DECODE_PATH)
     print(f"  Loaded RDS from {RDS_DIR}")
 
-    print(f"Comparing {len(sample['all_codes'])} stocks × 4 periods × 3 statements...")
-    result = compare_em_rds_batch(sample, rds, OUTPUT_ROOT, year=2022)
+    print(f"Comparing {len(sample['all_codes'])} stocks × 4 periods × 3 statements for year {args.year}...")
+    result = compare_em_rds_batch(sample, rds, OUTPUT_ROOT, year=args.year)
 
     s = result["summary"]
     print(f"\n=== EM vs RDS 比对报告 ===")
@@ -66,7 +71,7 @@ def main() -> int:
     for r in result["per_stock"]:
         for a in r["anomalies"]:
             all_anomalies.append((a["diff"], r["stock_code"], r["statement_type"], r["period"], a))
-    all_anomalies.sort(reverse=True)
+    all_anomalies.sort(key=lambda x: x[0], reverse=True)
     for diff, stock, stmt, period, a in all_anomalies[:10]:
         print(f"  {stock}/{stmt}/{period} {a['field']}: EM={a['em']:.2f} RDS={a['rds']:.2f} 差={diff:.2f}元")
 

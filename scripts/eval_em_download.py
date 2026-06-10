@@ -81,30 +81,42 @@ def process_stock(stock_code: str, progress: dict) -> None:
         os.makedirs(out_dir, exist_ok=True)
         out_path = os.path.join(out_dir, f"{stock_code}.csv")
 
-        if progress.get(f"{stock_code}|{stmt_type}") in ("done", "no_data"):
+        progress_key = f"{stock_code}|{stmt_type}|{YEAR}"
+        if progress.get(progress_key) in ("done", "no_data"):
             continue
 
         df = fetch_func(stock_code)
         if df is None or len(df) == 0:
-            progress[f"{stock_code}|{stmt_type}"] = "no_data"
-            log(f"  {stock_code}/{stmt_type}: no_data")
+            progress[progress_key] = "no_data"
+            log(f"  {stock_code}/{stmt_type}/{YEAR}: no_data")
             continue
 
         field_map = load_field_map(stmt_type)
         if not field_map:
-            log(f"  {stock_code}/{stmt_type}: no field map")
-            progress[f"{stock_code}|{stmt_type}"] = "no_data"
+            log(f"  {stock_code}/{stmt_type}/{YEAR}: no field map")
+            progress[progress_key] = "no_data"
             continue
 
         tidy = parse_to_tidy(df, stock_code, YEAR, field_map, stmt_type, source="em")
         if len(tidy) == 0:
-            progress[f"{stock_code}|{stmt_type}"] = "no_data"
-            log(f"  {stock_code}/{stmt_type}: no rows after parse")
+            progress[progress_key] = "no_data"
+            log(f"  {stock_code}/{stmt_type}/{YEAR}: no rows after parse")
             continue
 
-        tidy.to_csv(out_path, index=False, encoding="utf-8-sig")
-        progress[f"{stock_code}|{stmt_type}"] = "done"
-        log(f"  {stock_code}/{stmt_type}: {len(tidy)} rows saved")
+        # Load existing CSV and merge with new data (preserves prior year + adds this year)
+        import pandas as pd
+        if os.path.exists(out_path):
+            existing = pd.read_csv(out_path, encoding="utf-8-sig", dtype={"stock_code": str})
+            combined = pd.concat([existing, tidy], ignore_index=True)
+            combined = combined.drop_duplicates(
+                subset=["stock_code", "year", "period", "statement_type", "field_code"],
+                keep="last",
+            )
+        else:
+            combined = tidy
+        combined.to_csv(out_path, index=False, encoding="utf-8-sig")
+        progress[progress_key] = "done"
+        log(f"  {stock_code}/{stmt_type}/{YEAR}: {len(tidy)} rows saved (total: {len(combined)})")
         time.sleep(EM_API_REQUEST_DELAY)
 
 
