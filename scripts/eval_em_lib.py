@@ -35,3 +35,47 @@ def classify_board(stock_code: str) -> str:
             if code.startswith(prefix):
                 return board
     return "unknown"
+
+
+def stratified_sample(
+    stock_list: List[str],
+    per_board: int = 50,
+    seed: int = 42,
+) -> Dict:
+    """Stratified random sample: per_board stocks from each of 4 boards.
+
+    Args:
+        stock_list: full A-share stock codes.
+        per_board: how many to sample from each board (default 50).
+        seed: random seed for reproducibility.
+
+    Returns:
+        {
+            "seed": 42,
+            "per_board": 50,
+            "boards": {"sh_main": [...], "sz_main": [...], "chinext": [...], "star": [...]},
+            "all_codes": [所有抽到的代码]
+        }
+    """
+    by_board: Dict[str, List[str]] = {b: [] for b in BOARD_PREFIXES}
+    for code in stock_list:
+        board = classify_board(code)
+        if board in by_board:
+            by_board[board].append(code)
+
+    rng = random.Random(seed)
+    sampled: Dict[str, List[str]] = {}
+    for board, codes in by_board.items():
+        rng.shuffle(codes)
+        sampled[board] = codes[:per_board]
+
+    all_codes = []
+    for codes in sampled.values():
+        all_codes.extend(codes)
+
+    return {
+        "seed": seed,
+        "per_board": per_board,
+        "boards": sampled,
+        "all_codes": all_codes,
+    }
