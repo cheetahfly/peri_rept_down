@@ -80,3 +80,146 @@ def stratified_sample(
         "boards": sampled,
         "all_codes": all_codes,
     }
+
+
+# ----- Tidy 解析 -----
+
+PERIOD_MAP = {
+    "03-31": "Q1",
+    "06-30": "half_year",
+    "09-30": "Q3",
+    "12-31": "annual",
+}
+
+EM_API_MAX_RETRIES = 3
+EM_API_REQUEST_DELAY = 0.5  # seconds
+
+
+def detect_period(report_date: str) -> Optional[str]:
+    """Detect report period from date string like '2022-03-31'.
+
+    Returns 'Q1' / 'half_year' / 'Q3' / 'annual' or None if not a valid period end.
+    """
+    if not report_date or not isinstance(report_date, str):
+        return None
+    s = str(report_date).strip()
+    m = re.search(r"(\d{2})-(\d{2})$", s)
+    if not m:
+        return None
+    mm_dd = f"{m.group(1)}-{m.group(2)}"
+    return PERIOD_MAP.get(mm_dd)
+
+
+def parse_yi_value(val) -> Optional[float]:
+    """Parse a financial value, handling '亿' suffix and commas.
+
+    Examples:
+        "100.50亿" -> 10050000000.0
+        "1,234.56" -> 1234.56
+        None -> None
+    """
+    if val is None:
+        return None
+    s = str(val).strip()
+    if not s or s.lower() in ("nan", "false", "none"):
+        return None
+    try:
+        if s.endswith("亿"):
+            return float(s[:-1]) * 1e8
+        s = s.replace(",", "")
+        return float(s)
+    except (ValueError, TypeError):
+        return None
+
+
+def parse_to_tidy(
+    df: pd.DataFrame,
+    stock_code: str,
+    year: int,
+    field_map: Dict[str, Tuple[str, int, str]],
+    statement_type: str,
+    source: str = "em",
+) -> pd.DataFrame:
+    """Parse EM raw DataFrame to Tidy CSV format."""
+    if df is None or len(df) == 0:
+        return pd.DataFrame(columns=[
+            "stock_code", "year", "period", "statement_type",
+            "field_code", "field_name", "value", "display_order", "source",
+        ])
+
+    # Find date column (case-insensitive search for REPORT_DATE)
+    date_col = None
+    for c in df.columns:
+        if str(c).upper() in ("REPORT_DATE", "报告日期"):
+            date_col = c
+            break
+    if date_col is None:
+        date_col = df.columns[0]
+
+    rows = []
+    for _, row in df.iterrows():
+        report_date = str(row[date_col])
+        if not report_date.startswith(str(year)):
+            continue
+        period = detect_period(report_date)
+        if period is None:
+            continue
+
+        for col_name, (fcode, order, short_name) in field_map.items():
+            if col_name not in df.columns:
+                continue
+            val = parse_yi_value(row[col_name])
+            if val is None:
+                continue
+            rows.append({
+                "stock_code": str(stock_code).zfill(6),
+                "year": year,
+                "period": period,
+                "statement_type": statement_type,
+                "field_code": fcode,
+                "field_name": short_name,
+                "value": val,
+                "display_order": order,
+                "source": source,
+            })
+    return pd.DataFrame(rows)
+
+
+# ----- EM API 包装器 -----
+
+def _em_api_call(api_func, symbol: str):
+    """Single EM API call with retry. Returns DataFrame or None."""
+    import akshare as ak
+    func = getattr(ak, api_func)
+    for attempt in range(EM_API_MAX_RETRIES):
+        try:
+            df = func(symbol=symbol)
+            time.sleep(EM_API_REQUEST_DELAY)
+            return df
+        except Exception as e:
+            print(f"  Retry {attempt + 1}/{EM_API_MAX_RETRIES} for {symbol}: {type(e).__name__}")
+            time.sleep(2 ** attempt)
+    return None
+
+
+def _to_em_symbol(stock_code: str) -> str:
+    """Convert 6-digit code to EM symbol (SH600519 / SZ000001)."""
+    code = str(stock_code).zfill(6)
+    if code.startswith(("600", "601", "603", "605", "688", "689")):
+        return f"SH{code}"
+    return f"SZ{code}"
+
+
+def fetch_em_balance_sheet(stock_code: str):
+    """Fetch balance sheet from AKShare EM API. Returns DataFrame or None."""
+    return _em_api_call("stock_balance_sheet_by_report_em", _to_em_symbol(stock_code))
+
+
+def fetch_em_income_statement(stock_code: str):
+    """Fetch income statement from AKShare EM API. Returns DataFrame or None."""
+    return _em_api_call("stock_profit_statement_by_report_em", _to_em_symbol(stock_code))
+
+
+def fetch_em_cash_flow(stock_code: str):
+    """Fetch cash flow statement from AKShare EM API. Returns DataFrame or None."""
+    return _em_api_call("stock_cash_flow_sheet_by_report_em", _to_em_symbol(stock_code))
