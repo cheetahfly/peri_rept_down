@@ -551,3 +551,66 @@ def compare_em_rds_batch(
         "per_board": per_board,
         "per_stock": all_results,
     }
+
+
+# ----- Sina vs RDS 异常扫描 -----
+
+def scan_sina_anomalies(
+    sina_csv_path: str,
+    rds_loader_callable,
+    tolerance: float = 1.0,
+) -> list:
+    """Scan sina cleaned CSV and find fields where |sina - rds| > tolerance.
+
+    Args:
+        sina_csv_path: path to sina_cleaned_*.csv.
+        rds_loader_callable: function (code, year, stmt) -> {field_name: value}.
+        tolerance: max allowed absolute diff (default 1.0).
+
+    Returns:
+        List of anomaly dicts:
+            [{stock_code, year, period, statement_type, field_name, sina_val, rds_val, diff}]
+    """
+    if not os.path.exists(sina_csv_path):
+        return []
+    df = pd.read_csv(sina_csv_path, encoding="utf-8-sig", dtype={"stock_code": str})
+    required = {"stock_code", "year", "period", "statement_type", "field_name", "value"}
+    if not required.issubset(df.columns):
+        return []
+
+    anomalies = []
+    rds_cache: Dict[Tuple, dict] = {}
+
+    for _, row in df.iterrows():
+        code = str(row["stock_code"]).zfill(6)
+        year = int(row["year"])
+        stmt = row["statement_type"]
+        field = row["field_name"]
+        sina_val = float(row["value"])
+
+        key = (code, year, stmt)
+        if key not in rds_cache:
+            try:
+                rds_cache[key] = rds_loader_callable(code, year, stmt) or {}
+            except Exception:
+                rds_cache[key] = {}
+
+        rds_data = rds_cache[key]
+        if field not in rds_data:
+            continue
+
+        rds_val = float(rds_data[field])
+        diff = abs(sina_val - rds_val)
+        if diff > tolerance:
+            anomalies.append({
+                "stock_code": code,
+                "year": year,
+                "period": row["period"],
+                "statement_type": stmt,
+                "field_name": field,
+                "sina_val": sina_val,
+                "rds_val": rds_val,
+                "diff": diff,
+            })
+
+    return anomalies
