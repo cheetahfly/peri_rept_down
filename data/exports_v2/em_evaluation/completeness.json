@@ -1,0 +1,34 @@
+{
+  "total_stocks": 200,
+  "stocks_with_data": 185,
+  "complete_stocks": 185,
+  "coverage_rate": 0.925,
+  "completeness_rate": 0.925,
+  "per_board": {
+    "sh_main": {
+      "total": 50,
+      "complete": 47,
+      "with_data": 47
+    },
+    "sz_main": {
+      "total": 50,
+      "complete": 40,
+      "with_data": 40
+    },
+    "chinext": {
+      "total": 50,
+      "complete": 50,
+      "with_data": 50
+    },
+    "star": {
+      "total": 50,
+      "complete": 48,
+      "with_data": 48
+    }
+  },
+  "per_statement": {
+    "balance_sheet": 185,
+    "income_statement": 185,
+    "cash_flow": 185
+  }
+}
