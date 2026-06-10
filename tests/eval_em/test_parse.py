@@ -108,3 +108,72 @@ def test_parse_to_tidy_sets_source_column():
 
 def test_em_api_max_retries_positive():
     assert EM_API_MAX_RETRIES >= 1
+
+
+# ---- check_completeness ----
+
+from scripts.eval_em_lib import check_completeness
+
+
+def test_check_completeness_full(tmp_path):
+    """所有 12 项齐全 → complete=True。"""
+    sample = {"all_codes": ["600000", "300001"]}
+    for code in sample["all_codes"]:
+        for t in ("balance_sheet", "income_statement", "cash_flow"):
+            (tmp_path / t).mkdir(parents=True, exist_ok=True)
+            (tmp_path / t / f"{code}.csv").write_text("h\n", encoding="utf-8")
+
+    result = check_completeness(sample, str(tmp_path))
+    assert result["total_stocks"] == 2
+    assert result["complete_stocks"] == 2
+    assert result["coverage_rate"] == 1.0
+    assert result["completeness_rate"] == 1.0
+
+
+def test_check_completeness_partial(tmp_path):
+    """部分缺失 → coverage/completeness 不同。"""
+    sample = {"all_codes": ["600000", "300001", "688001"]}
+    for t in ("balance_sheet", "income_statement", "cash_flow"):
+        (tmp_path / t).mkdir(parents=True, exist_ok=True)
+        (tmp_path / t / "600000.csv").write_text("h\n", encoding="utf-8")
+    (tmp_path / "balance_sheet" / "300001.csv").write_text("h\n", encoding="utf-8")
+    # 688001: 无
+
+    result = check_completeness(sample, str(tmp_path))
+    assert result["total_stocks"] == 3
+    assert result["stocks_with_data"] == 2
+    assert result["complete_stocks"] == 1
+    assert result["coverage_rate"] == 2 / 3
+    assert result["completeness_rate"] == 1 / 3
+
+
+def test_check_completeness_per_board(tmp_path):
+    """分板块统计。"""
+    sample = {
+        "boards": {
+            "sh_main": ["600000", "600001"],
+            "chinext": ["300001"],
+        }
+    }
+    for t in ("balance_sheet", "income_statement", "cash_flow"):
+        (tmp_path / t).mkdir(parents=True, exist_ok=True)
+    for t in ("balance_sheet", "income_statement", "cash_flow"):
+        (tmp_path / t / "600000.csv").write_text("h\n", encoding="utf-8")
+    (tmp_path / "balance_sheet" / "300001.csv").write_text("h\n", encoding="utf-8")
+
+    result = check_completeness(sample, str(tmp_path))
+    assert result["per_board"]["sh_main"] == {"total": 2, "complete": 1, "with_data": 1}
+    assert result["per_board"]["chinext"] == {"total": 1, "complete": 0, "with_data": 1}
+
+
+def test_check_completeness_per_statement(tmp_path):
+    """分表统计。"""
+    sample = {"all_codes": ["600000"]}
+    (tmp_path / "balance_sheet").mkdir(parents=True, exist_ok=True)
+    (tmp_path / "balance_sheet" / "600000.csv").write_text("h\n", encoding="utf-8")
+    # income_statement 和 cash_flow 缺失
+
+    result = check_completeness(sample, str(tmp_path))
+    assert result["per_statement"]["balance_sheet"] == 1
+    assert result["per_statement"]["income_statement"] == 0
+    assert result["per_statement"]["cash_flow"] == 0

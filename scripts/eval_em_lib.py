@@ -298,3 +298,77 @@ def load_field_map(statement_type: str) -> Dict[str, Tuple[str, int, str]]:
         order = fcode_to_order.get(fcode, 999)
         field_map[name] = (fcode, order, name)
     return field_map
+
+
+# ----- 完整性检查 -----
+
+def check_completeness(sample: dict, output_root: str) -> dict:
+    """Check download completeness for the sample.
+
+    Args:
+        sample: dict with 'all_codes' (and optionally 'boards').
+        output_root: directory containing balance_sheet/, income_statement/, cash_flow/.
+
+    Returns:
+        {
+          "total_stocks": int,
+          "stocks_with_data": int,    # 至少有一张表
+          "complete_stocks": int,     # 3 张表齐全
+          "coverage_rate": float,     # with_data / total
+          "completeness_rate": float, # complete / total
+          "per_board": {board: {total, complete, with_data}},
+          "per_statement": {stmt: count}
+        }
+    """
+    STATEMENTS = ("balance_sheet", "income_statement", "cash_flow")
+    all_codes = sample.get("all_codes", [])
+    if "boards" in sample:
+        boards = sample["boards"]
+    else:
+        boards = {"all": all_codes}
+
+    total = len(all_codes)
+    stocks_with_data = 0
+    complete_stocks = 0
+    per_board = {b: {"total": len(codes), "complete": 0, "with_data": 0} for b, codes in boards.items()}
+    per_statement = {s: 0 for s in STATEMENTS}
+
+    for code in all_codes:
+        has_data = False
+        all_three = True
+        for stmt in STATEMENTS:
+            csv_path = os.path.join(output_root, stmt, f"{code}.csv")
+            if os.path.exists(csv_path) and os.path.getsize(csv_path) > 0:
+                has_data = True
+                per_statement[stmt] += 1
+            else:
+                all_three = False
+        if has_data:
+            stocks_with_data += 1
+        if all_three:
+            complete_stocks += 1
+
+    for board, codes in boards.items():
+        for code in codes:
+            has_data = False
+            all_three = True
+            for stmt in STATEMENTS:
+                csv_path = os.path.join(output_root, stmt, f"{code}.csv")
+                if os.path.exists(csv_path) and os.path.getsize(csv_path) > 0:
+                    has_data = True
+                else:
+                    all_three = False
+            if has_data:
+                per_board[board]["with_data"] += 1
+            if all_three:
+                per_board[board]["complete"] += 1
+
+    return {
+        "total_stocks": total,
+        "stocks_with_data": stocks_with_data,
+        "complete_stocks": complete_stocks,
+        "coverage_rate": stocks_with_data / total if total else 0,
+        "completeness_rate": complete_stocks / total if total else 0,
+        "per_board": per_board,
+        "per_statement": per_statement,
+    }
