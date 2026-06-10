@@ -85,3 +85,15 @@ def test_stratified_sample_includes_all_codes():
     result = stratified_sample(stock_list, per_board=10, seed=1)
     total = sum(len(v) for v in result["boards"].values())
     assert len(result["all_codes"]) == total
+
+
+def test_stratified_sample_reproducible_across_many_calls():
+    """多次调用同一 stock_list 必须全部产出相同结果。"""
+    stock_list = [f"{600000 + i:06d}" for i in range(50)] + \
+                 [f"{300000 + i:06d}" for i in range(50)] + \
+                 [f"{688000 + i:06d}" for i in range(50)] + \
+                 [f"{i:06d}" for i in range(1, 51)]
+    expected = stratified_sample(stock_list, per_board=10, seed=42)
+    for i in range(5):
+        actual = stratified_sample(stock_list, per_board=10, seed=42)
+        assert actual == expected, f"Call {i+1} diverged from expected"

@@ -66,8 +66,9 @@ def stratified_sample(
     rng = random.Random(seed)
     sampled: Dict[str, List[str]] = {}
     for board, codes in by_board.items():
-        rng.shuffle(codes)
-        sampled[board] = codes[:per_board]
+        shuffled = codes[:]  # copy to avoid mutating the local by_board lists
+        rng.shuffle(shuffled)
+        sampled[board] = shuffled[:per_board]
 
     all_codes = []
     for codes in sampled.values():
