@@ -98,13 +98,16 @@ EM_API_REQUEST_DELAY = 0.5  # seconds
 
 
 def detect_period(report_date: str) -> Optional[str]:
-    """Detect report period from date string like '2022-03-31'.
+    """Detect report period from date string like '2022-03-31' or '2022-03-31 00:00:00'.
 
     Returns 'Q1' / 'half_year' / 'Q3' / 'annual' or None if not a valid period end.
     """
     if not report_date or not isinstance(report_date, str):
         return None
     s = str(report_date).strip()
+    # Strip time portion if present (e.g. "2022-03-31 00:00:00")
+    if " " in s:
+        s = s.split(" ")[0]
     m = re.search(r"(\d{2})-(\d{2})$", s)
     if not m:
         return None
@@ -219,7 +222,7 @@ def fetch_em_balance_sheet(stock_code: str):
 
 def fetch_em_income_statement(stock_code: str):
     """Fetch income statement from AKShare EM API. Returns DataFrame or None."""
-    return _em_api_call("stock_profit_statement_by_report_em", _to_em_symbol(stock_code))
+    return _em_api_call("stock_profit_sheet_by_report_em", _to_em_symbol(stock_code))
 
 
 def fetch_em_cash_flow(stock_code: str):
@@ -227,10 +230,16 @@ def fetch_em_cash_flow(stock_code: str):
     return _em_api_call("stock_cash_flow_sheet_by_report_em", _to_em_symbol(stock_code))
 
 
-# ----- 字段映射表加载 -----
+# ----- EM 字段映射表加载 -----
+
+_EM_COLUMN_MAPPINGS: Optional[Dict[str, Dict[str, Tuple[str, int, str]]]] = None
+
 
 def load_field_map(statement_type: str) -> Dict[str, Tuple[str, int, str]]:
-    """Load F-code field mapping for a statement type from project decode_mappings.
+    """Load F-code field mapping for EM data.
+
+    Uses the EM-specific English-column mapping file at data/em_column_mappings.json.
+    Falls back to the legacy Chinese-name mapping if the file is not found.
 
     Args:
         statement_type: 'balance_sheet' / 'income_statement' / 'cash_flow'.
@@ -239,6 +248,20 @@ def load_field_map(statement_type: str) -> Dict[str, Tuple[str, int, str]]:
         {em_column_name: (F-code, display_order, short_name)}.
         Empty dict if not found.
     """
+    global _EM_COLUMN_MAPPINGS
+    if _EM_COLUMN_MAPPINGS is None:
+        em_map_path = os.path.join(BASE_DIR, "data", "em_column_mappings.json")
+        if os.path.exists(em_map_path):
+            with open(em_map_path, "r", encoding="utf-8") as f:
+                _EM_COLUMN_MAPPINGS = json.load(f)
+        else:
+            _EM_COLUMN_MAPPINGS = {}
+
+    # Prefer EM-specific mapping (English column names)
+    if _EM_COLUMN_MAPPINGS and statement_type in _EM_COLUMN_MAPPINGS:
+        return _EM_COLUMN_MAPPINGS[statement_type]
+
+    # Fallback: legacy decode_mappings_by_type.json (Chinese column names, Sina-style)
     decode_path = os.path.join(BASE_DIR, "data", "decode_mappings_by_type.json")
     if not os.path.exists(decode_path):
         return {}
