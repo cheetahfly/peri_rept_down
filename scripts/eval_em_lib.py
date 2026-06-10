@@ -300,6 +300,89 @@ def load_field_map(statement_type: str) -> Dict[str, Tuple[str, int, str]]:
     return field_map
 
 
+# ----- EM vs RDS 比对 -----
+
+TOLERANCE_YUAN = 1.0
+PERFECT_TOLERANCE_YUAN = 0.01
+
+
+def compare_values(em_val: float, rds_val: float) -> Tuple[str, float]:
+    """Compare two values using 1元 absolute tolerance.
+
+    Returns:
+        (severity, abs_diff)
+        severity in {'perfect', 'good', 'anomaly'}
+    """
+    diff = abs(float(em_val) - float(rds_val))
+    if diff <= PERFECT_TOLERANCE_YUAN:
+        severity = "perfect"
+    elif diff <= TOLERANCE_YUAN:
+        severity = "good"
+    else:
+        severity = "anomaly"
+    return severity, diff
+
+
+def align_em_rds(em_data: dict, rds_data: dict) -> dict:
+    """Align EM and RDS data by field_name (intersection)."""
+    common = set(em_data.keys()) & set(rds_data.keys())
+    return {
+        f: {"em": em_data[f], "rds": rds_data[f]}
+        for f in common
+    }
+
+
+def compare_em_rds_one_stock(
+    em_data: dict,
+    rds_data: dict,
+    statement_type: str,
+    stock_code: str,
+    year: int,
+    period: str,
+) -> dict:
+    """Compare EM data against RDS for one stock/period."""
+    common = set(em_data.keys()) & set(rds_data.keys())
+    aligned = align_em_rds(em_data, rds_data)
+
+    matched = 0
+    anomalies = []
+    for field, vals in aligned.items():
+        severity, diff = compare_values(vals["em"], vals["rds"])
+        if severity in ("perfect", "good"):
+            matched += 1
+        else:
+            anomalies.append({
+                "field": field,
+                "em": vals["em"],
+                "rds": vals["rds"],
+                "diff": diff,
+            })
+
+    total_common = len(common)
+    total_em = len(em_data)
+    total_rds = len(rds_data)
+    missing_in_em = len(set(rds_data.keys()) - set(em_data.keys()))
+    extra_in_em = len(set(em_data.keys()) - set(rds_data.keys()))
+
+    return {
+        "stock_code": stock_code,
+        "year": year,
+        "period": period,
+        "statement_type": statement_type,
+        "total_fields_em": total_em,
+        "total_fields_rds": total_rds,
+        "common_fields": total_common,
+        "matched": matched,
+        "unmatched": len(anomalies),
+        "missing_in_em": missing_in_em,
+        "extra_in_em": extra_in_em,
+        "match_rate": matched / total_common if total_common else 0,
+        "value_accuracy": matched / total_common if total_common else 0,
+        "field_coverage": total_common / total_rds if total_rds else 0,
+        "anomalies": anomalies,
+    }
+
+
 # ----- 完整性检查 -----
 
 def check_completeness(sample: dict, output_root: str) -> dict:
