@@ -252,17 +252,23 @@ def load_field_map(statement_type: str) -> Dict[str, Tuple[str, int, str]]:
     fcode_to_order: Dict[str, int] = {}
     if os.path.isdir(rules_dir):
         for fname in os.listdir(rules_dir):
-            if fname.endswith(".yaml") or fname.endswith(".yml"):
-                try:
-                    import yaml
-                    with open(os.path.join(rules_dir, fname), "r", encoding="utf-8") as f:
-                        rule = yaml.safe_load(f)
-                    if rule and "fields" in rule:
-                        for fcode, info in rule["fields"].items():
-                            if isinstance(info, dict) and "display_order" in info:
-                                fcode_to_order[fcode] = info["display_order"]
-                except Exception:
-                    pass
+            if not (fname.endswith(".yaml") or fname.endswith(".yml")):
+                continue
+            try:
+                import yaml
+                with open(os.path.join(rules_dir, fname), "r", encoding="utf-8") as f:
+                    rule = yaml.safe_load(f)
+                if not rule or not isinstance(rule, dict):
+                    continue
+                # Actual format: {statement_type: {fcode: order_number}}
+                # Look for the specific statement_type's mapping
+                stmt_orders = rule.get(statement_type)
+                if isinstance(stmt_orders, dict):
+                    for fcode, order in stmt_orders.items():
+                        if isinstance(order, (int, float)):
+                            fcode_to_order[fcode] = int(order)
+            except Exception:
+                pass
 
     field_map: Dict[str, Tuple[str, int, str]] = {}
     for fcode, name in fcode_to_name.items():
