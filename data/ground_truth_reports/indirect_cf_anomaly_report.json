@@ -1,0 +1,464 @@
+{
+  "generated_at": "2026-06-10T08:53:24",
+  "sample_size": 200,
+  "thresholds": {
+    "perfect_max_pct": 1.0,
+    "good_max_pct": 10.0,
+    "warning_max_pct": 50.0,
+    "anomaly_min_pct": 50.0
+  },
+  "summary": {
+    "total_comparisons": 911,
+    "severity_counts": {
+      "perfect": 792,
+      "good": 41,
+      "warning": 45,
+      "anomaly": 33
+    },
+    "total_stocks": 184,
+    "anomalous_stock_count": 14,
+    "most_common_anomaly_fields": [
+      {
+        "field": "资产减值准备",
+        "count": 6
+      },
+      {
+        "field": "经营性应收项目的减少",
+        "count": 4
+      },
+      {
+        "field": "固定资产折旧",
+        "count": 4
+      },
+      {
+        "field": "净利润",
+        "count": 4
+      },
+      {
+        "field": "存货的减少",
+        "count": 4
+      },
+      {
+        "field": "经营性应付项目的增加",
+        "count": 3
+      },
+      {
+        "field": "长期待摊费用摊销",
+        "count": 2
+      },
+      {
+        "field": "公允价值变动损失",
+        "count": 2
+      },
+      {
+        "field": "投资损失",
+        "count": 2
+      },
+      {
+        "field": "递延所得税资产减少",
+        "count": 2
+      }
+    ]
+  },
+  "anomalous_stocks": [
+    {
+      "stock": "000001",
+      "anomaly_count": 10,
+      "severity_counts": {
+        "perfect": 0,
+        "good": 0,
+        "warning": 4,
+        "anomaly": 10
+      },
+      "anomalous_fields": [
+        {
+          "year": 2020,
+          "field": "长期待摊费用摊销",
+          "sina": 630000000.0,
+          "rds": 806570000000.0,
+          "error_pct": 99.92189146633275
+        },
+        {
+          "year": 2020,
+          "field": "公允价值变动损失",
+          "sina": 716000000.0,
+          "rds": 2865000000.0,
+          "error_pct": 75.0087260034904
+        },
+        {
+          "year": 2020,
+          "field": "投资损失",
+          "sina": -33754000000.000004,
+          "rds": 103401000000.0,
+          "error_pct": 132.64378487635514
+        },
+        {
+          "year": 2020,
+          "field": "经营性应收项目的减少",
+          "sina": -483076000000.0,
+          "rds": 179058000000.0,
+          "error_pct": 369.78744317483716
+        },
+        {
+          "year": 2020,
+          "field": "资产减值准备",
+          "sina": 807000000.0,
+          "rds": 806570000000.0,
+          "error_pct": 99.89994668782623
+        },
+        {
+          "year": 2021,
+          "field": "长期待摊费用摊销",
+          "sina": 704000000.0,
+          "rds": 223444000000.0,
+          "error_pct": 99.68493224253056
+        },
+        {
+          "year": 2021,
+          "field": "公允价值变动损失",
+          "sina": -3422999999.9999995,
+          "rds": 648000000.0,
+          "error_pct": 628.2407407407406
+        },
+        {
+          "year": 2021,
+          "field": "递延所得税资产减少",
+          "sina": -1143000000.0,
+          "rds": -477000000.0,
+          "error_pct": 139.62264150943395
+        },
+        {
+          "year": 2021,
+          "field": "经营性应收项目的减少",
+          "sina": -500983000000.0,
+          "rds": 225222000000.0,
+          "error_pct": 322.4396373356067
+        },
+        {
+          "year": 2021,
+          "field": "资产减值准备",
+          "sina": 1198000000.0,
+          "rds": 223444000000.0,
+          "error_pct": 99.4638477649881
+        }
+      ]
+    },
+    {
+      "stock": "000032",
+      "anomaly_count": 5,
+      "severity_counts": {
+        "perfect": 0,
+        "good": 0,
+        "warning": 0,
+        "anomaly": 5
+      },
+      "anomalous_fields": [
+        {
+          "year": 2020,
+          "field": "净利润",
+          "sina": 910000000.0,
+          "rds": 188976574.62,
+          "error_pct": 381.54116552797956
+        },
+        {
+          "year": 2020,
+          "field": "固定资产折旧",
+          "sina": 312000000.0,
+          "rds": 15702784.7,
+          "error_pct": 1886.9087296344326
+        },
+        {
+          "year": 2020,
+          "field": "经营性应收项目的减少",
+          "sina": -3616000000.0,
+          "rds": -217922645.22,
+          "error_pct": 1559.304381309033
+        },
+        {
+          "year": 2020,
+          "field": "经营性应付项目的增加",
+          "sina": 6043000000.0,
+          "rds": 119562046.3,
+          "error_pct": 4954.279503411276
+        },
+        {
+          "year": 2020,
+          "field": "存货的减少",
+          "sina": -2945000000.0,
+          "rds": -240681189.27,
+          "error_pct": 1123.6103739275827
+        }
+      ]
+    },
+    {
+      "stock": "000151",
+      "anomaly_count": 3,
+      "severity_counts": {
+        "perfect": 1,
+        "good": 0,
+        "warning": 2,
+        "anomaly": 3
+      },
+      "anomalous_fields": [
+        {
+          "year": 2020,
+          "field": "存货的减少",
+          "sina": 131000000.0,
+          "rds": 75002398.77,
+          "error_pct": 74.66108037653635
+        },
+        {
+          "year": 2020,
+          "field": "经营性应收项目的减少",
+          "sina": 419000000.00000006,
+          "rds": 222709516.92,
+          "error_pct": 88.13744728767475
+        },
+        {
+          "year": 2020,
+          "field": "经营性应付项目的增加",
+          "sina": -316000000.0,
+          "rds": -126274478.22,
+          "error_pct": 150.248509797406
+        }
+      ]
+    },
+    {
+      "stock": "000523",
+      "anomaly_count": 3,
+      "severity_counts": {
+        "perfect": 1,
+        "good": 0,
+        "warning": 2,
+        "anomaly": 3
+      },
+      "anomalous_fields": [
+        {
+          "year": 2020,
+          "field": "资产减值准备",
+          "sina": 6080000000.0,
+          "rds": 1478993377.45,
+          "error_pct": 311.0904141087369
+        },
+        {
+          "year": 2020,
+          "field": "经营性应付项目的增加",
+          "sina": -275000000.0,
+          "rds": -177766603.63,
+          "error_pct": 54.697223429199184
+        },
+        {
+          "year": 2020,
+          "field": "递延所得税资产减少",
+          "sina": -143000000.0,
+          "rds": -5000315.48,
+          "error_pct": 2759.8195568252427
+        }
+      ]
+    },
+    {
+      "stock": "000155",
+      "anomaly_count": 2,
+      "severity_counts": {
+        "perfect": 0,
+        "good": 1,
+        "warning": 2,
+        "anomaly": 2
+      },
+      "anomalous_fields": [
+        {
+          "year": 2020,
+          "field": "净利润",
+          "sina": 534000000.0,
+          "rds": 293668894.0,
+          "error_pct": 81.83744036574741
+        },
+        {
+          "year": 2020,
+          "field": "存货的减少",
+          "sina": -195000000.0,
+          "rds": -107774335.54,
+          "error_pct": 80.93361376153095
+        }
+      ]
+    },
+    {
+      "stock": "000301",
+      "anomaly_count": 2,
+      "severity_counts": {
+        "perfect": 0,
+        "good": 1,
+        "warning": 3,
+        "anomaly": 2
+      },
+      "anomalous_fields": [
+        {
+          "year": 2020,
+          "field": "净利润",
+          "sina": 840000000.0,
+          "rds": 312734784.49,
+          "error_pct": 168.59819938797366
+        },
+        {
+          "year": 2020,
+          "field": "固定资产折旧",
+          "sina": 1851000000.0,
+          "rds": 1171980212.99,
+          "error_pct": 57.93782006589166
+        }
+      ]
+    },
+    {
+      "stock": "000002",
+      "anomaly_count": 1,
+      "severity_counts": {
+        "perfect": 6,
+        "good": 0,
+        "warning": 1,
+        "anomaly": 1
+      },
+      "anomalous_fields": [
+        {
+          "year": 2020,
+          "field": "固定资产折旧",
+          "sina": 4775000000.0,
+          "rds": 2650922637.73,
+          "error_pct": 80.12596565582388
+        }
+      ]
+    },
+    {
+      "stock": "000028",
+      "anomaly_count": 1,
+      "severity_counts": {
+        "perfect": 6,
+        "good": 0,
+        "warning": 0,
+        "anomaly": 1
+      },
+      "anomalous_fields": [
+        {
+          "year": 2020,
+          "field": "固定资产折旧",
+          "sina": 1007000000.0,
+          "rds": 139721479.94,
+          "error_pct": 620.7195346287713
+        }
+      ]
+    },
+    {
+      "stock": "000158",
+      "anomaly_count": 1,
+      "severity_counts": {
+        "perfect": 4,
+        "good": 0,
+        "warning": 0,
+        "anomaly": 1
+      },
+      "anomalous_fields": [
+        {
+          "year": 2020,
+          "field": "资产减值准备",
+          "sina": 104000000.0,
+          "rds": 48824648.71,
+          "error_pct": 113.00716492139202
+        }
+      ]
+    },
+    {
+      "stock": "000415",
+      "anomaly_count": 1,
+      "severity_counts": {
+        "perfect": 8,
+        "good": 0,
+        "warning": 0,
+        "anomaly": 1
+      },
+      "anomalous_fields": [
+        {
+          "year": 2020,
+          "field": "资产减值准备",
+          "sina": 4240000000.0,
+          "rds": 8616550000.0,
+          "error_pct": 50.79237049631233
+        }
+      ]
+    },
+    {
+      "stock": "000538",
+      "anomaly_count": 1,
+      "severity_counts": {
+        "perfect": 9,
+        "good": 0,
+        "warning": 0,
+        "anomaly": 1
+      },
+      "anomalous_fields": [
+        {
+          "year": 2020,
+          "field": "资产减值准备",
+          "sina": 125000000.0,
+          "rds": 330936651.97,
+          "error_pct": 62.22842067933549
+        }
+      ]
+    },
+    {
+      "stock": "000539",
+      "anomaly_count": 1,
+      "severity_counts": {
+        "perfect": 1,
+        "good": 2,
+        "warning": 4,
+        "anomaly": 1
+      },
+      "anomalous_fields": [
+        {
+          "year": 2020,
+          "field": "存货的减少",
+          "sina": 407000000.0,
+          "rds": 213210688.0,
+          "error_pct": 90.8909932320091
+        }
+      ]
+    },
+    {
+      "stock": "000585",
+      "anomaly_count": 1,
+      "severity_counts": {
+        "perfect": 1,
+        "good": 0,
+        "warning": 0,
+        "anomaly": 1
+      },
+      "anomalous_fields": [
+        {
+          "year": 2020,
+          "field": "投资损失",
+          "sina": -130000000.0,
+          "rds": 48900000.0,
+          "error_pct": 365.84867075664624
+        }
+      ]
+    },
+    {
+      "stock": "000629",
+      "anomaly_count": 1,
+      "severity_counts": {
+        "perfect": 1,
+        "good": 0,
+        "warning": 1,
+        "anomaly": 1
+      },
+      "anomalous_fields": [
+        {
+          "year": 2020,
+          "field": "净利润",
+          "sina": 398000000.0,
+          "rds": 242684205.43,
+          "error_pct": 63.999135953163375
+        }
+      ]
+    }
+  ]
+}

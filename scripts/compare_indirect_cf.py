@@ -11,6 +11,7 @@ Outputs match rate and value accuracy for indirect CF fields.
 import os
 import sys
 import argparse
+import json
 from typing import Dict, List
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -21,6 +22,14 @@ BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INDIRECT_DIR = os.path.join(BASE, "data", "exports_v2", "indirect_cf")
 RDS_DIR = "D:/Research/Quant/SETL/cninfo/data_backup"
 DECODE_PATH = os.path.join(BASE, "data", "decode_mappings_by_type.json")
+REPORT_DIR = os.path.join(BASE, "data", "ground_truth_reports")
+ANOMALY_REPORT_PATH = os.path.join(REPORT_DIR, "indirect_cf_anomaly_report.json")
+
+# Anomaly severity thresholds (error %)
+PERFECT_MAX = 1.0
+GOOD_MAX = 10.0
+WARNING_MAX = 50.0
+# > WARNING_MAX is treated as "anomaly"
 
 # Map Sina field names to RDS column names
 SINA_TO_RDS = {
@@ -56,6 +65,22 @@ def load_sina_data(stock_code: str) -> Dict[str, Dict[int, Dict[str, float]]]:
         value = float(row["value"])
         result.setdefault(name, {})[year] = value
     return result
+
+
+def classify_anomaly(error_pct: float) -> str:
+    """Bucket an error percentage into a severity category.
+
+    Treats inf/NaN errors as anomalies.
+    """
+    if error_pct != error_pct or error_pct == float("inf"):
+        return "anomaly"
+    if error_pct <= PERFECT_MAX:
+        return "perfect"
+    if error_pct <= GOOD_MAX:
+        return "good"
+    if error_pct <= WARNING_MAX:
+        return "warning"
+    return "anomaly"
 
 
 def main():
@@ -110,6 +135,8 @@ def main():
                 if error_pct < 10:  # within 10% tolerance
                     total_matched += 1
 
+                severity = classify_anomaly(error_pct)
+
                 results.append({
                     "stock": stock_code,
                     "year": year,
@@ -117,6 +144,7 @@ def main():
                     "sina": sina_val,
                     "rds": rds_val,
                     "error_pct": error_pct,
+                    "severity": severity,
                 })
 
     # Summary
@@ -128,6 +156,44 @@ def main():
         field_match_rates[r["field"]]["total"] += 1
         if r["error_pct"] < 10:
             field_match_rates[r["field"]]["matched"] += 1
+
+    # Severity grouping across all comparisons
+    severity_counts = {"perfect": 0, "good": 0, "warning": 0, "anomaly": 0}
+    for r in results:
+        severity_counts[r["severity"]] = severity_counts.get(r["severity"], 0) + 1
+
+    # Per-stock aggregation
+    stock_summary: Dict[str, Dict] = {}
+    for r in results:
+        s = stock_summary.setdefault(r["stock"], {
+            "stocks_compared": 0,
+            "severity_counts": {"perfect": 0, "good": 0, "warning": 0, "anomaly": 0},
+            "anomalous_fields": [],
+        })
+        s["stocks_compared"] += 1
+        s["severity_counts"][r["severity"]] += 1
+        if r["severity"] == "anomaly":
+            s["anomalous_fields"].append({
+                "year": r["year"],
+                "field": r["field"],
+                "sina": r["sina"],
+                "rds": r["rds"],
+                "error_pct": r["error_pct"],
+            })
+
+    anomalous_stocks = {
+        stock: info for stock, info in stock_summary.items()
+        if info["anomalous_fields"]
+    }
+
+    # Most common anomalous field pattern (by field name, ignoring year)
+    field_anomaly_freq: Dict[str, int] = {}
+    for info in anomalous_stocks.values():
+        for entry in info["anomalous_fields"]:
+            field_anomaly_freq[entry["field"]] = field_anomaly_freq.get(entry["field"], 0) + 1
+    top_anomaly_fields = sorted(
+        field_anomaly_freq.items(), key=lambda kv: -kv[1]
+    )[:10]
 
     print(f"\n=== 间接法 CF 对比报告 ===")
     print(f"样本股票数: {len(sample)}")
@@ -148,6 +214,76 @@ def main():
     for r in sorted_results[:10]:
         if r["error_pct"] > 100:
             print(f"  {r['stock']}/{r['year']} {r['field']}: Sina={r['sina']:.2f} RDS={r['rds']:.2f} ({r['error_pct']:.1f}%)")
+
+    # Anomaly / severity breakdown
+    print("\n=== 异常检测 (anomaly detection) ===")
+    print(f"分级阈值: perfect<={PERFECT_MAX}%  good<={GOOD_MAX}%  "
+          f"warning<={WARNING_MAX}%  anomaly>{WARNING_MAX}%")
+    print(f"分级计数: perfect={severity_counts['perfect']}  "
+          f"good={severity_counts['good']}  "
+          f"warning={severity_counts['warning']}  "
+          f"anomaly={severity_counts['anomaly']}")
+    print(f"异常股票数: {len(anomalous_stocks)}/{len(sample)}")
+
+    print("\n异常股票 Top 10 (按异常字段数排序):")
+    top_anomalous = sorted(
+        anomalous_stocks.items(),
+        key=lambda kv: -len(kv[1]["anomalous_fields"]),
+    )[:10]
+    for stock, info in top_anomalous:
+        fields = ",".join(sorted({e["field"] for e in info["anomalous_fields"]}))
+        print(f"  {stock}: {len(info['anomalous_fields'])} 处异常 -> {fields}")
+
+    if top_anomaly_fields:
+        print("\n最常见异常字段 (Top 10):")
+        for field, count in top_anomaly_fields:
+            print(f"  {field}: {count} 次")
+
+    # JSON anomaly report
+    os.makedirs(REPORT_DIR, exist_ok=True)
+    # Replace inf with a sentinel for JSON serialization
+    def _safe_pct(p):
+        if p == float("inf") or p != p:
+            return None
+        return p
+
+    report = {
+        "generated_at": __import__("datetime").datetime.now().isoformat(timespec="seconds"),
+        "sample_size": len(sample),
+        "thresholds": {
+            "perfect_max_pct": PERFECT_MAX,
+            "good_max_pct": GOOD_MAX,
+            "warning_max_pct": WARNING_MAX,
+            "anomaly_min_pct": WARNING_MAX,
+        },
+        "summary": {
+            "total_comparisons": total_results,
+            "severity_counts": severity_counts,
+            "total_stocks": len(stock_summary),
+            "anomalous_stock_count": len(anomalous_stocks),
+            "most_common_anomaly_fields": [
+                {"field": f, "count": c} for f, c in top_anomaly_fields
+            ],
+        },
+        "anomalous_stocks": [
+            {
+                "stock": stock,
+                "anomaly_count": len(info["anomalous_fields"]),
+                "severity_counts": info["severity_counts"],
+                "anomalous_fields": [
+                    {**entry, "error_pct": _safe_pct(entry["error_pct"])}
+                    for entry in info["anomalous_fields"]
+                ],
+            }
+            for stock, info in sorted(
+                anomalous_stocks.items(),
+                key=lambda kv: -len(kv[1]["anomalous_fields"]),
+            )
+        ],
+    }
+    with open(ANOMALY_REPORT_PATH, "w", encoding="utf-8") as f:
+        json.dump(report, f, ensure_ascii=False, indent=2)
+    print(f"\n异常报告已保存: {ANOMALY_REPORT_PATH}")
 
     return 0
 
