@@ -22,6 +22,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import akshare as ak  # noqa: E402
+import yaml  # noqa: E402
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from dual_channel_cf_lib import (  # noqa: E402
@@ -34,6 +35,28 @@ import pandas as pd  # noqa: E402
 
 OUT_DIR = "data/exports_v2/cash_flow_dual_channel"
 os.makedirs(OUT_DIR, exist_ok=True)
+
+FINANCIAL_CODES_YAML = "rules/financial_stock_codes.yaml"
+
+
+def load_financial_codes():
+    """加载金融股代码白名单（banks/insurance/securities 三大类合并去重）"""
+    if not os.path.exists(FINANCIAL_CODES_YAML):
+        return set()
+    with open(FINANCIAL_CODES_YAML, encoding="utf-8") as f:
+        d = yaml.safe_load(f) or {}
+    s = set()
+    for v in d.values():
+        if isinstance(v, list):
+            s.update(str(c) for c in v)
+    return s
+
+
+FINANCIAL_CODES = load_financial_codes()
+
+
+def is_financial(code: str) -> bool:
+    return code in FINANCIAL_CODES
 
 
 def em_symbol(code: str) -> str:
@@ -71,7 +94,7 @@ def build_merged_csv(stock, year, rows, out_path):
     df.to_csv(out_path, index=False, encoding="utf-8-sig")
 
 
-def build_report_html(stock, year, rows, out_path):
+def build_report_html(stock, year, rows, out_path, is_fin=False):
     color_css = {
         "exact": "#c8eac8", "sub_yuan": "#f4e4b4", "rounded": "#ffe0a3",
         "large_error": "#f5c2c2", "no_match": "#e8e8e8",
@@ -102,6 +125,14 @@ def build_report_html(stock, year, rows, out_path):
 <strong>2022+ 数据务必用 PDF 年报抽样校验</strong>（参考 Job 1 baseline: docs/audit/2026-06-12-pdf-extraction-baseline.md）。
 </div>"""
 
+    # 金融股提示横幅
+    fin_banner = ""
+    if is_fin:
+        fin_banner = """<div class="summary" style="border-left-color:#0366d6;background:#e3f2fd;">
+<strong>💼 金融股提示</strong>：该股票为金融股（银行/保险/券商），其 CF schema 与普通股不同（316列 vs 254列）。<br>
+RDS 标准数据应使用 cf_f.rds（非 cf_o.rds）。EM 部分字段名为通用名（如 OTHER_ASSET_IMPAIRMENT 实际存"客户存款"值），需查 <code>rules/cf_field_map_financial.yaml</code> 解读。
+</div>"""
+
     html = f"""<!DOCTYPE html>
 <html><head><meta charset="UTF-8"><title>{stock} {year} CF EM vs THS new</title>
 <style>
@@ -112,9 +143,11 @@ th, td {{ padding: 6px 10px; border: 1px solid #e1e4e8; }}
 th {{ background: #1a1a2e; color: #fff; }}
 .num {{ text-align: right; font-family: Consolas, monospace; }}
 .summary {{ background: #fff8db; padding: 12px; border-left: 4px solid #f0ad4e; margin: 12px 0; }}
+code {{ background:#f5f5f5; padding:1px 4px; border-radius:3px; }}
 </style></head><body>
 <h1>{stock} - {year} 年报现金流量表 EM vs THS新版 双渠道对比</h1>
 {warning_banner}
+{fin_banner}
 <div class="summary"><strong>项目分布：</strong> {summary_line}</div>
 <table>
 <thead><tr><th>EM 字段</th><th>EM 值</th><th>THS 匹配字段</th><th>THS 值</th>
@@ -127,32 +160,36 @@ th {{ background: #1a1a2e; color: #fff; }}
 
 
 def process_stock(stock: str, year: int):
-    print(f"\n[{stock} {year}] downloading...")
+    is_fin = is_financial(stock)
+    label = " (金融股)" if is_fin else ""
+    print(f"\n[{stock} {year}]{label} downloading...")
     try:
         em_csv, ths_csv = download_one(stock, year)
     except Exception as e:
         print(f"  [ERROR] download: {type(e).__name__}: {e}")
-        return {"stock": stock, "year": year, "status": "DOWNLOAD_FAILED", "error": str(e)}
+        return {"stock": stock, "year": year, "status": "DOWNLOAD_FAILED",
+                "error": str(e), "is_financial": is_fin}
 
     em_v = extract_em_year_values(em_csv, year)
     ths_v = extract_ths_new_year_values(ths_csv, year)
     if not em_v:
-        return {"stock": stock, "year": year, "status": "NO_EM_DATA"}
+        return {"stock": stock, "year": year, "status": "NO_EM_DATA", "is_financial": is_fin}
     if not ths_v:
-        return {"stock": stock, "year": year, "status": "NO_THS_DATA"}
+        return {"stock": stock, "year": year, "status": "NO_THS_DATA", "is_financial": is_fin}
 
     rows = dual_match(em_v, ths_v)
     merged_csv = os.path.join(OUT_DIR, f"{stock}_{year}_merged.csv")
     report_html = os.path.join(OUT_DIR, f"{stock}_{year}_report.html")
     build_merged_csv(stock, year, rows, merged_csv)
-    build_report_html(stock, year, rows, report_html)
+    build_report_html(stock, year, rows, report_html, is_fin=is_fin)
 
     counts = {}
     for r in rows:
         counts[r["class"]] = counts.get(r["class"], 0) + 1
     print(f"  [OK] em={len(em_v)} ths={len(ths_v)}  分布: {counts}")
     return {"stock": stock, "year": year, "status": "OK", "counts": counts,
-            "merged_csv": merged_csv, "report_html": report_html}
+            "merged_csv": merged_csv, "report_html": report_html,
+            "is_financial": is_fin}
 
 
 def main():
