@@ -23,16 +23,27 @@ os.makedirs(OUT_DIR, exist_ok=True)
 
 
 def load_pdf_extracted(stock_code, year):
-    """读取 PDF 提取结果，返回 {item_name_zh: value} 或 None"""
+    """读取 PDF 提取结果，返回 {item_name_zh: value} 或 None
+
+    兼容两种 JSON 结构：
+    - Wrapped:  {stock_code, ..., data: {statement_type, found, pages, data: {item: v}, ...}}
+    - Flat:     {statement_type, found, pages, data: {item: v}, extracted_at}
+    """
     path = os.path.join(EXTRACTED_DIR, stock_code, f"{stock_code}_{year}_cash_flow.json")
     if not os.path.exists(path):
         return None
     with open(path, "r", encoding="utf-8") as f:
         outer = json.load(f)
-    data = outer.get("data", {}).get("data", {})
-    # data 是 {item_name_zh: value or None}
+    # Wrapped: outer.data 仍是 dict 且含 statement_type → 再下钻一层
+    inner = outer.get("data", {})
+    if isinstance(inner, dict) and "statement_type" in inner and "data" in inner:
+        field_map = inner.get("data", {})
+    else:
+        field_map = inner
+    if not isinstance(field_map, dict):
+        return None
     out = {}
-    for name, v in data.items():
+    for name, v in field_map.items():
         if isinstance(v, (int, float)):
             out[name] = float(v)
         elif isinstance(v, str):
