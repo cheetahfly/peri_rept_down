@@ -1,0 +1,3214 @@
+[
+  {
+    "stock_code": "000002",
+    "status": "OK",
+    "rds_total": 54,
+    "exact": 0,
+    "sub_yuan": 0,
+    "rounded": 0,
+    "large_error": 0,
+    "no_match": 54,
+    "exact_rate": 0.0,
+    "details": [
+      {
+        "rds_code": "F006N",
+        "rds_name": "销售商品、提供劳务收到的现金",
+        "rds_value": 472283130715.82,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F008N",
+        "rds_name": "收到其他与经营活动有关的现金",
+        "rds_value": 36078780855.97,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F009N",
+        "rds_name": "经营活动现金流入小计",
+        "rds_value": 508361911571.79,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F010N",
+        "rds_name": "购买商品、接受劳务支付的现金",
+        "rds_value": 318470472700.42,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F011N",
+        "rds_name": "支付给职工以及为职工支付的现金",
+        "rds_value": 15561462921.17,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F012N",
+        "rds_name": "支付的各项税费",
+        "rds_value": 59397255641.48,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F013N",
+        "rds_name": "支付其他与经营活动有关的现金",
+        "rds_value": 61744698064.91,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F014N",
+        "rds_name": "经营活动现金流出小计",
+        "rds_value": 455173889327.98,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F015N",
+        "rds_name": "经营活动产生的现金流量净额",
+        "rds_value": 53188022243.81,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F016N",
+        "rds_name": "收回投资收到的现金",
+        "rds_value": 4636886080.38,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F017N",
+        "rds_name": "取得投资收益收到的现金",
+        "rds_value": 3903163650.08,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F018N",
+        "rds_name": "处置固定资产、无形资产和其他长期资产收回的现金净额",
+        "rds_value": 62313156.81,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F019N",
+        "rds_name": "处置子公司及其他营业单位收到的现金净额",
+        "rds_value": 4704049890.99,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F020N",
+        "rds_name": "收到其他与投资活动有关的现金",
+        "rds_value": 17257903571.86,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F021N",
+        "rds_name": "投资活动现金流入小计",
+        "rds_value": 30564316350.12,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F022N",
+        "rds_name": "购建固定资产、无形资产和其他长期资产支付的现金",
+        "rds_value": 7208297858.47,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F023N",
+        "rds_name": "投资支付的现金",
+        "rds_value": 12937284477.77,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F024N",
+        "rds_name": "取得子公司及其他营业单位支付的现金净额",
+        "rds_value": 4143334783.53,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F025N",
+        "rds_name": "支付其他与投资活动有关的现金",
+        "rds_value": 478332102.3,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F026N",
+        "rds_name": "投资活动现金流出小计",
+        "rds_value": 24767249222.07,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F027N",
+        "rds_name": "投资活动产生的现金流量净额",
+        "rds_value": 5797067128.05,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F028N",
+        "rds_name": "吸收投资收到的现金",
+        "rds_value": 38858944942.25,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F089N",
+        "rds_name": "其中：子公司吸收少数股东投资收到的现金",
+        "rds_value": 31693649391.52,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F029N",
+        "rds_name": "取得借款收到的现金",
+        "rds_value": 106113680208.76,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F076N",
+        "rds_name": "发行债券收到的现金",
+        "rds_value": 8963038000.0,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F031N",
+        "rds_name": "筹资活动现金流入小计",
+        "rds_value": 153935663151.01,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F032N",
+        "rds_name": "偿还债务支付的现金",
+        "rds_value": 110431890971.91,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F033N",
+        "rds_name": "分配股利、利润或偿付利息支付的现金",
+        "rds_value": 34716050996.39,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F090N",
+        "rds_name": "其中：子公司支付给少数股东的股利、利润",
+        "rds_value": 7474053653.85,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F034N",
+        "rds_name": "支付其他与筹资活动有关的现金",
+        "rds_value": 41291981121.54,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F035N",
+        "rds_name": "筹资活动现金流出小计",
+        "rds_value": 186439923089.84,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F036N",
+        "rds_name": "筹资活动产生的现金流量净额",
+        "rds_value": -32504259938.83,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F037N",
+        "rds_name": "四、汇率变动对现金的影响",
+        "rds_value": -557101198.03,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F039N",
+        "rds_name": "五、现金及现金等价物净增加额",
+        "rds_value": 25923728235.0,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F040N",
+        "rds_name": "期初现金及现金等价物余额",
+        "rds_value": 159738651471.96,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F041N",
+        "rds_name": "期末现金及现金等价物余额",
+        "rds_value": 185662379706.96,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F044N",
+        "rds_name": "净利润",
+        "rds_value": 59298116444.53,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F045N",
+        "rds_name": "加：资产减值准备",
+        "rds_value": 2205279757.12,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F046N",
+        "rds_name": "固定资产折旧、油气资产折耗、生产性生物资产折旧",
+        "rds_value": 2650922637.73,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F047N",
+        "rds_name": "无形资产摊销",
+        "rds_value": 2209843443.13,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F049N",
+        "rds_name": "处置固定资产、无形资产和其他长期资产的损失",
+        "rds_value": -48381265.04,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F051N",
+        "rds_name": "公允价值变动损失",
+        "rds_value": -5333532.39,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F052N",
+        "rds_name": "财务费用",
+        "rds_value": 5145102736.17,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F053N",
+        "rds_name": "投资损失",
+        "rds_value": -13511869972.98,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F054N",
+        "rds_name": "递延所得税资产减少",
+        "rds_value": -4116268905.2,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F055N",
+        "rds_name": "递延所得税负债增加",
+        "rds_value": -50857427.98,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F056N",
+        "rds_name": "存货的减少",
+        "rds_value": -38165029254.17,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F057N",
+        "rds_name": "经营性应收项目的减少",
+        "rds_value": 3636963382.13,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F058N",
+        "rds_name": "经营性应付项目的增加",
+        "rds_value": 31815394142.5,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F059N",
+        "rds_name": "其他",
+        "rds_value": 2124140058.26,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F060N",
+        "rds_name": "经营活动产生的现金流量净额2",
+        "rds_value": 53188022243.81,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F066N",
+        "rds_name": "现金的期末余额",
+        "rds_value": 185662379706.96,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F067N",
+        "rds_name": "减：现金的期初余额",
+        "rds_value": 159738651471.96,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F071N",
+        "rds_name": "现金及现金等价物净增加额2",
+        "rds_value": 25923728235.0,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      }
+    ]
+  },
+  {
+    "stock_code": "000858",
+    "status": "OK",
+    "rds_total": 44,
+    "exact": 16,
+    "sub_yuan": 0,
+    "rounded": 0,
+    "large_error": 2,
+    "no_match": 26,
+    "exact_rate": 36.36,
+    "details": [
+      {
+        "rds_code": "F006N",
+        "rds_name": "销售商品、提供劳务收到的现金",
+        "rds_value": 62667576569.99,
+        "pdf_name": "销售商品、提供劳务收到的现金",
+        "pdf_value": 62667576569.99,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F007N",
+        "rds_name": "收到的税费返还",
+        "rds_value": 56724988.21,
+        "pdf_name": "收到的税费返还",
+        "pdf_value": 56724988.21,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F008N",
+        "rds_name": "收到其他与经营活动有关的现金",
+        "rds_value": 2243660435.98,
+        "pdf_name": "收到其他与经营活动有关的现金",
+        "pdf_value": 2243660435.98,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F009N",
+        "rds_name": "经营活动现金流入小计",
+        "rds_value": 64967961994.18,
+        "pdf_name": "经营活动现金流入小计",
+        "pdf_value": 64967961994.18,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F010N",
+        "rds_name": "购买商品、接受劳务支付的现金",
+        "rds_value": 17340551154.28,
+        "pdf_name": "购买商品、接受劳务支付的现金",
+        "pdf_value": 17340551154.28,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F011N",
+        "rds_name": "支付给职工以及为职工支付的现金",
+        "rds_value": 5740856054.71,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F012N",
+        "rds_name": "支付的各项税费",
+        "rds_value": 23227933861.45,
+        "pdf_name": "支付的各项税费",
+        "pdf_value": 143335903.87,
+        "abs_diff": 23084597957.58,
+        "rel_err_pct": 99.38291582572532,
+        "class": "large_error"
+      },
+      {
+        "rds_code": "F013N",
+        "rds_name": "支付其他与经营活动有关的现金",
+        "rds_value": 3960293330.53,
+        "pdf_name": "支付其他与经营活动有关的现金",
+        "pdf_value": 3960293330.53,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F014N",
+        "rds_name": "经营活动现金流出小计",
+        "rds_value": 50269634400.97,
+        "pdf_name": "经营活动现金流出小计",
+        "pdf_value": 50269634400.97,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F015N",
+        "rds_name": "经营活动产生的现金流量净额",
+        "rds_value": 14698327593.21,
+        "pdf_name": "经营活动产生的现金流量净额",
+        "pdf_value": 14698327593.21,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F018N",
+        "rds_name": "处置固定资产、无形资产和其他长期资产收回的现金净额",
+        "rds_value": 6438616.16,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F021N",
+        "rds_name": "投资活动现金流入小计",
+        "rds_value": 6438616.16,
+        "pdf_name": "投资活动现金流入小计",
+        "pdf_value": 6438616.16,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F022N",
+        "rds_name": "购建固定资产、无形资产和其他长期资产支付的现金",
+        "rds_value": 993760087.19,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F023N",
+        "rds_name": "投资支付的现金",
+        "rds_value": 734693877.55,
+        "pdf_name": "投资支付的现金",
+        "pdf_value": 734693877.55,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F026N",
+        "rds_name": "投资活动现金流出小计",
+        "rds_value": 1728453964.74,
+        "pdf_name": "投资活动现金流出小计",
+        "pdf_value": 1728453964.74,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F027N",
+        "rds_name": "投资活动产生的现金流量净额",
+        "rds_value": -1722015348.58,
+        "pdf_name": "投资活动产生的现金流量净额",
+        "pdf_value": -1722015348.58,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F028N",
+        "rds_name": "吸收投资收到的现金",
+        "rds_value": 15000000.0,
+        "pdf_name": "吸收投资收到的现金",
+        "pdf_value": 15000000.0,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F031N",
+        "rds_name": "筹资活动现金流入小计",
+        "rds_value": 15000000.0,
+        "pdf_name": "筹资活动现金流入小计",
+        "pdf_value": 15000000.0,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F033N",
+        "rds_name": "分配股利、利润或偿付利息支付的现金",
+        "rds_value": 9228223328.76,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F090N",
+        "rds_name": "其中：子公司支付给少数股东的股利、利润",
+        "rds_value": 688685717.76,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F035N",
+        "rds_name": "筹资活动现金流出小计",
+        "rds_value": 9228223328.76,
+        "pdf_name": "筹资活动现金流出小计",
+        "pdf_value": 9228223328.76,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F036N",
+        "rds_name": "筹资活动产生的现金流量净额",
+        "rds_value": -9213223328.76,
+        "pdf_name": "筹资活动产生的现金流量净额",
+        "pdf_value": -8539537611.0,
+        "abs_diff": 673685717.7600002,
+        "rel_err_pct": 7.3121609421647555,
+        "class": "large_error"
+      },
+      {
+        "rds_code": "F037N",
+        "rds_name": "四、汇率变动对现金的影响",
+        "rds_value": -130439.21,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F039N",
+        "rds_name": "五、现金及现金等价物净增加额",
+        "rds_value": 3762958476.66,
+        "pdf_name": "五、现金及现金等价物净增加额",
+        "pdf_value": 3762958476.66,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F040N",
+        "rds_name": "期初现金及现金等价物余额",
+        "rds_value": 63204133323.79,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F041N",
+        "rds_name": "期末现金及现金等价物余额",
+        "rds_value": 66967091800.45,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F044N",
+        "rds_name": "净利润",
+        "rds_value": 20913340409.54,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F045N",
+        "rds_name": "加：资产减值准备",
+        "rds_value": 5926341.01,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F046N",
+        "rds_name": "固定资产折旧、油气资产折耗、生产性生物资产折旧",
+        "rds_value": 435670691.93,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F047N",
+        "rds_name": "无形资产摊销",
+        "rds_value": 27577383.23,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F048N",
+        "rds_name": "长期待摊费用摊销",
+        "rds_value": 48208049.76,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F049N",
+        "rds_name": "处置固定资产、无形资产和其他长期资产的损失",
+        "rds_value": -1129293.57,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F050N",
+        "rds_name": "固定资产报废损失",
+        "rds_value": 6193941.49,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F052N",
+        "rds_name": "财务费用",
+        "rds_value": 130439.21,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F053N",
+        "rds_name": "投资损失",
+        "rds_value": -93504494.16,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F054N",
+        "rds_name": "递延所得税资产减少",
+        "rds_value": -328679600.95,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F056N",
+        "rds_name": "存货的减少",
+        "rds_value": 444843931.64,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F057N",
+        "rds_name": "经营性应收项目的减少",
+        "rds_value": -2121902869.11,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F058N",
+        "rds_name": "经营性应付项目的增加",
+        "rds_value": -4638347336.81,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F060N",
+        "rds_name": "经营活动产生的现金流量净额2",
+        "rds_value": 14698327593.21,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F066N",
+        "rds_name": "现金的期末余额",
+        "rds_value": 66967091800.45,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F067N",
+        "rds_name": "减：现金的期初余额",
+        "rds_value": 63138829242.88,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F069N",
+        "rds_name": "减：现金等价物的期初余额",
+        "rds_value": 65304080.91,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F071N",
+        "rds_name": "现金及现金等价物净增加额2",
+        "rds_value": 3762958476.66,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      }
+    ]
+  },
+  {
+    "stock_code": "002415",
+    "status": "OK",
+    "rds_total": 56,
+    "exact": 30,
+    "sub_yuan": 0,
+    "rounded": 0,
+    "large_error": 1,
+    "no_match": 25,
+    "exact_rate": 53.57,
+    "details": [
+      {
+        "rds_code": "F006N",
+        "rds_name": "销售商品、提供劳务收到的现金",
+        "rds_value": 68169017614.45,
+        "pdf_name": "销售商品、提供劳务收到的现金",
+        "pdf_value": 68169017614.45,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F007N",
+        "rds_name": "收到的税费返还",
+        "rds_value": 3274552890.75,
+        "pdf_name": "收到的税费返还",
+        "pdf_value": 3274552890.75,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F008N",
+        "rds_name": "收到其他与经营活动有关的现金",
+        "rds_value": 1427590353.65,
+        "pdf_name": "收到其他与经营活动有关的现金",
+        "pdf_value": 1427590353.65,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F009N",
+        "rds_name": "经营活动现金流入小计",
+        "rds_value": 72871160858.85,
+        "pdf_name": "经营活动现金流入小计",
+        "pdf_value": 72871160858.85,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F010N",
+        "rds_name": "购买商品、接受劳务支付的现金",
+        "rds_value": 37257220824.09,
+        "pdf_name": "购买商品、接受劳务支付的现金",
+        "pdf_value": 37257220824.09,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F011N",
+        "rds_name": "支付给职工以及为职工支付的现金",
+        "rds_value": 10247824582.96,
+        "pdf_name": "支付给职工以及为职工支付的现金",
+        "pdf_value": 10247824582.96,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F012N",
+        "rds_name": "支付的各项税费",
+        "rds_value": 4901863280.18,
+        "pdf_name": "支付的各项税费",
+        "pdf_value": 4901863280.18,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F013N",
+        "rds_name": "支付其他与经营活动有关的现金",
+        "rds_value": 4376095604.95,
+        "pdf_name": "支付其他与经营活动有关的现金",
+        "pdf_value": 4376095604.95,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F014N",
+        "rds_name": "经营活动现金流出小计",
+        "rds_value": 56783004292.18,
+        "pdf_name": "经营活动现金流出小计",
+        "pdf_value": 56783004292.18,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F015N",
+        "rds_name": "经营活动产生的现金流量净额",
+        "rds_value": 16088156566.67,
+        "pdf_name": "经营活动产生的现金流量净额",
+        "pdf_value": 16088156566.67,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F016N",
+        "rds_name": "收回投资收到的现金",
+        "rds_value": 1693378691.26,
+        "pdf_name": "收回投资收到的现金",
+        "pdf_value": 1693378691.26,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F017N",
+        "rds_name": "取得投资收益收到的现金",
+        "rds_value": 150000000.0,
+        "pdf_name": "取得投资收益收到的现金",
+        "pdf_value": 150000000.0,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F018N",
+        "rds_name": "处置固定资产、无形资产和其他长期资产收回的现金净额",
+        "rds_value": 14793178.49,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F020N",
+        "rds_name": "收到其他与投资活动有关的现金",
+        "rds_value": 46196873.8,
+        "pdf_name": "收到其他与投资活动有关的现金",
+        "pdf_value": 46196873.8,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F021N",
+        "rds_name": "投资活动现金流入小计",
+        "rds_value": 1904368743.55,
+        "pdf_name": "投资活动现金流入小计",
+        "pdf_value": 1904368743.55,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F022N",
+        "rds_name": "购建固定资产、无形资产和其他长期资产支付的现金",
+        "rds_value": 2003628270.01,
+        "pdf_name": "购建固定资产、无形资产和其他长期资产支付的现金",
+        "pdf_value": 2003628270.01,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F023N",
+        "rds_name": "投资支付的现金",
+        "rds_value": 2405456262.23,
+        "pdf_name": "投资支付的现金",
+        "pdf_value": 2405456262.23,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F024N",
+        "rds_name": "取得子公司及其他营业单位支付的现金净额",
+        "rds_value": 48918168.58,
+        "pdf_name": "取得子公司及其他营业单位支付的现金净额",
+        "pdf_value": 48918168.58,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F025N",
+        "rds_name": "支付其他与投资活动有关的现金",
+        "rds_value": 1000000.0,
+        "pdf_name": "支付其他与投资活动有关的现金",
+        "pdf_value": 1000000.0,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F026N",
+        "rds_name": "投资活动现金流出小计",
+        "rds_value": 4459002700.82,
+        "pdf_name": "投资活动现金流出小计",
+        "pdf_value": 4459002700.82,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F027N",
+        "rds_name": "投资活动产生的现金流量净额",
+        "rds_value": -2554633957.27,
+        "pdf_name": "投资活动产生的现金流量净额",
+        "pdf_value": -2554633957.27,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F028N",
+        "rds_name": "吸收投资收到的现金",
+        "rds_value": 173897986.67,
+        "pdf_name": "吸收投资收到的现金",
+        "pdf_value": 173897986.67,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F089N",
+        "rds_name": "其中：子公司吸收少数股东投资收到的现金",
+        "rds_value": 173897986.67,
+        "pdf_name": "其中：子公司吸收少数股东投资收到的现金",
+        "pdf_value": 173897986.67,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F029N",
+        "rds_name": "取得借款收到的现金",
+        "rds_value": 5883973583.25,
+        "pdf_name": "取得借款收到的现金",
+        "pdf_value": 5883973583.25,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F076N",
+        "rds_name": "发行债券收到的现金",
+        "rds_value": 999500000.0,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F031N",
+        "rds_name": "筹资活动现金流入小计",
+        "rds_value": 7057371569.92,
+        "pdf_name": "筹资活动现金流入小计",
+        "pdf_value": 7057371569.92,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F032N",
+        "rds_name": "偿还债务支付的现金",
+        "rds_value": 4834813277.12,
+        "pdf_name": "偿还债务支付的现金",
+        "pdf_value": 4834813277.12,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F033N",
+        "rds_name": "分配股利、利润或偿付利息支付的现金",
+        "rds_value": 6704954160.69,
+        "pdf_name": "分配股利、利润或偿付利息支付的现金",
+        "pdf_value": 6704954160.69,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F090N",
+        "rds_name": "其中：子公司支付给少数股东的股利、利润",
+        "rds_value": 40000000.0,
+        "pdf_name": "其中：子公司支付给少数股东的股利、利润",
+        "pdf_value": 40000000.0,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F034N",
+        "rds_name": "支付其他与筹资活动有关的现金",
+        "rds_value": 77707417.35,
+        "pdf_name": "支付其他与筹资活动有关的现金",
+        "pdf_value": 77707417.35,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F035N",
+        "rds_name": "筹资活动现金流出小计",
+        "rds_value": 11617474855.16,
+        "pdf_name": "筹资活动现金流出小计",
+        "pdf_value": 11617474855.16,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F036N",
+        "rds_name": "筹资活动产生的现金流量净额",
+        "rds_value": -4560103285.24,
+        "pdf_name": "筹资活动产生的现金流量净额",
+        "pdf_value": -5471352289.92,
+        "abs_diff": 911249004.6800003,
+        "rel_err_pct": 19.98307818223115,
+        "class": "large_error"
+      },
+      {
+        "rds_code": "F037N",
+        "rds_name": "四、汇率变动对现金的影响",
+        "rds_value": -464249454.25,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F039N",
+        "rds_name": "五、现金及现金等价物净增加额",
+        "rds_value": 8509169869.91,
+        "pdf_name": "五、现金及现金等价物净增加额",
+        "pdf_value": 8509169869.91,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F040N",
+        "rds_name": "期初现金及现金等价物余额",
+        "rds_value": 26515668008.4,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F041N",
+        "rds_name": "期末现金及现金等价物余额",
+        "rds_value": 35024837878.31,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F044N",
+        "rds_name": "净利润",
+        "rds_value": 13678319472.17,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F045N",
+        "rds_name": "加：资产减值准备",
+        "rds_value": 363109513.99,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F046N",
+        "rds_name": "固定资产折旧、油气资产折耗、生产性生物资产折旧",
+        "rds_value": 713633074.93,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F047N",
+        "rds_name": "无形资产摊销",
+        "rds_value": 87014571.01,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F048N",
+        "rds_name": "长期待摊费用摊销",
+        "rds_value": 44742828.97,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F049N",
+        "rds_name": "处置固定资产、无形资产和其他长期资产的损失",
+        "rds_value": 5836675.36,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F051N",
+        "rds_name": "公允价值变动损失",
+        "rds_value": -85458209.54,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F052N",
+        "rds_name": "财务费用",
+        "rds_value": 598966581.29,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F053N",
+        "rds_name": "投资损失",
+        "rds_value": -169277048.95,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F054N",
+        "rds_name": "递延所得税资产减少",
+        "rds_value": -131576150.12,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F055N",
+        "rds_name": "递延所得税负债增加",
+        "rds_value": 41891719.93,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F056N",
+        "rds_name": "存货的减少",
+        "rds_value": -496228965.62,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F057N",
+        "rds_name": "经营性应收项目的减少",
+        "rds_value": -2794429636.26,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F058N",
+        "rds_name": "经营性应付项目的增加",
+        "rds_value": 3098102287.85,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F059N",
+        "rds_name": "其他",
+        "rds_value": 947569525.92,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F060N",
+        "rds_name": "经营活动产生的现金流量净额2",
+        "rds_value": 16088156566.67,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F066N",
+        "rds_name": "现金的期末余额",
+        "rds_value": 35024837878.31,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F067N",
+        "rds_name": "减：现金的期初余额",
+        "rds_value": 26515668008.4,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F071N",
+        "rds_name": "现金及现金等价物净增加额2",
+        "rds_value": 8509169869.91,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F096N",
+        "rds_name": "信用减值损失",
+        "rds_value": 185940325.74,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      }
+    ]
+  },
+  {
+    "stock_code": "002475",
+    "status": "PDF_NOT_EXTRACTED"
+  },
+  {
+    "stock_code": "300750",
+    "status": "OK",
+    "rds_total": 55,
+    "exact": 25,
+    "sub_yuan": 0,
+    "rounded": 0,
+    "large_error": 0,
+    "no_match": 30,
+    "exact_rate": 45.45,
+    "details": [
+      {
+        "rds_code": "F006N",
+        "rds_name": "销售商品、提供劳务收到的现金",
+        "rds_value": 54002988575.54,
+        "pdf_name": "销售商品、提供劳务收到的现金",
+        "pdf_value": 54002988575.54,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F007N",
+        "rds_name": "收到的税费返还",
+        "rds_value": 151928522.94,
+        "pdf_name": "收到的税费返还",
+        "pdf_value": 151928522.94,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F008N",
+        "rds_name": "收到其他与经营活动有关的现金",
+        "rds_value": 6397335867.06,
+        "pdf_name": "收到其他与经营活动有关的现金",
+        "pdf_value": 6397335867.06,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F009N",
+        "rds_name": "经营活动现金流入小计",
+        "rds_value": 60552252965.54,
+        "pdf_name": "经营活动现金流入小计",
+        "pdf_value": 60552252965.54,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F010N",
+        "rds_name": "购买商品、接受劳务支付的现金",
+        "rds_value": 33461951736.87,
+        "pdf_name": "购买商品、接受劳务支付的现金",
+        "pdf_value": 33461951736.87,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F011N",
+        "rds_name": "支付给职工以及为职工支付的现金",
+        "rds_value": 4027848128.71,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F012N",
+        "rds_name": "支付的各项税费",
+        "rds_value": 2265587429.63,
+        "pdf_name": "支付的各项税费",
+        "pdf_value": 2265587429.63,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F013N",
+        "rds_name": "支付其他与经营活动有关的现金",
+        "rds_value": 2366963038.37,
+        "pdf_name": "支付其他与经营活动有关的现金",
+        "pdf_value": 2366963038.37,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F014N",
+        "rds_name": "经营活动现金流出小计",
+        "rds_value": 42122350333.58,
+        "pdf_name": "经营活动现金流出小计",
+        "pdf_value": 42122350333.58,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F015N",
+        "rds_name": "经营活动产生的现金流量净额",
+        "rds_value": 18429902631.96,
+        "pdf_name": "经营活动产生的现金流量净额",
+        "pdf_value": 18429902631.96,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F016N",
+        "rds_name": "收回投资收到的现金",
+        "rds_value": 44779761.91,
+        "pdf_name": "收回投资收到的现金",
+        "pdf_value": 44779761.91,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F017N",
+        "rds_name": "取得投资收益收到的现金",
+        "rds_value": 24087086.33,
+        "pdf_name": "取得投资收益收到的现金",
+        "pdf_value": 24087086.33,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F018N",
+        "rds_name": "处置固定资产、无形资产和其他长期资产收回的现金净额",
+        "rds_value": 24649.08,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F020N",
+        "rds_name": "收到其他与投资活动有关的现金",
+        "rds_value": 2735874410.58,
+        "pdf_name": "收到其他与投资活动有关的现金",
+        "pdf_value": 2735874410.58,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F021N",
+        "rds_name": "投资活动现金流入小计",
+        "rds_value": 2804765907.9,
+        "pdf_name": "投资活动现金流入小计",
+        "pdf_value": 2804765907.9,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F022N",
+        "rds_name": "购建固定资产、无形资产和其他长期资产支付的现金",
+        "rds_value": 13302355759.04,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F023N",
+        "rds_name": "投资支付的现金",
+        "rds_value": 4088418479.98,
+        "pdf_name": "投资支付的现金",
+        "pdf_value": 4088418479.98,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F025N",
+        "rds_name": "支付其他与投资活动有关的现金",
+        "rds_value": 466447835.43,
+        "pdf_name": "支付其他与投资活动有关的现金",
+        "pdf_value": 466447835.43,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F026N",
+        "rds_name": "投资活动现金流出小计",
+        "rds_value": 17857222074.45,
+        "pdf_name": "投资活动现金流出小计",
+        "pdf_value": 17857222074.45,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F027N",
+        "rds_name": "投资活动产生的现金流量净额",
+        "rds_value": -15052456166.55,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F028N",
+        "rds_name": "吸收投资收到的现金",
+        "rds_value": 20536360992.16,
+        "pdf_name": "吸收投资收到的现金",
+        "pdf_value": 20536360992.16,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F089N",
+        "rds_name": "其中：子公司吸收少数股东投资收到的现金",
+        "rds_value": 923523424.41,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F029N",
+        "rds_name": "取得借款收到的现金",
+        "rds_value": 9450920678.78,
+        "pdf_name": "取得借款收到的现金",
+        "pdf_value": 9450920678.78,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F030N",
+        "rds_name": "收到其他与筹资活动有关的现金",
+        "rds_value": 13199266407.5,
+        "pdf_name": "收到其他与筹资活动有关的现金",
+        "pdf_value": 13199266407.5,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F031N",
+        "rds_name": "筹资活动现金流入小计",
+        "rds_value": 43186548078.44,
+        "pdf_name": "筹资活动现金流入小计",
+        "pdf_value": 43186548078.44,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F032N",
+        "rds_name": "偿还债务支付的现金",
+        "rds_value": 4743701233.75,
+        "pdf_name": "偿还债务支付的现金",
+        "pdf_value": 4743701233.75,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F033N",
+        "rds_name": "分配股利、利润或偿付利息支付的现金",
+        "rds_value": 898809819.12,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F090N",
+        "rds_name": "其中：子公司支付给少数股东的股利、利润",
+        "rds_value": 7825842.99,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F034N",
+        "rds_name": "支付其他与筹资活动有关的现金",
+        "rds_value": 112602486.19,
+        "pdf_name": "支付其他与筹资活动有关的现金",
+        "pdf_value": 112602486.19,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F035N",
+        "rds_name": "筹资活动现金流出小计",
+        "rds_value": 5755113539.06,
+        "pdf_name": "筹资活动现金流出小计",
+        "pdf_value": 5755113539.06,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F036N",
+        "rds_name": "筹资活动产生的现金流量净额",
+        "rds_value": 37431434539.38,
+        "pdf_name": "筹资活动产生的现金流量净额",
+        "pdf_value": 37431434539.38,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F037N",
+        "rds_name": "四、汇率变动对现金的影响",
+        "rds_value": -576950661.91,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F039N",
+        "rds_name": "五、现金及现金等价物净增加额",
+        "rds_value": 40231930342.88,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F040N",
+        "rds_name": "期初现金及现金等价物余额",
+        "rds_value": 23200055644.02,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F041N",
+        "rds_name": "期末现金及现金等价物余额",
+        "rds_value": 63431985986.9,
+        "pdf_name": "期末现金及现金等价物余额",
+        "pdf_value": 63431985986.9,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F044N",
+        "rds_name": "净利润",
+        "rds_value": 6103918052.46,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F045N",
+        "rds_name": "加：资产减值准备",
+        "rds_value": 1169471948.67,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F046N",
+        "rds_name": "固定资产折旧、油气资产折耗、生产性生物资产折旧",
+        "rds_value": 4576797794.5,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F047N",
+        "rds_name": "无形资产摊销",
+        "rds_value": 135243814.08,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F048N",
+        "rds_name": "长期待摊费用摊销",
+        "rds_value": 155847906.24,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F049N",
+        "rds_name": "处置固定资产、无形资产和其他长期资产的损失",
+        "rds_value": 9890379.23,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F050N",
+        "rds_name": "固定资产报废损失",
+        "rds_value": 47137042.0,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F051N",
+        "rds_name": "公允价值变动损失",
+        "rds_value": -286915936.0,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F052N",
+        "rds_name": "财务费用",
+        "rds_value": 772394855.22,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F053N",
+        "rds_name": "投资损失",
+        "rds_value": 26192466.45,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F054N",
+        "rds_name": "递延所得税资产减少",
+        "rds_value": -772834310.15,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F055N",
+        "rds_name": "递延所得税负债增加",
+        "rds_value": -5673139.63,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F056N",
+        "rds_name": "存货的减少",
+        "rds_value": -2401630461.19,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F057N",
+        "rds_name": "经营性应收项目的减少",
+        "rds_value": -3415569969.88,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F058N",
+        "rds_name": "经营性应付项目的增加",
+        "rds_value": 11747641389.69,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F059N",
+        "rds_name": "其他",
+        "rds_value": 567990800.27,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F060N",
+        "rds_name": "经营活动产生的现金流量净额2",
+        "rds_value": 18429902631.96,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F066N",
+        "rds_name": "现金的期末余额",
+        "rds_value": 63431985986.9,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F067N",
+        "rds_name": "减：现金的期初余额",
+        "rds_value": 23200055644.02,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F071N",
+        "rds_name": "现金及现金等价物净增加额2",
+        "rds_value": 40231930342.88,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      }
+    ]
+  },
+  {
+    "stock_code": "600519",
+    "status": "OK",
+    "rds_total": 49,
+    "exact": 31,
+    "sub_yuan": 0,
+    "rounded": 0,
+    "large_error": 1,
+    "no_match": 17,
+    "exact_rate": 63.27,
+    "details": [
+      {
+        "rds_code": "F006N",
+        "rds_name": "销售商品、提供劳务收到的现金",
+        "rds_value": 107024384560.17,
+        "pdf_name": "销售商品、提供劳务收到的现金",
+        "pdf_value": 107024384560.17,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F072N",
+        "rds_name": "客户存款和同业存放款项净增加额",
+        "rds_value": 3189100199.87,
+        "pdf_name": "客户存款和同业存放款项净增加额",
+        "pdf_value": 3189100199.87,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F081N",
+        "rds_name": "收取利息、手续费及佣金的现金",
+        "rds_value": 3075945383.34,
+        "pdf_name": "收取利息、手续费及佣金的现金",
+        "pdf_value": 3075945383.34,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F008N",
+        "rds_name": "收到其他与经营活动有关的现金",
+        "rds_value": 221421226.63,
+        "pdf_name": "收到其他与经营活动有关的现金",
+        "pdf_value": 221421226.63,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F009N",
+        "rds_name": "经营活动现金流入小计",
+        "rds_value": 113510851370.01,
+        "pdf_name": "经营活动现金流入小计",
+        "pdf_value": 113510851370.01,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F010N",
+        "rds_name": "购买商品、接受劳务支付的现金",
+        "rds_value": 7230646129.19,
+        "pdf_name": "购买商品、接受劳务支付的现金",
+        "pdf_value": 7230646129.19,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F084N",
+        "rds_name": "客户贷款及垫款净增加额",
+        "rds_value": 2978755728.0,
+        "pdf_name": "客户贷款及垫款净增加额",
+        "pdf_value": 2978755728.0,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F085N",
+        "rds_name": "存放中央银行和同业款项净增加额",
+        "rds_value": -2506406682.56,
+        "pdf_name": "存放中央银行和同业款项净增加额",
+        "pdf_value": -2506406682.56,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F087N",
+        "rds_name": "支付利息、手续费及佣金的现金",
+        "rds_value": 107241768.26,
+        "pdf_name": "支付利息、手续费及佣金的现金",
+        "pdf_value": 107241768.26,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F011N",
+        "rds_name": "支付给职工以及为职工支付的现金",
+        "rds_value": 8161813197.26,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F012N",
+        "rds_name": "支付的各项税费",
+        "rds_value": 41622706350.37,
+        "pdf_name": "支付的各项税费",
+        "pdf_value": 41622706350.37,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F013N",
+        "rds_name": "支付其他与经营活动有关的现金",
+        "rds_value": 4247026186.46,
+        "pdf_name": "支付其他与经营活动有关的现金",
+        "pdf_value": 4047026186.46,
+        "abs_diff": 200000000.0,
+        "rel_err_pct": 4.709177462517717,
+        "class": "large_error"
+      },
+      {
+        "rds_code": "F014N",
+        "rds_name": "经营活动现金流出小计",
+        "rds_value": 61841782676.98,
+        "pdf_name": "经营活动现金流出小计",
+        "pdf_value": 61841782676.98,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F015N",
+        "rds_name": "经营活动产生的现金流量净额",
+        "rds_value": 51669068693.03,
+        "pdf_name": "经营活动产生的现金流量净额",
+        "pdf_value": 51669068693.03,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F016N",
+        "rds_name": "收回投资收到的现金",
+        "rds_value": 314906521.48,
+        "pdf_name": "收回投资收到的现金",
+        "pdf_value": 314906521.48,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F018N",
+        "rds_name": "处置固定资产、无形资产和其他长期资产收回的现金净额",
+        "rds_value": 495904.85,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F020N",
+        "rds_name": "收到其他与投资活动有关的现金",
+        "rds_value": 6675319.03,
+        "pdf_name": "收到其他与投资活动有关的现金",
+        "pdf_value": 6675319.03,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F021N",
+        "rds_name": "投资活动现金流入小计",
+        "rds_value": 322077745.36,
+        "pdf_name": "投资活动现金流入小计",
+        "pdf_value": 322077745.36,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F022N",
+        "rds_name": "购建固定资产、无形资产和其他长期资产支付的现金",
+        "rds_value": 2089769498.78,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F023N",
+        "rds_name": "投资支付的现金",
+        "rds_value": 20000000.0,
+        "pdf_name": "投资支付的现金",
+        "pdf_value": 20000000.0,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F025N",
+        "rds_name": "支付其他与投资活动有关的现金",
+        "rds_value": 17535402.3,
+        "pdf_name": "支付其他与投资活动有关的现金",
+        "pdf_value": 17535402.3,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F026N",
+        "rds_name": "投资活动现金流出小计",
+        "rds_value": 2127304901.08,
+        "pdf_name": "投资活动现金流出小计",
+        "pdf_value": 2127304901.08,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F027N",
+        "rds_name": "投资活动产生的现金流量净额",
+        "rds_value": -1805227155.72,
+        "pdf_name": "投资活动产生的现金流量净额",
+        "pdf_value": -1805227155.72,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F033N",
+        "rds_name": "分配股利、利润或偿付利息支付的现金",
+        "rds_value": 24091029750.51,
+        "pdf_name": "分配股利、利润或偿付利息支付的 现金",
+        "pdf_value": 24091029750.51,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F090N",
+        "rds_name": "其中：子公司支付给少数股东的股利、利润",
+        "rds_value": 2704262179.11,
+        "pdf_name": "其中：子公司支付给少数股东的股 利、利润",
+        "pdf_value": 2704262179.11,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F034N",
+        "rds_name": "支付其他与筹资活动有关的现金",
+        "rds_value": 36507157.75,
+        "pdf_name": "支付其他与筹资活动有关的现金",
+        "pdf_value": 36507157.75,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F035N",
+        "rds_name": "筹资活动现金流出小计",
+        "rds_value": 24127536908.26,
+        "pdf_name": "筹资活动现金流出小计",
+        "pdf_value": 24127536908.26,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F036N",
+        "rds_name": "筹资活动产生的现金流量净额",
+        "rds_value": -24127536908.26,
+        "pdf_name": "筹资活动产生的现金流量净额",
+        "pdf_value": -24127536908.26,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F037N",
+        "rds_name": "四、汇率变动对现金的影响",
+        "rds_value": 380639.36,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F039N",
+        "rds_name": "五、现金及现金等价物净增加额",
+        "rds_value": 25736685268.41,
+        "pdf_name": "五、现金及现金等价物净增加额",
+        "pdf_value": 25736685268.41,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F040N",
+        "rds_name": "期初现金及现金等价物余额",
+        "rds_value": 121003839599.64,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F041N",
+        "rds_name": "期末现金及现金等价物余额",
+        "rds_value": 146740524868.05,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F044N",
+        "rds_name": "净利润",
+        "rds_value": 49523329882.4,
+        "pdf_name": "净利润",
+        "pdf_value": 49523329882.4,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F046N",
+        "rds_name": "固定资产折旧、油气资产折耗、生产性生物资产折旧",
+        "rds_value": 1195956468.6,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F047N",
+        "rds_name": "无形资产摊销",
+        "rds_value": 110349099.0,
+        "pdf_name": "无形资产摊销",
+        "pdf_value": 110349099.0,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F048N",
+        "rds_name": "长期待摊费用摊销",
+        "rds_value": 10562811.76,
+        "pdf_name": "长期待摊费用摊销",
+        "pdf_value": 10562811.76,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F050N",
+        "rds_name": "固定资产报废损失",
+        "rds_value": 100113.92,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F051N",
+        "rds_name": "公允价值变动损失",
+        "rds_value": -4897994.43,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F053N",
+        "rds_name": "投资损失",
+        "rds_value": -305631.46,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F054N",
+        "rds_name": "递延所得税资产减少",
+        "rds_value": -23278138.8,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F055N",
+        "rds_name": "递延所得税负债增加",
+        "rds_value": -71235087.78,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F056N",
+        "rds_name": "存货的减少",
+        "rds_value": -3584166871.73,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F057N",
+        "rds_name": "经营性应收项目的减少",
+        "rds_value": -504008375.44,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F058N",
+        "rds_name": "经营性应付项目的增加",
+        "rds_value": 4945290607.14,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F060N",
+        "rds_name": "经营活动产生的现金流量净额2",
+        "rds_value": 51669068693.03,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F066N",
+        "rds_name": "现金的期末余额",
+        "rds_value": 146740524868.05,
+        "pdf_name": "现金的期末余额",
+        "pdf_value": 146740524868.05,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F067N",
+        "rds_name": "减：现金的期初余额",
+        "rds_value": 121003839599.64,
+        "pdf_name": "减：现金的期初余额",
+        "pdf_value": 121003839599.64,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F071N",
+        "rds_name": "现金及现金等价物净增加额2",
+        "rds_value": 25736685268.41,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F096N",
+        "rds_name": "信用减值损失",
+        "rds_value": 71371809.85,
+        "pdf_name": "信用减值损失",
+        "pdf_value": 71371809.85,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      }
+    ]
+  },
+  {
+    "stock_code": "600887",
+    "status": "OK",
+    "rds_total": 55,
+    "exact": 30,
+    "sub_yuan": 0,
+    "rounded": 0,
+    "large_error": 0,
+    "no_match": 25,
+    "exact_rate": 54.55,
+    "details": [
+      {
+        "rds_code": "F006N",
+        "rds_name": "销售商品、提供劳务收到的现金",
+        "rds_value": 106024002676.65,
+        "pdf_name": "销售商品、提供劳务收到的现金",
+        "pdf_value": 106024002676.65,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F081N",
+        "rds_name": "收取利息、手续费及佣金的现金",
+        "rds_value": 55118407.39,
+        "pdf_name": "收取利息、手续费及佣金的现金",
+        "pdf_value": 55118407.39,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F008N",
+        "rds_name": "收到其他与经营活动有关的现金",
+        "rds_value": 2015204006.59,
+        "pdf_name": "收到其他与经营活动有关的现金",
+        "pdf_value": 2015204006.59,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F009N",
+        "rds_name": "经营活动现金流入小计",
+        "rds_value": 108094325090.63,
+        "pdf_name": "经营活动现金流入小计",
+        "pdf_value": 108094325090.63,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F010N",
+        "rds_name": "购买商品、接受劳务支付的现金",
+        "rds_value": 83537495382.83,
+        "pdf_name": "购买商品、接受劳务支付的现金",
+        "pdf_value": 83537495382.83,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F011N",
+        "rds_name": "支付给职工以及为职工支付的现金",
+        "rds_value": 9340320414.79,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F012N",
+        "rds_name": "支付的各项税费",
+        "rds_value": 4039541155.37,
+        "pdf_name": "支付的各项税费",
+        "pdf_value": 4039541155.37,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F013N",
+        "rds_name": "支付其他与经营活动有关的现金",
+        "rds_value": 1325328973.09,
+        "pdf_name": "支付其他与经营活动有关的现金",
+        "pdf_value": 1325328973.09,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F014N",
+        "rds_name": "经营活动现金流出小计",
+        "rds_value": 98242685926.08,
+        "pdf_name": "经营活动现金流出小计",
+        "pdf_value": 98242685926.08,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F015N",
+        "rds_name": "经营活动产生的现金流量净额",
+        "rds_value": 9851639164.55,
+        "pdf_name": "经营活动产生的现金流量净额",
+        "pdf_value": 9851639164.55,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F016N",
+        "rds_name": "收回投资收到的现金",
+        "rds_value": 614628653.08,
+        "pdf_name": "收回投资收到的现金",
+        "pdf_value": 614628653.08,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F017N",
+        "rds_name": "取得投资收益收到的现金",
+        "rds_value": 824082432.9,
+        "pdf_name": "取得投资收益收到的现金",
+        "pdf_value": 824082432.9,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F018N",
+        "rds_name": "处置固定资产、无形资产和其他长期资产收回的现金净额",
+        "rds_value": 21964778.38,
+        "pdf_name": "处置固定资产、无形资产和其他长期资产收回 的现金净额",
+        "pdf_value": 21964778.38,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F019N",
+        "rds_name": "处置子公司及其他营业单位收到的现金净额",
+        "rds_value": 2191396.32,
+        "pdf_name": "处置子公司及其他营业单位收到的现金净额",
+        "pdf_value": 2191396.32,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F021N",
+        "rds_name": "投资活动现金流入小计",
+        "rds_value": 1462867260.68,
+        "pdf_name": "投资活动现金流入小计",
+        "pdf_value": 1462867260.68,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F022N",
+        "rds_name": "购建固定资产、无形资产和其他长期资产支付的现金",
+        "rds_value": 6522197148.12,
+        "pdf_name": "购建固定资产、无形资产和其他长期资产支付 的现金",
+        "pdf_value": 6522197148.12,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F023N",
+        "rds_name": "投资支付的现金",
+        "rds_value": 3961029402.45,
+        "pdf_name": "投资支付的现金",
+        "pdf_value": 3961029402.45,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F025N",
+        "rds_name": "支付其他与投资活动有关的现金",
+        "rds_value": 22732264.52,
+        "pdf_name": "支付其他与投资活动有关的现金",
+        "pdf_value": 22732264.52,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F026N",
+        "rds_name": "投资活动现金流出小计",
+        "rds_value": 10505958815.09,
+        "pdf_name": "投资活动现金流出小计",
+        "pdf_value": 10505958815.09,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F027N",
+        "rds_name": "投资活动产生的现金流量净额",
+        "rds_value": -9043091554.41,
+        "pdf_name": "投资活动产生的现金流量净额",
+        "pdf_value": -9043091554.41,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F028N",
+        "rds_name": "吸收投资收到的现金",
+        "rds_value": 247501528.32,
+        "pdf_name": "吸收投资收到的现金",
+        "pdf_value": 247501528.32,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F089N",
+        "rds_name": "其中：子公司吸收少数股东投资收到的现金",
+        "rds_value": 443353.32,
+        "pdf_name": "其中：子公司吸收少数股东投资收到的现金",
+        "pdf_value": 443353.32,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F029N",
+        "rds_name": "取得借款收到的现金",
+        "rds_value": 74557306113.81,
+        "pdf_name": "取得借款收到的现金",
+        "pdf_value": 74557306113.81,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F031N",
+        "rds_name": "筹资活动现金流入小计",
+        "rds_value": 74804807642.13,
+        "pdf_name": "筹资活动现金流入小计",
+        "pdf_value": 74804807642.13,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F032N",
+        "rds_name": "偿还债务支付的现金",
+        "rds_value": 69435631526.14,
+        "pdf_name": "偿还债务支付的现金",
+        "pdf_value": 69435631526.14,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F033N",
+        "rds_name": "分配股利、利润或偿付利息支付的现金",
+        "rds_value": 5309737280.33,
+        "pdf_name": "分配股利、利润或偿付利息支付的现金",
+        "pdf_value": 5309737280.33,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F090N",
+        "rds_name": "其中：子公司支付给少数股东的股利、利润",
+        "rds_value": 13730651.84,
+        "pdf_name": "其中：子公司支付给少数股东的股利、利润",
+        "pdf_value": 13730651.84,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F034N",
+        "rds_name": "支付其他与筹资活动有关的现金",
+        "rds_value": 106000845.19,
+        "pdf_name": "支付其他与筹资活动有关的现金",
+        "pdf_value": 106000845.19,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F035N",
+        "rds_name": "筹资活动现金流出小计",
+        "rds_value": 74851369651.66,
+        "pdf_name": "筹资活动现金流出小计",
+        "pdf_value": 74851369651.66,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F036N",
+        "rds_name": "筹资活动产生的现金流量净额",
+        "rds_value": -46562009.53,
+        "pdf_name": "筹资活动产生的现金流量净额",
+        "pdf_value": -46562009.53,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F037N",
+        "rds_name": "四、汇率变动对现金的影响",
+        "rds_value": -395132646.31,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F039N",
+        "rds_name": "五、现金及现金等价物净增加额",
+        "rds_value": 366852954.3,
+        "pdf_name": "五、现金及现金等价物净增加额",
+        "pdf_value": 366852954.3,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
+      },
+      {
+        "rds_code": "F040N",
+        "rds_name": "期初现金及现金等价物余额",
+        "rds_value": 11066714362.59,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F041N",
+        "rds_name": "期末现金及现金等价物余额",
+        "rds_value": 11433567316.89,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F044N",
+        "rds_name": "净利润",
+        "rds_value": 7098938695.41,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F045N",
+        "rds_name": "加：资产减值准备",
+        "rds_value": 339312411.62,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F046N",
+        "rds_name": "固定资产折旧、油气资产折耗、生产性生物资产折旧",
+        "rds_value": 2222557525.17,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F047N",
+        "rds_name": "无形资产摊销",
+        "rds_value": 83466615.78,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F048N",
+        "rds_name": "长期待摊费用摊销",
+        "rds_value": 136339693.97,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F049N",
+        "rds_name": "处置固定资产、无形资产和其他长期资产的损失",
+        "rds_value": 6008330.64,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F050N",
+        "rds_name": "固定资产报废损失",
+        "rds_value": 15006189.28,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F051N",
+        "rds_name": "公允价值变动损失",
+        "rds_value": -171088869.5,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F052N",
+        "rds_name": "财务费用",
+        "rds_value": 667632738.17,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F053N",
+        "rds_name": "投资损失",
+        "rds_value": -599730018.58,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F054N",
+        "rds_name": "递延所得税资产减少",
+        "rds_value": -25745227.43,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F055N",
+        "rds_name": "递延所得税负债增加",
+        "rds_value": -80880243.07,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F056N",
+        "rds_name": "存货的减少",
+        "rds_value": 194563078.44,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F057N",
+        "rds_name": "经营性应收项目的减少",
+        "rds_value": -3301570234.0,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F058N",
+        "rds_name": "经营性应付项目的增加",
+        "rds_value": 2657009576.58,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F059N",
+        "rds_name": "其他",
+        "rds_value": 621681012.08,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F060N",
+        "rds_name": "经营活动产生的现金流量净额2",
+        "rds_value": 9851639164.55,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F066N",
+        "rds_name": "现金的期末余额",
+        "rds_value": 11433567316.89,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F067N",
+        "rds_name": "减：现金的期初余额",
+        "rds_value": 11066714362.59,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F071N",
+        "rds_name": "现金及现金等价物净增加额2",
+        "rds_value": 366852954.3,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      },
+      {
+        "rds_code": "F096N",
+        "rds_name": "信用减值损失",
+        "rds_value": -11862110.01,
+        "pdf_name": null,
+        "pdf_value": null,
+        "abs_diff": null,
+        "rel_err_pct": null,
+        "class": "no_match"
+      }
+    ]
+  }
+]
