@@ -118,6 +118,64 @@ def evaluate_stock(stock_code, year=2020):
     }
 
 
+def analyze_failure_modes(summary_path, out_md_path):
+    """聚合 'no_match' 与 'large_error'，输出 top 失败项目清单"""
+    import collections
+    with open(summary_path, "r", encoding="utf-8") as f:
+        results = json.load(f)
+    no_match_counter = collections.Counter()
+    no_match_examples = {}  # rds_name -> [(stock_code, rds_value)]
+    large_err_counter = collections.Counter()
+    large_err_examples = {}  # rds_name -> [(stock_code, rds_value, pdf_value, abs_diff)]
+    placeholder_neg_55x = []  # rds_name -> [(stock, value)]
+    for r in results:
+        if r.get("status") != "OK":
+            continue
+        for d in r.get("details", []):
+            if d["class"] == "no_match":
+                no_match_counter[d["rds_name"]] += 1
+                no_match_examples.setdefault(d["rds_name"], []).append(
+                    (r["stock_code"], d["rds_value"])
+                )
+            elif d["class"] == "large_error":
+                large_err_counter[d["rds_name"]] += 1
+                large_err_examples.setdefault(d["rds_name"], []).append(
+                    (r["stock_code"], d["rds_value"], d["pdf_value"], d["abs_diff"])
+                )
+                pv = d.get("pdf_value")
+                if isinstance(pv, (int, float)) and -570 < pv < -540:
+                    placeholder_neg_55x.append(
+                        (d["rds_name"], r["stock_code"], pv)
+                    )
+    with open(out_md_path, "w", encoding="utf-8") as f:
+        f.write("# PDF 提取失败模式分析\n\n")
+        f.write(f"基线: 7 只股票 × 2020 年报，分析自 `{summary_path}`\n\n")
+        f.write("## A. 占位符 bug（pdf_value ∈ [-570, -540]）\n\n")
+        if placeholder_neg_55x:
+            f.write(f"发现 {len(placeholder_neg_55x)} 个 large_error 是 extractor 输出的 -55x 占位符（疑似页码相关 sentinel 泄露）：\n\n")
+            for name, stock, v in placeholder_neg_55x:
+                f.write(f"- ({stock}) {name} → pdf_value={v}\n")
+        else:
+            f.write("无\n")
+        f.write("\n## B. Top 20 'no_match' (PDF 中没找到对应 RDS 项目)\n\n")
+        f.write("| 出现次数 | RDS 项目名 | 示例(股票:RDS值) |\n|---:|---|---|\n")
+        for name, cnt in no_match_counter.most_common(20):
+            examples = no_match_examples.get(name, [])[:3]
+            ex_str = ", ".join(f"{s}:{v:,.0f}" for s, v in examples if v is not None)
+            f.write(f"| {cnt} | {name} | {ex_str} |\n")
+        f.write("\n## C. Top 20 'large_error' (找到但值差很多)\n\n")
+        f.write("| 次数 | RDS 项目名 | 示例(股票:RDS→PDF, diff) |\n|---:|---|---|\n")
+        for name, cnt in large_err_counter.most_common(20):
+            examples = large_err_examples.get(name, [])[:2]
+            ex_str = "; ".join(
+                f"{s}:{rv:,.0f}→{pv:,.0f}, Δ={d:,.0f}"
+                for s, rv, pv, d in examples
+                if rv is not None and pv is not None
+            )
+            f.write(f"| {cnt} | {name} | {ex_str} |\n")
+
+
+
 def main():
     # 从 data/pdfs 推断已下载 PDF 的股票
     candidates = []
@@ -144,6 +202,11 @@ def main():
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
     print(f"\nSummary: {out_path}")
+
+    # 失败模式分析
+    failure_md = os.path.join(OUT_DIR, "_failure_modes.md")
+    analyze_failure_modes(out_path, failure_md)
+    print(f"Failure modes: {failure_md}")
 
 
 if __name__ == "__main__":
