@@ -1,0 +1,37 @@
+{
+  "channel": "08_ths_new_report",
+  "error": null,
+  "row_count": 4500,
+  "col_count": 10,
+  "columns": [
+    "report_date",
+    "report_name",
+    "report_period",
+    "quarter_name",
+    "metric_name",
+    "value",
+    "single",
+    "yoy",
+    "mom",
+    "single_yoy"
+  ],
+  "csv": "tmp/akshare_test_600519_2020\\raw_08_ths_new_report.csv",
+  "extra": {
+    "call_args": {
+      "symbol": "600519",
+      "indicator": "按报告期"
+    }
+  },
+  "head_first_row": {
+    "report_date": "2026-03-31",
+    "report_name": "2026一季报",
+    "report_period": "2026-1",
+    "quarter_name": "2026一季度",
+    "metric_name": "financing_cash_inflow_special",
+    "value": null,
+    "single": null,
+    "yoy": null,
+    "mom": null,
+    "single_yoy": null
+  }
+}

@@ -1,0 +1,304 @@
+{
+  "stock_code": "600519",
+  "report_year": 2020,
+  "report_type": "annual",
+  "statement_type": "cash_flow",
+  "source": "RDS (cninfo/data_backup/cf_o.rds)",
+  "item_count": 49,
+  "items": [
+    {
+      "item_code": "F006N",
+      "item_name": "销售商品、提供劳务收到的现金",
+      "value": 107024384560.17,
+      "display_order": 0
+    },
+    {
+      "item_code": "F072N",
+      "item_name": "客户存款和同业存放款项净增加额",
+      "value": 3189100199.87,
+      "display_order": 1
+    },
+    {
+      "item_code": "F081N",
+      "item_name": "收取利息、手续费及佣金的现金",
+      "value": 3075945383.34,
+      "display_order": 2
+    },
+    {
+      "item_code": "F008N",
+      "item_name": "收到其他与经营活动有关的现金",
+      "value": 221421226.63,
+      "display_order": 3
+    },
+    {
+      "item_code": "F009N",
+      "item_name": "经营活动现金流入小计",
+      "value": 113510851370.01,
+      "display_order": 4
+    },
+    {
+      "item_code": "F010N",
+      "item_name": "购买商品、接受劳务支付的现金",
+      "value": 7230646129.19,
+      "display_order": 5
+    },
+    {
+      "item_code": "F084N",
+      "item_name": "客户贷款及垫款净增加额",
+      "value": 2978755728.0,
+      "display_order": 6
+    },
+    {
+      "item_code": "F085N",
+      "item_name": "存放中央银行和同业款项净增加额",
+      "value": -2506406682.56,
+      "display_order": 7
+    },
+    {
+      "item_code": "F087N",
+      "item_name": "支付利息、手续费及佣金的现金",
+      "value": 107241768.26,
+      "display_order": 8
+    },
+    {
+      "item_code": "F011N",
+      "item_name": "支付给职工以及为职工支付的现金",
+      "value": 8161813197.26,
+      "display_order": 9
+    },
+    {
+      "item_code": "F012N",
+      "item_name": "支付的各项税费",
+      "value": 41622706350.37,
+      "display_order": 10
+    },
+    {
+      "item_code": "F013N",
+      "item_name": "支付其他与经营活动有关的现金",
+      "value": 4247026186.46,
+      "display_order": 11
+    },
+    {
+      "item_code": "F014N",
+      "item_name": "经营活动现金流出小计",
+      "value": 61841782676.98,
+      "display_order": 12
+    },
+    {
+      "item_code": "F015N",
+      "item_name": "经营活动产生的现金流量净额",
+      "value": 51669068693.03,
+      "display_order": 13
+    },
+    {
+      "item_code": "F016N",
+      "item_name": "收回投资收到的现金",
+      "value": 314906521.48,
+      "display_order": 14
+    },
+    {
+      "item_code": "F018N",
+      "item_name": "处置固定资产、无形资产和其他长期资产收回的现金净额",
+      "value": 495904.85,
+      "display_order": 15
+    },
+    {
+      "item_code": "F020N",
+      "item_name": "收到其他与投资活动有关的现金",
+      "value": 6675319.03,
+      "display_order": 16
+    },
+    {
+      "item_code": "F021N",
+      "item_name": "投资活动现金流入小计",
+      "value": 322077745.36,
+      "display_order": 17
+    },
+    {
+      "item_code": "F022N",
+      "item_name": "购建固定资产、无形资产和其他长期资产支付的现金",
+      "value": 2089769498.78,
+      "display_order": 18
+    },
+    {
+      "item_code": "F023N",
+      "item_name": "投资支付的现金",
+      "value": 20000000.0,
+      "display_order": 19
+    },
+    {
+      "item_code": "F025N",
+      "item_name": "支付其他与投资活动有关的现金",
+      "value": 17535402.3,
+      "display_order": 20
+    },
+    {
+      "item_code": "F026N",
+      "item_name": "投资活动现金流出小计",
+      "value": 2127304901.08,
+      "display_order": 21
+    },
+    {
+      "item_code": "F027N",
+      "item_name": "投资活动产生的现金流量净额",
+      "value": -1805227155.72,
+      "display_order": 22
+    },
+    {
+      "item_code": "F033N",
+      "item_name": "分配股利、利润或偿付利息支付的现金",
+      "value": 24091029750.51,
+      "display_order": 23
+    },
+    {
+      "item_code": "F090N",
+      "item_name": "其中：子公司支付给少数股东的股利、利润",
+      "value": 2704262179.11,
+      "display_order": 24
+    },
+    {
+      "item_code": "F034N",
+      "item_name": "支付其他与筹资活动有关的现金",
+      "value": 36507157.75,
+      "display_order": 25
+    },
+    {
+      "item_code": "F035N",
+      "item_name": "筹资活动现金流出小计",
+      "value": 24127536908.26,
+      "display_order": 26
+    },
+    {
+      "item_code": "F036N",
+      "item_name": "筹资活动产生的现金流量净额",
+      "value": -24127536908.26,
+      "display_order": 27
+    },
+    {
+      "item_code": "F037N",
+      "item_name": "四、汇率变动对现金的影响",
+      "value": 380639.36,
+      "display_order": 28
+    },
+    {
+      "item_code": "F039N",
+      "item_name": "五、现金及现金等价物净增加额",
+      "value": 25736685268.41,
+      "display_order": 29
+    },
+    {
+      "item_code": "F040N",
+      "item_name": "期初现金及现金等价物余额",
+      "value": 121003839599.64,
+      "display_order": 30
+    },
+    {
+      "item_code": "F041N",
+      "item_name": "期末现金及现金等价物余额",
+      "value": 146740524868.05,
+      "display_order": 31
+    },
+    {
+      "item_code": "F044N",
+      "item_name": "净利润",
+      "value": 49523329882.4,
+      "display_order": 32
+    },
+    {
+      "item_code": "F046N",
+      "item_name": "固定资产折旧、油气资产折耗、生产性生物资产折旧",
+      "value": 1195956468.6,
+      "display_order": 33
+    },
+    {
+      "item_code": "F047N",
+      "item_name": "无形资产摊销",
+      "value": 110349099.0,
+      "display_order": 34
+    },
+    {
+      "item_code": "F048N",
+      "item_name": "长期待摊费用摊销",
+      "value": 10562811.76,
+      "display_order": 35
+    },
+    {
+      "item_code": "F050N",
+      "item_name": "固定资产报废损失",
+      "value": 100113.92,
+      "display_order": 36
+    },
+    {
+      "item_code": "F051N",
+      "item_name": "公允价值变动损失",
+      "value": -4897994.43,
+      "display_order": 37
+    },
+    {
+      "item_code": "F053N",
+      "item_name": "投资损失",
+      "value": -305631.46,
+      "display_order": 38
+    },
+    {
+      "item_code": "F054N",
+      "item_name": "递延所得税资产减少",
+      "value": -23278138.8,
+      "display_order": 39
+    },
+    {
+      "item_code": "F055N",
+      "item_name": "递延所得税负债增加",
+      "value": -71235087.78,
+      "display_order": 40
+    },
+    {
+      "item_code": "F056N",
+      "item_name": "存货的减少",
+      "value": -3584166871.73,
+      "display_order": 41
+    },
+    {
+      "item_code": "F057N",
+      "item_name": "经营性应收项目的减少",
+      "value": -504008375.44,
+      "display_order": 42
+    },
+    {
+      "item_code": "F058N",
+      "item_name": "经营性应付项目的增加",
+      "value": 4945290607.14,
+      "display_order": 43
+    },
+    {
+      "item_code": "F060N",
+      "item_name": "经营活动产生的现金流量净额2",
+      "value": 51669068693.03,
+      "display_order": 44
+    },
+    {
+      "item_code": "F066N",
+      "item_name": "现金的期末余额",
+      "value": 146740524868.05,
+      "display_order": 45
+    },
+    {
+      "item_code": "F067N",
+      "item_name": "减：现金的期初余额",
+      "value": 121003839599.64,
+      "display_order": 46
+    },
+    {
+      "item_code": "F071N",
+      "item_name": "现金及现金等价物净增加额2",
+      "value": 25736685268.41,
+      "display_order": 47
+    },
+    {
+      "item_code": "F096N",
+      "item_name": "信用减值损失",
+      "value": 71371809.85,
+      "display_order": 48
+    }
+  ]
+}

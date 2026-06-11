@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>akshare 现金流量表渠道质量测试报告</title>
+<style>
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 48px;
+    line-height: 1.7;
+    color: #24292e;
+    background: #fafbfc;
+}
+h1 {
+    color: #1a1a2e;
+    border-bottom: 3px solid #1a1a2e;
+    padding-bottom: 12px;
+    margin-top: 0;
+}
+h2 {
+    color: #0366d6;
+    border-bottom: 1px solid #e1e4e8;
+    padding-bottom: 6px;
+    margin-top: 32px;
+}
+h3 {
+    color: #2c3e50;
+    margin-top: 24px;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 16px 0;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border-radius: 6px;
+    overflow: hidden;
+    font-size: 14px;
+}
+th {
+    background: #f6f8fa;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #e1e4e8;
+    color: #24292e;
+}
+td {
+    padding: 8px 14px;
+    border-bottom: 1px solid #f0f3f6;
+    vertical-align: top;
+}
+tr:hover td {
+    background: #f6f8fa;
+}
+td:has(+ td) {
+    /* not used widely yet, ignore */
+}
+/* 数字右对齐 */
+td:nth-child(n+3) {
+    /* general data column hint */
+}
+code {
+    background: #f1f3f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "SF Mono", "Consolas", "Cascadia Code", monospace;
+    font-size: 13px;
+    color: #d73a49;
+}
+pre {
+    background: #2d2d2d;
+    color: #e6e6e6;
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+}
+blockquote {
+    border-left: 4px solid #0366d6;
+    padding: 8px 16px;
+    margin: 16px 0;
+    background: #f0f6ff;
+    color: #586069;
+}
+hr {
+    border: 0;
+    border-top: 1px solid #e1e4e8;
+    margin: 28px 0;
+}
+a { color: #0366d6; text-decoration: none; }
+a:hover { text-decoration: underline; }
+strong { color: #1a1a2e; }
+ul, ol { padding-left: 24px; }
+li { margin: 4px 0; }
+/* 星级评分高亮 */
+td:contains("⭐⭐⭐⭐⭐") { background: #e6ffed; }
+
+</style>
+</head>
+<body>
+<h1 id="akshare">akshare 各渠道现金流量表数据质量测试报告</h1>
+<p><strong>测试目标</strong>：600519 贵州茅台 2020 年年报现金流量表<br />
+<strong>测试日期</strong>：2026-06-11<br />
+<strong>对比基准</strong>：RDS (cninfo/data_backup/cf_o.rds) — 49 项 item，含直接法+间接法<br />
+<strong>说明</strong>：原计划测2021年，但RDS中600519恰好无2021年报CF数据，按用户指示改用2020年报</p>
+<hr />
+<h2 id="1-10-akshare">1. 测试范围（10 个 akshare 接口）</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>接口</th>
+<th>类型</th>
+<th>调用参数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>01</td>
+<td><code>stock_cash_flow_sheet_by_yearly_em</code></td>
+<td>EM 年度</td>
+<td><code>symbol="SH600519"</code></td>
+</tr>
+<tr>
+<td>02</td>
+<td><code>stock_cash_flow_sheet_by_quarterly_em</code></td>
+<td>EM 单季度</td>
+<td><code>symbol="SH600519"</code></td>
+</tr>
+<tr>
+<td>03</td>
+<td><code>stock_cash_flow_sheet_by_report_em</code></td>
+<td>EM 按报告期</td>
+<td><code>symbol="SH600519"</code></td>
+</tr>
+<tr>
+<td>04</td>
+<td><code>stock_cash_flow_sheet_by_report_delisted_em</code></td>
+<td>EM 退市股</td>
+<td><code>symbol="SH600519"</code></td>
+</tr>
+<tr>
+<td>05</td>
+<td><code>stock_financial_cash_ths</code></td>
+<td>THS 旧版 按报告期</td>
+<td><code>symbol="600519", indicator="按报告期"</code></td>
+</tr>
+<tr>
+<td>06</td>
+<td><code>stock_financial_cash_ths</code></td>
+<td>THS 旧版 按年度</td>
+<td><code>symbol="600519", indicator="按年度"</code></td>
+</tr>
+<tr>
+<td>07</td>
+<td><code>stock_financial_cash_ths</code></td>
+<td>THS 旧版 按单季度</td>
+<td><code>symbol="600519", indicator="按单季度"</code></td>
+</tr>
+<tr>
+<td>08</td>
+<td><code>stock_financial_cash_new_ths</code></td>
+<td>THS 新版 按报告期</td>
+<td><code>symbol="600519", indicator="按报告期"</code></td>
+</tr>
+<tr>
+<td>09</td>
+<td><code>stock_financial_cash_new_ths</code></td>
+<td>THS 新版 按年度</td>
+<td><code>symbol="600519", indicator="按年度"</code></td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>stock_financial_report_sina</code></td>
+<td>Sina 综合</td>
+<td><code>stock="sh600519", symbol="现金流量表"</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>备注：akshare 中无 sina 专用现金流量表接口，Sina 现金流量表通过综合接口 <code>stock_financial_report_sina(symbol="现金流量表")</code> 获取。</p>
+</blockquote>
+<hr />
+<h2 id="2">2. 数据下载结果</h2>
+<p>全部 10 个接口下载成功，原始数据保存于 <code>tmp/akshare_test_600519_2020/raw_*.csv</code>：</p>
+<table>
+<thead>
+<tr>
+<th>接口</th>
+<th style="text-align: right;">行数</th>
+<th style="text-align: right;">列数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>01_em_yearly</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">254</td>
+<td>全部年报</td>
+</tr>
+<tr>
+<td>02_em_quarterly</td>
+<td style="text-align: right;">93</td>
+<td style="text-align: right;">253</td>
+<td>全部单季度数据</td>
+</tr>
+<tr>
+<td>03_em_report</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">254</td>
+<td>全部报告期（年+季）</td>
+</tr>
+<tr>
+<td>04_em_report_delisted</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">254</td>
+<td><strong>意外返回600519数据</strong> — 该接口未做退市股过滤</td>
+</tr>
+<tr>
+<td>05_ths_old_report</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">72</td>
+<td>按报告期；<strong>值带"亿"单位</strong></td>
+</tr>
+<tr>
+<td>06_ths_old_yearly</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">72</td>
+<td>按年度；同上</td>
+</tr>
+<tr>
+<td>07_ths_old_single_q</td>
+<td style="text-align: right;">93</td>
+<td style="text-align: right;">72</td>
+<td>按单季度</td>
+</tr>
+<tr>
+<td>08_ths_new_report</td>
+<td style="text-align: right;">4500</td>
+<td style="text-align: right;">10</td>
+<td>长格式（metric_name + value）</td>
+</tr>
+<tr>
+<td>09_ths_new_yearly</td>
+<td style="text-align: right;">2340</td>
+<td style="text-align: right;">10</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>10_sina_cf</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">71</td>
+<td>综合接口含报告日</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-rds">3. 与 RDS 标准对比（核心结果）</h2>
+<h3 id="_1">评分指标</h3>
+<ul>
+<li><strong>精确到分</strong>：<code>|渠道值 - RDS值| &lt; 0.01 元</code></li>
+<li><strong>精度损失（亚元）</strong>：差异 &lt; 1 元</li>
+<li><strong>舍入或聚合（&lt;1%）</strong>：相对误差 &lt; 1%（典型为"亿"单位精度损失）</li>
+<li><strong>大误差（≥1%）</strong>：含 best-match 误匹配（即渠道根本缺失该字段）</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>渠道</th>
+<th style="text-align: right;">字段数</th>
+<th style="text-align: right;">精确</th>
+<th style="text-align: right;">精度损失</th>
+<th style="text-align: right;">舍入</th>
+<th style="text-align: right;">大误差</th>
+<th style="text-align: right;">间接法字段</th>
+<th>评级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>01 EM 年度</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;"><strong>47</strong></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;"><strong>17</strong></td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>03 EM 按报告期</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;"><strong>47</strong></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">17</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>04 EM 退市股接口</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">17</td>
+<td>⭐⭐⭐⭐⭐（接口归类异常）</td>
+</tr>
+<tr>
+<td>08 THS 新版 按报告期</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;"><strong>47</strong></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">10/16*</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>09 THS 新版 按年度</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;"><strong>47</strong></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">10/16*</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td>10 Sina 综合</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;"><strong>35</strong></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">2</td>
+<td>⭐⭐⭐（仅直接法）</td>
+</tr>
+<tr>
+<td>05 THS 旧版 按报告期</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">13</td>
+<td>⭐⭐（精度仅到亿）</td>
+</tr>
+<tr>
+<td>06 THS 旧版 按年度</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">13</td>
+<td>⭐⭐</td>
+</tr>
+<tr>
+<td>02 EM 单季度</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">43</td>
+<td style="text-align: right;">0</td>
+<td>n/a（返回Q4单季值）</td>
+</tr>
+<tr>
+<td>07 THS 旧版 按单季度</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">43</td>
+<td style="text-align: right;">0</td>
+<td>n/a（单季度数据）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><em>THS 新版的间接法检测数为 10，但人工核对其 47 个 exact match 中实际包含 </em><em>16/17</em>* 个 RDS 间接法项目（仅缺 F096 信用减值损失）</p>
+</blockquote>
+<hr />
+<h2 id="4">4. 关键发现详解</h2>
+<h3 id="41-em-4849-980">4.1 EM (年度/报告期) — 实际精确率 48/49 = 98.0%</h3>
+<p>EM 标记的 2 个"大误差"实际为：
+1. <strong>F013 支付其他与经营活动有关的现金</strong> (RDS = 4,247,026,186.46)<br />
+   EM 拆为两个字段：<br />
+   - <code>PAY_OTHER_OPERATE</code> = 4,047,026,186.46<br />
+   - <code>OPERATE_OUTFLOW_OTHER</code> = 200,000,000.00<br />
+   两者相加 = 4,247,026,186.46 ✓ <strong>完全匹配，仅是字段切分差异</strong>
+2. <strong>F096 信用减值损失</strong> (RDS = 71,371,809.85)<br />
+   EM 未提供此字段 — <strong>真实缺失</strong></p>
+<p><strong>结论</strong>：EM 实际覆盖 48/49 直接法+间接法项目，仅缺信用减值损失一项。<strong>间接法CF完整可用</strong>（净利润、折旧、摊销、存货变动、应收应付、递延税等17项全部精确到分）。</p>
+<h3 id="42-sina">4.2 Sina — 仅直接法 + 部分汇总</h3>
+<p>Sina 35 个非空字段全部精确到分（35/35 = 100% 精确率），但 RDS 49 项中 <strong>14 项 Sina 完全缺失</strong>（被算法误匹配为 large_error）：
+- F044 净利润 ❌
+- F046-F058 间接法各项（折旧/摊销/公允价值/投资损失/递延税/存货/应收应付）❌
+- F096 信用减值损失 ❌</p>
+<p><strong>结论</strong>：<strong>Sina 确实不提供间接法CF补充资料</strong>，与 CLAUDE.md 描述一致。</p>
+<h3 id="43-ths">4.3 THS 新版 — 字段最完整且精确</h3>
+<p>THS 新版 47/48 个返回字段精确到分，间接法覆盖 <strong>16/17</strong>（仅缺 F096）。所有间接法项目用英文 metric_name 命名（如 <code>cash_net_profit</code>、<code>depreciation_etc</code>、<code>amortization_intangible_assets</code>、<code>inventory_decrease</code>、<code>operating_receivable_decrease</code> 等）。</p>
+<p><strong>反驳 CLAUDE.md 中"THS 新版精度不稳定"的说法</strong> — 本次测试600519 2020年报数据<strong>完全精确到分</strong>，与 RDS 完全一致。需要在其他股票上做更广泛测试才能验证"精度因股票而异"的说法。</p>
+<h3 id="44-ths">4.4 THS 旧版 — 精度限制到亿</h3>
+<p>确认 CLAUDE.md 描述：THS 旧版接口返回的值是字符串带单位（如 "1070.24亿"），换算后精度仅到亿元。仅 1/49 精确（碰巧到分）。</p>
+<p>例：
+- 销售商品收到的现金：THS = "1070.24亿" → 107,024,000,000，RDS = 107,024,384,560.17（差异 384,560.17元）
+- 经营活动净额：THS = "516.69亿" → 51,669,000,000，RDS = 51,669,068,693.03（差异 68,693.03元）</p>
+<h3 id="45-em">4.5 EM 退市股接口意外行为</h3>
+<p><code>stock_cash_flow_sheet_by_report_delisted_em(symbol="SH600519")</code> 仍然返回了 600519 的完整数据（98 行 × 254 列），与 <code>by_report_em</code> 输出完全一致。<strong>该接口未做退市股过滤</strong> — 调用者需自行注意命名歧义。</p>
+<h3 id="46-em">4.6 EM 单季度接口</h3>
+<p><code>stock_cash_flow_sheet_by_quarterly_em</code> 2020-12-31 行返回 <code>REPORT_TYPE="四季度"</code>，值为单季 Q4 值（如 NETCASH_OPERATE = 26,558,065,873.04），并非年度累计。用于年度对比时<strong>不适用</strong>，需调用 <code>_yearly_em</code> 或 <code>_report_em</code>。</p>
+<hr />
+<h2 id="5">5. 总结与推荐</h2>
+<blockquote>
+<p>⚠ <strong>重要前提：EM 与 THS 新版的精度均不稳定</strong> —— 本次 600519 测试中两者都精确到分，但 <strong>EM 渠道实际精度因股票而异，部分上市公司只精确到百万元</strong>，与 THS 新版同样存在该问题。以下推荐仅在目标股票完成精度抽查后才适用。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>用途</th>
+<th>推荐接口</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>年度CF（含间接法）首选</strong></td>
+<td><code>stock_cash_flow_sheet_by_yearly_em</code> 或 <code>stock_financial_cash_new_ths(indicator="按年度")</code></td>
+<td>600519 精确到分，含间接法补充资料，覆盖 48/49 项；<strong>其他股票需先抽样校验精度</strong></td>
+</tr>
+<tr>
+<td><strong>任意报告期CF（含间接法）</strong></td>
+<td><code>stock_cash_flow_sheet_by_report_em</code> 或 <code>stock_financial_cash_new_ths(indicator="按报告期")</code></td>
+<td>同上</td>
+</tr>
+<tr>
+<td><strong>直接法CF快速校验</strong></td>
+<td><code>stock_financial_report_sina(symbol="现金流量表")</code></td>
+<td>35个直接法项目全部精确，<strong>Sina 精度稳定到分</strong>，但无间接法</td>
+</tr>
+<tr>
+<td><strong>单季度CF</strong></td>
+<td><code>stock_cash_flow_sheet_by_quarterly_em</code></td>
+<td>唯一返回单季值的接口</td>
+</tr>
+<tr>
+<td><strong>不推荐</strong></td>
+<td><code>stock_financial_cash_ths</code>（任何 indicator）</td>
+<td>精度仅到亿，无法精确到分</td>
+</tr>
+<tr>
+<td><strong>慎用</strong></td>
+<td><code>stock_cash_flow_sheet_by_report_delisted_em</code></td>
+<td>命名误导，实际未做退市股过滤</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-claudemd">6. 对 CLAUDE.md 的修正建议</h2>
+<p>经本次测试，<strong>CLAUDE.md 中以下描述需修正/补充</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>原描述</th>
+<th>测试结果</th>
+<th>建议修正</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"EM 不提供间接法 CF"</td>
+<td>EM 提供 17 项间接法字段（含 NETPROFIT、FA_IR_DEPR、IA_AMORTIZE 等）</td>
+<td>EM <strong>提供完整间接法 CF</strong>，覆盖 48/49 项（仅缺 F096 信用减值损失）</td>
+</tr>
+<tr>
+<td>"EM 精确到分（曾被认为）"</td>
+<td>仅在 600519 上验证精确到分</td>
+<td><strong>EM 精度因股票而异</strong>：部分上市公司精确到分，部分仅精确到百万元；与 THS 新版同样存在精度不稳定问题，使用前需对目标股票抽样校验</td>
+</tr>
+<tr>
+<td>"THS 新版精度不稳定"</td>
+<td>600519 测试结果完全精确到分</td>
+<td>描述正确；至少 600519 上精确到分，但其他股票仍可能仅到百万元</td>
+</tr>
+<tr>
+<td>"Sina 主力可靠"</td>
+<td>Sina 仅提供直接法 35 项，无间接法</td>
+<td>Sina 仅在直接法 CF 上可靠且精度稳定，间接法需 EM 或 THS 新版</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7">7. 数据存档</h2>
+<ul>
+<li><strong>下载脚本</strong>：<code>scripts/akshare_cf_test_download.py</code></li>
+<li><strong>对比脚本</strong>：<code>scripts/akshare_cf_test_compare.py</code></li>
+<li><strong>RDS标准导出</strong>：<code>scripts/akshare_cf_test_export_rds.py</code></li>
+<li><strong>原始数据</strong>：<code>tmp/akshare_test_600519_2020/raw_*.csv</code> (10 个)</li>
+<li><strong>每渠道元数据</strong>：<code>tmp/akshare_test_600519_2020/meta_*.json</code> (10 个)</li>
+<li><strong>下载汇总</strong>：<code>tmp/akshare_test_600519_2020/_download_summary.json</code></li>
+<li><strong>质量对比JSON</strong>：<code>tmp/akshare_test_600519_2020/_quality_report.json</code></li>
+<li><strong>本报告</strong>：<code>tmp/akshare_test_600519_2020/_quality_report.md</code></li>
+</ul>
+<hr>
+<p style="text-align:center;color:#959da5;font-size:12px;">
+Generated from <code>tmp/akshare_test_600519_2020/_quality_report.md</code> by <code>scripts/render_quality_report_html.py</code>
+</p>
+</body>
+</html>
