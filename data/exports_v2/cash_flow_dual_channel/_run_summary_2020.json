@@ -1,5 +1,53 @@
 [
   {
+    "stock": "600519",
+    "year": 2020,
+    "status": "OK",
+    "counts": {
+      "exact": 49,
+      "large_error": 2
+    },
+    "merged_csv": "data/exports_v2/cash_flow_dual_channel\\600519_2020_merged.csv",
+    "report_html": "data/exports_v2/cash_flow_dual_channel\\600519_2020_report.html",
+    "is_financial": false
+  },
+  {
+    "stock": "600887",
+    "year": 2020,
+    "status": "OK",
+    "counts": {
+      "exact": 55,
+      "large_error": 1
+    },
+    "merged_csv": "data/exports_v2/cash_flow_dual_channel\\600887_2020_merged.csv",
+    "report_html": "data/exports_v2/cash_flow_dual_channel\\600887_2020_report.html",
+    "is_financial": false
+  },
+  {
+    "stock": "000651",
+    "year": 2020,
+    "status": "OK",
+    "counts": {
+      "exact": 62,
+      "large_error": 1
+    },
+    "merged_csv": "data/exports_v2/cash_flow_dual_channel\\000651_2020_merged.csv",
+    "report_html": "data/exports_v2/cash_flow_dual_channel\\000651_2020_report.html",
+    "is_financial": false
+  },
+  {
+    "stock": "688981",
+    "year": 2020,
+    "status": "OK",
+    "counts": {
+      "exact": 48,
+      "large_error": 10
+    },
+    "merged_csv": "data/exports_v2/cash_flow_dual_channel\\688981_2020_merged.csv",
+    "report_html": "data/exports_v2/cash_flow_dual_channel\\688981_2020_report.html",
+    "is_financial": false
+  },
+  {
     "stock": "300750",
     "year": 2020,
     "status": "OK",
@@ -9,6 +57,20 @@
       "rounded": 1
     },
     "merged_csv": "data/exports_v2/cash_flow_dual_channel\\300750_2020_merged.csv",
-    "report_html": "data/exports_v2/cash_flow_dual_channel\\300750_2020_report.html"
+    "report_html": "data/exports_v2/cash_flow_dual_channel\\300750_2020_report.html",
+    "is_financial": false
+  },
+  {
+    "stock": "600036",
+    "year": 2020,
+    "status": "OK",
+    "counts": {
+      "exact": 52,
+      "large_error": 18,
+      "rounded": 1
+    },
+    "merged_csv": "data/exports_v2/cash_flow_dual_channel\\600036_2020_merged.csv",
+    "report_html": "data/exports_v2/cash_flow_dual_channel\\600036_2020_report.html",
+    "is_financial": true
   }
 ]
