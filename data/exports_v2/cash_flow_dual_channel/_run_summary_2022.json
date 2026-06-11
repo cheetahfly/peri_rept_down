@@ -1,0 +1,60 @@
+[
+  {
+    "stock": "600519",
+    "year": 2022,
+    "status": "OK",
+    "counts": {
+      "exact": 49,
+      "large_error": 3,
+      "rounded": 1
+    },
+    "merged_csv": "data/exports_v2/cash_flow_dual_channel\\600519_2022_merged.csv",
+    "report_html": "data/exports_v2/cash_flow_dual_channel\\600519_2022_report.html"
+  },
+  {
+    "stock": "600887",
+    "year": 2022,
+    "status": "OK",
+    "counts": {
+      "exact": 55,
+      "large_error": 3,
+      "rounded": 1
+    },
+    "merged_csv": "data/exports_v2/cash_flow_dual_channel\\600887_2022_merged.csv",
+    "report_html": "data/exports_v2/cash_flow_dual_channel\\600887_2022_report.html"
+  },
+  {
+    "stock": "000651",
+    "year": 2022,
+    "status": "OK",
+    "counts": {
+      "exact": 61,
+      "large_error": 2
+    },
+    "merged_csv": "data/exports_v2/cash_flow_dual_channel\\000651_2022_merged.csv",
+    "report_html": "data/exports_v2/cash_flow_dual_channel\\000651_2022_report.html"
+  },
+  {
+    "stock": "688981",
+    "year": 2022,
+    "status": "OK",
+    "counts": {
+      "exact": 48,
+      "large_error": 7
+    },
+    "merged_csv": "data/exports_v2/cash_flow_dual_channel\\688981_2022_merged.csv",
+    "report_html": "data/exports_v2/cash_flow_dual_channel\\688981_2022_report.html"
+  },
+  {
+    "stock": "300750",
+    "year": 2022,
+    "status": "OK",
+    "counts": {
+      "exact": 53,
+      "large_error": 10,
+      "rounded": 1
+    },
+    "merged_csv": "data/exports_v2/cash_flow_dual_channel\\300750_2022_merged.csv",
+    "report_html": "data/exports_v2/cash_flow_dual_channel\\300750_2022_report.html"
+  }
+]
