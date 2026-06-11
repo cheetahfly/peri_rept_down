@@ -1,0 +1,14 @@
+[
+  {
+    "stock": "300750",
+    "year": 2020,
+    "status": "OK",
+    "counts": {
+      "exact": 56,
+      "large_error": 6,
+      "rounded": 1
+    },
+    "merged_csv": "data/exports_v2/cash_flow_dual_channel\\300750_2020_merged.csv",
+    "report_html": "data/exports_v2/cash_flow_dual_channel\\300750_2020_report.html"
+  }
+]
