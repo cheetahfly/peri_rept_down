@@ -54,14 +54,49 @@ def load_pdf_extracted(stock_code, year):
     return out
 
 
+_PREFIX_TOKENS = ("一、", "二、", "三、", "四、", "五、", "六、", "七、", "八、",
+                  "加：", "减：", "其中：", "其中:", "加:", "减:")
+
+
+def _normalize_name(name):
+    """字符串规范化：去前缀序号/冠词、去空格、去冒号、统一'现金'↔'现金及现金等价物'同义。"""
+    if not name:
+        return ""
+    s = name
+    for p in _PREFIX_TOKENS:
+        if s.startswith(p):
+            s = s[len(p):]
+    s = s.replace(" ", "").replace("：", "").replace(":", "").replace("(", "（").replace(")", "）")
+    # '现金及现金等价物' 与 '现金' 同义（在期初/期末余额项目中）
+    s = s.replace("现金及现金等价物", "现金")
+    # '油气资产折耗、生产性生物资产折旧' 常被截断，做关键词归一
+    s = s.replace("油气资产折耗", "").replace("生产性生物资产折旧", "")
+    return s
+
+
 def best_match_by_name(rds_name, pdf_data):
-    """按字符串相似度匹配；返回 (matched_name, value) 或 (None, None)"""
+    """按字符串相似度匹配；返回 (matched_name, value) 或 (None, None)。
+
+    匹配策略（按优先级）：
+    1. 完全相同
+    2. 规范化（去前缀序号/冒号/空格、'现金'/'现金及现金等价物' 同义）后相等
+    3. 子串包含（rds 名是 pdf 名的子串，反向亦然）
+    """
     if rds_name in pdf_data:
         return rds_name, pdf_data[rds_name]
-    # 简化匹配：去空格、冒号后再尝试
-    norm_rds = rds_name.replace(" ", "").replace("：", "").replace(":", "")
+    norm_rds = _normalize_name(rds_name)
+    if not norm_rds:
+        return None, None
+    # Pass 2: normalized equality
     for name, v in pdf_data.items():
-        if name.replace(" ", "").replace("：", "").replace(":", "") == norm_rds:
+        if _normalize_name(name) == norm_rds:
+            return name, v
+    # Pass 3: substring match (rds is in pdf name, or pdf name is in rds)
+    for name, v in pdf_data.items():
+        npdf = _normalize_name(name)
+        if not npdf:
+            continue
+        if norm_rds in npdf or npdf in norm_rds:
             return name, v
     return None, None
 
