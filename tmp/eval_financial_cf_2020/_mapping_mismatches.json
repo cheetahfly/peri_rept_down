@@ -1,0 +1,47 @@
+[
+  {
+    "rds_code": "F086N",
+    "rds_name": "支付原保险合同赔付款项的现金",
+    "rds_value": 14334000000.0,
+    "em_field": "RECEIVE_OTHER_FINANCE",
+    "em_value": 14417000000.0,
+    "abs_diff": 83000000.0,
+    "rel_err": 0.5790428352169666
+  },
+  {
+    "rds_code": "F035N",
+    "rds_name": "筹资活动现金流出小计",
+    "rds_value": 2936000000.0,
+    "em_field": "DISPOSAL_LONG_ASSET",
+    "em_value": 2354000000.0,
+    "abs_diff": 582000000.0,
+    "rel_err": 19.82288828337875
+  },
+  {
+    "rds_code": "F047N",
+    "rds_name": "无形资产摊销",
+    "rds_value": 300009000000.0,
+    "em_field": "TOTAL_FINANCE_INFLOW",
+    "em_value": 333833000000.0,
+    "abs_diff": 33824000000.0,
+    "rel_err": 11.274328436813562
+  },
+  {
+    "rds_code": "F049N",
+    "rds_name": "处置固定资产、无形资产和其他长期资产的损失",
+    "rds_value": 488298000000.0,
+    "em_field": "FINANCE_OUTFLOW_OTHER",
+    "em_value": 447456000000.0,
+    "abs_diff": 40842000000.0,
+    "rel_err": 8.364154676037995
+  },
+  {
+    "rds_code": "F051N",
+    "rds_name": "公允价值变动损失",
+    "rds_value": 5511000000.0,
+    "em_field": "FAIRVALUE_CHANGE_LOSS",
+    "em_value": 5131000000.0,
+    "abs_diff": 380000000.0,
+    "rel_err": 6.895300308473962
+  }
+]
