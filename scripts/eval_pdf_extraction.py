@@ -57,20 +57,27 @@ def load_pdf_extracted(stock_code, year):
 _PREFIX_TOKENS = ("一、", "二、", "三、", "四、", "五、", "六、", "七、", "八、",
                   "加：", "减：", "其中：", "其中:", "加:", "减:")
 
+# 去括号注释（中文/英文）：'公允价值变动损失（收益以"－"号填列）' → '公允价值变动损失'
+_BRACKET_RE = __import__("re").compile(r"[（(].*?[）)]")
+
 
 def _normalize_name(name):
-    """字符串规范化：去前缀序号/冠词、去空格、去冒号、统一'现金'↔'现金及现金等价物'同义。"""
+    """字符串规范化：去前缀序号/冠词、去空格、去冒号、去括号注释、统一'现金'↔'现金及现金等价物'同义。"""
     if not name:
         return ""
     s = name
     for p in _PREFIX_TOKENS:
         if s.startswith(p):
             s = s[len(p):]
-    s = s.replace(" ", "").replace("：", "").replace(":", "").replace("(", "（").replace(")", "）")
+    # 去除任意括号注释（"（收益以「－」号填列）"等）
+    s = _BRACKET_RE.sub("", s)
+    s = s.replace(" ", "").replace("：", "").replace(":", "")
     # '现金及现金等价物' 与 '现金' 同义（在期初/期末余额项目中）
     s = s.replace("现金及现金等价物", "现金")
     # '油气资产折耗、生产性生物资产折旧' 常被截断，做关键词归一
     s = s.replace("油气资产折耗", "").replace("生产性生物资产折旧", "")
+    # 标点统一
+    s = s.replace("，", "").replace(",", "").replace("、", "")
     return s
 
 

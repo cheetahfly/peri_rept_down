@@ -373,8 +373,9 @@ class BaseExtractor(ABC):
 
         # 精确匹配间接法补充资料的唯一性标题
         header_patterns = [
-            re.compile(r'将净利润调节为经营活动现金流量'),
+            re.compile(r'将净利润调节为经营活动[的]?现金流量'),  # '的' 可选 (e.g. 万科A 2020)
             re.compile(r'现金流量表补充资料'),
+            re.compile(r'现金流量表相关情况'),  # 万科A 等使用此表述
         ]
 
         for page_num in range(parser.page_count):

@@ -305,11 +305,19 @@ class TableParser:
         best_abs = 0
         item_idx = list(columns).index(item_col) if item_col in columns else 0
 
+        # 注脚标记模式：'55(1)'、'56(3)' 等（短整数+括号短整数），常见于附注引用列
+        # 不应被当作财务数值
+        footnote_re = re.compile(r'^\s*\d{1,3}\s*[（(]\s*\d{1,2}\s*[)）]\s*$')
+
         for col in columns:
             if col == item_col or col is None:
                 continue
             cell_value = row[col]
             if pd.notna(cell_value):
+                cell_str = str(cell_value).strip()
+                # 跳过附注标记（如 '55(1)'）
+                if footnote_re.match(cell_str):
+                    continue
                 parsed = cls.parse_number(cell_value)
                 if parsed is not None:
                     abs_parsed = abs(parsed)
@@ -319,7 +327,6 @@ class TableParser:
                     # 阈值条件
                     if abs_parsed > 100:
                         # 特殊处理：当第一数值列是括号负数(如"(亏损)")时，优先用右边的列
-                        cell_str = str(cell_value).strip()
                         if cell_str.startswith('(') and ')' in cell_str:
                             # 括号负数出现在第一个数值列（item_col+1附近），
                             # 说明真正的值在更右边的列，继续搜索
