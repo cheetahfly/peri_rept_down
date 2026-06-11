@@ -3,12 +3,12 @@
     "stock_code": "000002",
     "status": "OK",
     "rds_total": 54,
-    "exact": 31,
+    "exact": 33,
     "sub_yuan": 0,
     "rounded": 0,
-    "large_error": 3,
-    "no_match": 20,
-    "exact_rate": 57.41,
+    "large_error": 9,
+    "no_match": 12,
+    "exact_rate": 61.11,
     "details": [
       {
         "rds_code": "F006N",
@@ -384,21 +384,21 @@
         "rds_code": "F045N",
         "rds_name": "加：资产减值准备",
         "rds_value": 2205279757.12,
-        "pdf_name": null,
-        "pdf_value": null,
-        "abs_diff": null,
-        "rel_err_pct": null,
-        "class": "no_match"
+        "pdf_name": "加：资产减值损失",
+        "pdf_value": 1980818041.07,
+        "abs_diff": 224461716.04999995,
+        "rel_err_pct": 10.178378290795054,
+        "class": "large_error"
       },
       {
         "rds_code": "F046N",
         "rds_name": "固定资产折旧、油气资产折耗、生产性生物资产折旧",
         "rds_value": 2650922637.73,
-        "pdf_name": null,
-        "pdf_value": null,
-        "abs_diff": null,
-        "rel_err_pct": null,
-        "class": "no_match"
+        "pdf_name": "固定资产及投资性房地产的折旧",
+        "pdf_value": 2650922637.73,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
       },
       {
         "rds_code": "F047N",
@@ -414,21 +414,21 @@
         "rds_code": "F049N",
         "rds_name": "处置固定资产、无形资产和其他长期资产的损失",
         "rds_value": -48381265.04,
-        "pdf_name": null,
-        "pdf_value": null,
-        "abs_diff": null,
-        "rel_err_pct": null,
-        "class": "no_match"
+        "pdf_name": "处置固定资产的净收益/损失",
+        "pdf_value": 9665523.59,
+        "abs_diff": 58046788.629999995,
+        "rel_err_pct": 119.97782319666273,
+        "class": "large_error"
       },
       {
         "rds_code": "F051N",
         "rds_name": "公允价值变动损失",
         "rds_value": -5333532.39,
-        "pdf_name": null,
-        "pdf_value": null,
-        "abs_diff": null,
-        "rel_err_pct": null,
-        "class": "no_match"
+        "pdf_name": "公允价值变动收益/损失",
+        "pdf_value": 68518913.61,
+        "abs_diff": 73852446.0,
+        "rel_err_pct": 1384.681681852503,
+        "class": "large_error"
       },
       {
         "rds_code": "F052N",
@@ -444,41 +444,41 @@
         "rds_code": "F053N",
         "rds_name": "投资损失",
         "rds_value": -13511869972.98,
-        "pdf_name": null,
-        "pdf_value": null,
-        "abs_diff": null,
-        "rel_err_pct": null,
-        "class": "no_match"
+        "pdf_name": "投资收益",
+        "pdf_value": -13511869972.98,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
       },
       {
         "rds_code": "F054N",
         "rds_name": "递延所得税资产减少",
         "rds_value": -4116268905.2,
-        "pdf_name": null,
-        "pdf_value": null,
-        "abs_diff": null,
-        "rel_err_pct": null,
-        "class": "no_match"
+        "pdf_name": "递延所得税资产增加",
+        "pdf_value": -7566546637.72,
+        "abs_diff": 3450277732.5200005,
+        "rel_err_pct": 83.82051347912022,
+        "class": "large_error"
       },
       {
         "rds_code": "F055N",
         "rds_name": "递延所得税负债增加",
         "rds_value": -50857427.98,
-        "pdf_name": null,
-        "pdf_value": null,
-        "abs_diff": null,
-        "rel_err_pct": null,
-        "class": "no_match"
+        "pdf_name": "递延所得税负债减少",
+        "pdf_value": -256584069.03,
+        "abs_diff": 205726641.05,
+        "rel_err_pct": 404.5164083620259,
+        "class": "large_error"
       },
       {
         "rds_code": "F056N",
         "rds_name": "存货的减少",
         "rds_value": -38165029254.17,
-        "pdf_name": null,
-        "pdf_value": null,
-        "abs_diff": null,
-        "rel_err_pct": null,
-        "class": "no_match"
+        "pdf_name": "存货的增加",
+        "pdf_value": -107689498336.12,
+        "abs_diff": 69524469081.95,
+        "rel_err_pct": 182.16799630607804,
+        "class": "large_error"
       },
       {
         "rds_code": "F057N",
@@ -1009,12 +1009,12 @@
     "stock_code": "002415",
     "status": "OK",
     "rds_total": 56,
-    "exact": 43,
+    "exact": 45,
     "sub_yuan": 0,
     "rounded": 0,
-    "large_error": 9,
-    "no_match": 4,
-    "exact_rate": 76.79,
+    "large_error": 10,
+    "no_match": 1,
+    "exact_rate": 80.36,
     "details": [
       {
         "rds_code": "F006N",
@@ -1440,11 +1440,11 @@
         "rds_code": "F051N",
         "rds_name": "公允价值变动损失",
         "rds_value": -85458209.54,
-        "pdf_name": null,
-        "pdf_value": null,
-        "abs_diff": null,
-        "rel_err_pct": null,
-        "class": "no_match"
+        "pdf_name": "公允价值变动收益",
+        "pdf_value": -85458209.54,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
       },
       {
         "rds_code": "F052N",
@@ -1460,21 +1460,21 @@
         "rds_code": "F053N",
         "rds_name": "投资损失",
         "rds_value": -169277048.95,
-        "pdf_name": null,
-        "pdf_value": null,
-        "abs_diff": null,
-        "rel_err_pct": null,
-        "class": "no_match"
+        "pdf_name": "投资收益",
+        "pdf_value": -169277048.95,
+        "abs_diff": 0.0,
+        "rel_err_pct": 0.0,
+        "class": "exact"
       },
       {
         "rds_code": "F054N",
         "rds_name": "递延所得税资产减少",
         "rds_value": -131576150.12,
-        "pdf_name": null,
-        "pdf_value": null,
-        "abs_diff": null,
-        "rel_err_pct": null,
-        "class": "no_match"
+        "pdf_name": "递延所得税资产增加",
+        "pdf_value": -154200329.39,
+        "abs_diff": 22624179.26999998,
+        "rel_err_pct": 17.19474178972883,
+        "class": "large_error"
       },
       {
         "rds_code": "F055N",
@@ -1490,10 +1490,10 @@
         "rds_code": "F056N",
         "rds_name": "存货的减少",
         "rds_value": -496228965.62,
-        "pdf_name": "存货的减少(增加)",
-        "pdf_value": 49235200.73,
-        "abs_diff": 545464166.35,
-        "rel_err_pct": 109.92187158371225,
+        "pdf_name": "存货的增加",
+        "pdf_value": -5742789862.91,
+        "abs_diff": 5246560897.29,
+        "rel_err_pct": 1057.2863054728828,
         "class": "large_error"
       },
       {

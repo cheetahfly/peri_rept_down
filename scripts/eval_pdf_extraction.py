@@ -54,6 +54,46 @@ def load_pdf_extracted(stock_code, year):
     return out
 
 
+# 别名映射：RDS 项目名 → [(PDF 中可能出现的名字, 是否需要 negate)]
+# 关键观察（000002 万科 2020）：'投资收益'(PDF)/'投资损失'(RDS) 都存负数 → 命名差异但值同向
+# 仅当确证 sign-convention 反向时才 negate=True
+_RDS_TO_PDF_ALIASES = {
+    "投资损失": [("投资收益", False), ("投资损失", False)],
+    "公允价值变动损失": [
+        ("公允价值变动收益/损失", False),
+        ("公允价值变动收益", False),
+        ("公允价值变动损失", False),
+    ],
+    "递延所得税资产减少": [("递延所得税资产增加", False), ("递延所得税资产减少", False)],
+    "递延所得税负债增加": [("递延所得税负债减少", False), ("递延所得税负债增加", False)],
+    "存货的减少": [("存货的增加", False), ("存货的减少", False)],
+    "处置固定资产、无形资产和其他长期资产的损失": [
+        ("处置固定资产的净收益/损失", False),
+        ("处置固定资产、无形资产和其他长期资产的损失", False),
+    ],
+    "加：资产减值准备": [
+        ("加：资产减值损失", False),
+        ("资产减值损失", False),
+        ("加：资产减值准备", False),
+    ],
+    "固定资产折旧、油气资产折耗、生产性生物资产折旧": [
+        ("固定资产及投资性房地产的折旧", False),
+        ("固定资产折旧", False),
+    ],
+}
+
+
+def _match_by_alias(rds_name, pdf_data):
+    """通过别名表查找：返回 (matched_pdf_name, value, used_negate) 或 None"""
+    aliases = _RDS_TO_PDF_ALIASES.get(rds_name, [])
+    for pdf_alias, negate in aliases:
+        norm_alias = _normalize_name(pdf_alias)
+        for name, v in pdf_data.items():
+            if _normalize_name(name) == norm_alias:
+                return name, (-v if negate else v), negate
+    return None
+
+
 _PREFIX_TOKENS = ("一、", "二、", "三、", "四、", "五、", "六、", "七、", "八、",
                   "加：", "减：", "其中：", "其中:", "加:", "减:")
 
@@ -86,19 +126,25 @@ def best_match_by_name(rds_name, pdf_data):
 
     匹配策略（按优先级）：
     1. 完全相同
-    2. 规范化（去前缀序号/冒号/空格、'现金'/'现金及现金等价物' 同义）后相等
-    3. 子串包含（rds 名是 pdf 名的子串，反向亦然）
+    2. 别名表（处理 sign-convention 差异，如"投资收益"=负"投资损失"）
+    3. 规范化（去前缀序号/冒号/空格、'现金'/'现金及现金等价物' 同义）后相等
+    4. 子串包含（rds 名是 pdf 名的子串，反向亦然）
     """
     if rds_name in pdf_data:
         return rds_name, pdf_data[rds_name]
+    # Pass 2: alias table (handles sign-convention + name-merge differences)
+    alias_match = _match_by_alias(rds_name, pdf_data)
+    if alias_match is not None:
+        name, value, _negate = alias_match
+        return name, value
     norm_rds = _normalize_name(rds_name)
     if not norm_rds:
         return None, None
-    # Pass 2: normalized equality
+    # Pass 3: normalized equality
     for name, v in pdf_data.items():
         if _normalize_name(name) == norm_rds:
             return name, v
-    # Pass 3: substring match (rds is in pdf name, or pdf name is in rds)
+    # Pass 4: substring match (rds is in pdf name, or pdf name is in rds)
     for name, v in pdf_data.items():
         npdf = _normalize_name(name)
         if not npdf:
