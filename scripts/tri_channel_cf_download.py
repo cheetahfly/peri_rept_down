@@ -59,6 +59,79 @@ def load_rds_standard(stock_code: str, year: int) -> Dict[str, float]:
     return out
 
 
+def build_merged_csv(stock: str, year: int, rows: List[Dict], out_path: str) -> None:
+    """合并表：每行一个 RDS 项 + 对应 tushare 匹配 + class"""
+    import pandas as pd
+    df = pd.DataFrame(rows)
+    df.insert(0, "stock_code", stock)
+    df.insert(1, "report_year", year)
+    df.insert(2, "source", "tushare_vs_rds")
+    df.to_csv(out_path, index=False, encoding="utf-8-sig")
+
+
+def build_report_html(stock: str, year: int, rows: List[Dict],
+                      tushare_values: Dict[str, float], out_path: str) -> None:
+    """生成 HTML 报告，含双层警告横幅 + 彩色对比表"""
+    color_css = {
+        "exact": "#c8eac8", "sub_yuan": "#f4e4b4", "rounded": "#ffe0a3",
+        "large_error": "#f5c2c2", "no_match": "#e8e8e8",
+    }
+    body = []
+    for r in rows:
+        bg = color_css.get(r["class"], "#fff")
+        rds_v = f"{r['rds_value']:,.2f}" if r['rds_value'] is not None else ""
+        ts_v = f"{r['tushare_value']:,.2f}" if r['tushare_value'] is not None else ""
+        diff = f"{r['abs_diff']:,.2f}" if r['abs_diff'] is not None else ""
+        rel = f"{r['rel_err_pct']:.4f}%" if r['rel_err_pct'] is not None else ""
+        body.append(
+            f'<tr style="background:{bg}">'
+            f'<td>{r["rds_name"]}</td><td class="num">{rds_v}</td>'
+            f'<td>{r["tushare_label"] or ""}</td><td class="num">{ts_v}</td>'
+            f'<td class="num">{diff}</td><td class="num">{rel}</td>'
+            f'<td>{r["class"]}</td></tr>'
+        )
+    counts: Dict[str, int] = {}
+    for r in rows:
+        counts[r["class"]] = counts.get(r["class"], 0) + 1
+    summary_line = " · ".join(f"{k}={v}" for k, v in counts.items())
+
+    warning_banner1 = """<div class="summary" style="border-left-color:#d73a49;background:#ffe0e0;">
+<strong>⚠ 警告 1：</strong>即使 tushare 与 RDS exact_rate 很高，两者可能是同一上游（巨潮资讯）的两次提取。
+差异通常源于字段命名 / 精度（rounded 类）。
+</div>"""
+    warning_banner2 = f"""<div class="summary" style="border-left-color:#0366d6;background:#e3f2fd;">
+<strong>ℹ 警告 2：</strong>tushare 标榜源头=巨潮资讯（与 RDS 同源）。本次对比共 {sum(counts.values())} 项；
+如果 exact 占比 < 50%，假设"同源"不成立，tushare 可能是第三方转载。
+</div>"""
+
+    html = f"""<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>{stock} {year} tushare vs RDS</title>
+<style>
+body {{ font-family: -apple-system, "Microsoft YaHei", sans-serif; padding: 20px; }}
+h1 {{ color: #1a1a2e; }}
+table {{ border-collapse: collapse; width: 100%; font-size: 13px; }}
+th, td {{ padding: 6px 10px; border: 1px solid #e1e4e8; }}
+th {{ background: #1a1a2e; color: #fff; }}
+.num {{ text-align: right; font-family: Consolas, monospace; }}
+.summary {{ padding: 12px; border-left: 4px solid; margin: 12px 0; }}
+</style></head><body>
+<h1>{stock} - {year} tushare vs RDS 逐项对比</h1>
+{warning_banner1}
+{warning_banner2}
+<div class="summary" style="background:#fff8db;border-left-color:#f0ad4e;">
+<strong>项目分布：</strong> {summary_line}<br>
+<strong>tushare 字段总数：</strong> {len(tushare_values)}
+</div>
+<table>
+<thead><tr><th>RDS 项目</th><th>RDS 值</th><th>tushare 匹配字段</th><th>tushare 值</th>
+<th>差异(元)</th><th>相对误差</th><th>类别</th></tr></thead>
+<tbody>{"".join(body)}</tbody>
+</table>
+</body></html>"""
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(html)
+
+
 def process_stock(stock: str, year: int, token: str) -> Dict:
     """单只股票 × 单年处理：拉 tushare + RDS + 比对 + 输出报告"""
     try:

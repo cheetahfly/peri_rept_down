@@ -118,3 +118,23 @@ def test_process_stock_returns_status_dict():
     assert result["year"] == 2020
     assert result["status"] == "OK"
     assert "counts" in result
+
+
+def test_build_report_html_contains_double_warnings():
+    """build_report_html 应含双层警告横幅"""
+    import tempfile
+    rows = [{"rds_name": "净利润", "rds_value": 100.0, "tushare_label": "x",
+             "tushare_value": 100.0, "abs_diff": 0.0, "rel_err_pct": 0.0,
+             "class": "exact", "color": "green"}]
+    tushare_values = {"[income_statement] x": 100.0}
+    with tempfile.NamedTemporaryFile(suffix=".html", delete=False) as f:
+        path = f.name
+    try:
+        tri_channel_cf_download.build_report_html("600519", 2020, rows, tushare_values, path)
+        with open(path, encoding="utf-8") as f:
+            html = f.read()
+        assert "警告 1" in html
+        assert "警告 2" in html
+        assert "exact" in html
+    finally:
+        os.unlink(path)
