@@ -50,6 +50,15 @@ class TushareProvider(BaseApiProvider):
             time.sleep(self._sleep - elapsed)
         self._last_call_ts = time.time()
 
-    # _fetch / _df_to_dict / _ts_code / _period
-    # 在 Task 2.3-2.4 中实现
+    @staticmethod
+    def _ts_code(stock_code: str) -> str:
+        """600xxx → 600xxx.SH, 0xxxxx/3xxxxx → 0xxxxx.SZ"""
+        if stock_code.startswith(("600", "601", "603", "605", "688")):
+            return f"{stock_code}.SH"
+        if stock_code.startswith(("000", "001", "002", "003", "300", "301")):
+            return f"{stock_code}.SZ"
+        raise ValueError(f"Unknown market for stock code: {stock_code}")
+
+    # _fetch / _df_to_dict / _period
+    # 在 Task 2.4 中实现
     # get_*_statement 在 Task 2.5-2.7 中实现

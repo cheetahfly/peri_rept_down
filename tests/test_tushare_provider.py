@@ -47,3 +47,26 @@ def test_throttle_skips_when_enough_time_passed(provider):
     elapsed = time.time() - start
     # 不应 sleep
     assert elapsed < 0.05, f"throttle unexpectedly slow: {elapsed}s"
+
+
+def test_ts_code_sh_prefix():
+    """6xx 开头的股票加 .SH 后缀"""
+    p = TushareProvider.__new__(TushareProvider)  # 不触发 token 检查
+    assert p._ts_code("600519") == "600519.SH"
+    assert p._ts_code("601318") == "601318.SH"
+    assert p._ts_code("688981") == "688981.SH"
+
+
+def test_ts_code_sz_prefix():
+    """0xx/3xx 开头的股票加 .SZ 后缀"""
+    p = TushareProvider.__new__(TushareProvider)
+    assert p._ts_code("000001") == "000001.SZ"
+    assert p._ts_code("300750") == "300750.SZ"
+    assert p._ts_code("002415") == "002415.SZ"
+
+
+def test_ts_code_unknown_market_raises():
+    """未知前缀应抛 ValueError"""
+    p = TushareProvider.__new__(TushareProvider)
+    with pytest.raises(ValueError, match="Unknown market"):
+        p._ts_code("999999")
