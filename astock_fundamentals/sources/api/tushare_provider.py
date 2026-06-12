@@ -43,6 +43,13 @@ class TushareProvider(BaseApiProvider):
         except ImportError:
             raise ImportError("请安装 tushare: pip install tushare")
 
-    # _throttle / _fetch / _df_to_dict / _ts_code / _period
-    # 在 Task 2.2-2.4 中实现
+    def _throttle(self):
+        """强制 sleep 间隔，避免触发 200 req/min 限流"""
+        elapsed = time.time() - self._last_call_ts
+        if elapsed < self._sleep:
+            time.sleep(self._sleep - elapsed)
+        self._last_call_ts = time.time()
+
+    # _fetch / _df_to_dict / _ts_code / _period
+    # 在 Task 2.3-2.4 中实现
     # get_*_statement 在 Task 2.5-2.7 中实现
