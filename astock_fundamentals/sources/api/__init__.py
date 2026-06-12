@@ -27,3 +27,13 @@ class BaseApiProvider:
 
     def get_cash_flow(self, stock_code: str, year: int, report_type: str = "annual") -> Optional[Dict]:
         raise NotImplementedError
+
+
+from astock_fundamentals.sources.api.tushare_provider import TushareProvider
+
+__all__ = [
+    "BaseApiProvider",
+    "AKShareProvider",
+    "TushareProvider",
+    "WindProvider",
+]
