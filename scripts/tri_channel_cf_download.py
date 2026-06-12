@@ -169,6 +169,9 @@ def process_stock(stock: str, year: int, token: str) -> Dict:
 
 
 def main():
+    import json
+    import time
+
     ap = argparse.ArgumentParser()
     ap.add_argument("--stock", help="single stock code, e.g. 600519")
     ap.add_argument("--stocks-file", help="text file with one stock code per line")
@@ -179,8 +182,25 @@ def main():
     token = resolve_token(args.token)
     print(f"Token resolved, length: {len(token)}")
 
-    # process_stock / build_merged_csv / build_report_html
-    # 在后续 tasks 中添加
+    if args.stock:
+        stocks = [args.stock]
+    elif args.stocks_file:
+        with open(args.stocks_file) as f:
+            stocks = [ln.strip() for ln in f if ln.strip() and not ln.startswith("#")]
+    else:
+        sys.exit("ERROR: --stock or --stocks-file required")
+
+    results = []
+    for code in stocks:
+        r = process_stock(code, args.year, token)
+        results.append(r)
+        print(f"  [{code}] {r['status']}: {r.get('counts', r.get('error', ''))}")
+        time.sleep(0.5)
+
+    out = os.path.join(OUT_DIR, f"_run_summary_{args.year}.json")
+    with open(out, "w", encoding="utf-8") as f:
+        json.dump(results, f, ensure_ascii=False, indent=2)
+    print(f"\nSummary: {out}")
 
 
 if __name__ == "__main__":
