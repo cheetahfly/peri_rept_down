@@ -1,67 +1,87 @@
 # -*- coding: utf-8 -*-
 """
-Dual-channel CF 对比工具库：在两渠道数值字典之间找最佳匹配并分类差异。
+EM + THS new 双渠道现金流量表对比工具库。
 
-辅助 tri_channel_cf_lib 使用（tri_match 复用本模块的 best_match/classify_diff）。
+注意：复用 scripts/akshare_cf_test_compare.py 中的 normalize_value/best_match，
+但 extract_* 函数需要参数化年份（原版写死 2020）。
 """
-from typing import Dict, Tuple, Optional
+import os
+import sys
 
+import pandas as pd
 
-# 差异分级阈值（相对误差 %）
-EXACT_MAX = 0.01      # 视为完全相等
-CLOSE_MAX = 1.0       # 视为接近
-WARN_MAX = 10.0       # 警告
-ANOMALY_MAX = 50.0    # 异常
-# > ANOMALY_MAX 视为 no_match（数值完全不在合理范围内）
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from akshare_cf_test_compare import normalize_value, best_match  # noqa: E402
 
-CLASS_COLORS = {
-    "exact":     "#2ecc71",  # 绿
-    "close":     "#f1c40f",  # 黄
-    "warn":      "#e67e22",  # 橙
-    "anomaly":   "#e74c3c",  # 红
-    "no_match":  "#95a5a6",  # 灰
+# EM 排除列（元数据 + YoY）
+EM_EXCLUDE = {
+    "SECUCODE", "SECURITY_CODE", "SECURITY_NAME_ABBR", "ORG_CODE", "ORG_TYPE",
+    "REPORT_DATE", "REPORT_TYPE", "REPORT_DATE_NAME", "SECURITY_TYPE_CODE",
+    "NOTICE_DATE", "UPDATE_DATE", "CURRENCY", "LISTING_STATE", "OPINION_TYPE",
+    "OPDATE", "OSOPINION_TYPE",
 }
 
 
-def best_match(target: float, candidates: Dict[str, float]) -> Tuple[Optional[str], Optional[float], Optional[float], Optional[float]]:
-    """在 candidates 中找与 target 值最接近的项。
+def extract_em_year_values(csv_path, year):
+    """EM CSV → {col_name_en: value}，提取指定年份年报（REPORT_DATE 以 'YYYY-12-31' 开头）"""
+    df = pd.read_csv(csv_path)
+    df["REPORT_DATE"] = df["REPORT_DATE"].astype(str)
+    mask = df["REPORT_DATE"].str.startswith(f"{year}-12-31")
+    if mask.sum() == 0:
+        return {}
+    r = df[mask].iloc[0].to_dict()
+    out = {}
+    for c, v in r.items():
+        if c in EM_EXCLUDE or c.endswith("_YOY"):
+            continue
+        nv = normalize_value(v)
+        if nv is not None:
+            out[c] = nv
+    return out
 
-    返回 (label, value, abs_diff, rel_err_pct)。
-    若 candidates 为空，返回 (None, None, None, None)。
+
+def extract_ths_new_year_values(csv_path, year):
+    """THS new 长格式 CSV → {metric_name: value}，按 report_date 年份过滤"""
+    df = pd.read_csv(csv_path)
+    df["report_date"] = df["report_date"].astype(str)
+    mask = df["report_date"].str.startswith(f"{year}-12-31")
+    sub = df[mask]
+    out = {}
+    for _, row in sub.iterrows():
+        name = row.get("metric_name")
+        nv = normalize_value(row.get("value"))
+        if name and nv is not None:
+            out[str(name)] = nv
+    return out
+
+
+def classify_diff(diff, rel_err):
+    """返回 (class, color_hint)；class 描述渠道间差异级别"""
+    if diff is None:
+        return ("no_match", "gray")
+    if diff < 0.01:
+        return ("exact", "green")
+    if diff < 1.0:
+        return ("sub_yuan", "yellow")
+    if rel_err is not None and rel_err < 1.0:
+        return ("rounded", "orange")
+    return ("large_error", "red")
+
+
+def dual_match(em_values, ths_values):
+    """对每个 EM 字段在 THS 中找最佳匹配，返回对照清单。
+
+    返回 list of:
+      {em_field, em_value, ths_label, ths_value, abs_diff, rel_err_pct, class, color}
     """
-    if not candidates:
-        return None, None, None, None
-    best_label = None
-    best_val = None
-    best_abs = None
-    for label, val in candidates.items():
-        if val is None:
-            continue
-        try:
-            v = float(val)
-        except (TypeError, ValueError):
-            continue
-        abs_diff = abs(v - target)
-        if best_abs is None or abs_diff < best_abs:
-            best_abs = abs_diff
-            best_label = label
-            best_val = v
-    if best_label is None:
-        return None, None, None, None
-    rel_err_pct = (best_abs / abs(target) * 100.0) if target else None
-    return best_label, best_val, best_abs, rel_err_pct
-
-
-def classify_diff(abs_diff: Optional[float], rel_err_pct: Optional[float]) -> Tuple[str, str]:
-    """根据 (abs_diff, rel_err_pct) 返回 (class, color)。"""
-    if abs_diff is None or rel_err_pct is None:
-        return "no_match", CLASS_COLORS["no_match"]
-    if abs_diff < 0.01 or rel_err_pct < EXACT_MAX:
-        return "exact", CLASS_COLORS["exact"]
-    if rel_err_pct < CLOSE_MAX:
-        return "close", CLASS_COLORS["close"]
-    if rel_err_pct < WARN_MAX:
-        return "warn", CLASS_COLORS["warn"]
-    if rel_err_pct < ANOMALY_MAX:
-        return "anomaly", CLASS_COLORS["anomaly"]
-    return "no_match", CLASS_COLORS["no_match"]
+    rows = []
+    for em_field, em_v in em_values.items():
+        ths_label, ths_v, diff, rel = best_match(em_v, ths_values)
+        cls, color = classify_diff(diff, rel)
+        rows.append({
+            "em_field": em_field, "em_value": em_v,
+            "ths_label": ths_label, "ths_value": ths_v,
+            "abs_diff": diff, "rel_err_pct": rel,
+            "class": cls, "color": color,
+        })
+    return rows

@@ -63,9 +63,9 @@ def test_tri_match_against_rds_standard():
 
 
 def test_tri_match_handles_no_match():
-    """RDS 有但 tushare 没的项标 no_match"""
+    """RDS 有但 tushare 完全无候选时标 no_match"""
     rds = {"x_special_item": 999.0}
-    tushare = {"[cash_flow] y": 100.0}
+    tushare = {}  # 完全空 tushare
     rows = tri_match(tushare, rds)
     no_match_rows = [r for r in rows if r["class"] == "no_match"]
     assert len(no_match_rows) >= 1
