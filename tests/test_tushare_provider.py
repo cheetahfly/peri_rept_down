@@ -154,3 +154,45 @@ def test_df_to_dict_nan_excluded(provider):
     result = provider._df_to_dict(df)
     assert "total_assets" not in result
     assert result["revenue"] == 100.0
+
+
+def test_get_balance_sheet_calls_balancesheet_endpoint(provider):
+    """get_balance_sheet 应调 tushare 的 balancesheet 接口"""
+    fake_df = pd.DataFrame({"total_assets": [100.0]})
+    provider._api = MagicMock()
+    provider._api.balancesheet = MagicMock(return_value=fake_df)
+    result = provider.get_balance_sheet("600519", 2020, "annual")
+    assert result == {"total_assets": 100.0}
+    call_kwargs = provider._api.balancesheet.call_args.kwargs
+    assert call_kwargs["ts_code"] == "600519.SH"
+    assert call_kwargs["period"] == "20201231"
+    assert call_kwargs["report_type"] == "annual"
+
+
+def test_get_income_statement_calls_income_endpoint(provider):
+    fake_df = pd.DataFrame({"total_revenue": [500.0]})
+    provider._api = MagicMock()
+    provider._api.income = MagicMock(return_value=fake_df)
+    result = provider.get_income_statement("000001", 2021, "half")
+    assert result == {"total_revenue": 500.0}
+    call_kwargs = provider._api.income.call_args.kwargs
+    assert call_kwargs["ts_code"] == "000001.SZ"
+    assert call_kwargs["period"] == "20210630"
+
+
+def test_get_cash_flow_calls_cashflow_endpoint(provider):
+    fake_df = pd.DataFrame({"c_fr_sale_sg": [800.0]})
+    provider._api = MagicMock()
+    provider._api.cashflow = MagicMock(return_value=fake_df)
+    result = provider.get_cash_flow("300750", 2022, "q3")
+    assert result == {"c_fr_sale_sg": 800.0}
+    call_kwargs = provider._api.cashflow.call_args.kwargs
+    assert call_kwargs["ts_code"] == "300750.SZ"
+    assert call_kwargs["period"] == "20220930"
+
+
+def test_get_balance_sheet_empty_returns_empty_dict(provider):
+    """空 DataFrame（报告期未发布）→ 空 dict"""
+    provider._api = MagicMock()
+    provider._api.balancesheet = MagicMock(return_value=pd.DataFrame())
+    assert provider.get_balance_sheet("688981", 2018, "annual") == {}

@@ -111,3 +111,33 @@ class TushareProvider(BaseApiProvider):
         if suffix is None:
             raise ValueError(f"Unknown report_type: {report_type}")
         return f"{year}{suffix}"
+
+    def get_balance_sheet(self, stock_code: str, year: int,
+                          report_type: str = "annual") -> Optional[Dict]:
+        df = self._fetch(
+            "balancesheet",
+            ts_code=self._ts_code(stock_code),
+            period=self._period(year, report_type),
+            report_type=report_type,
+        )
+        return self._df_to_dict(df)
+
+    def get_income_statement(self, stock_code: str, year: int,
+                             report_type: str = "annual") -> Optional[Dict]:
+        df = self._fetch(
+            "income",
+            ts_code=self._ts_code(stock_code),
+            period=self._period(year, report_type),
+            report_type=report_type,
+        )
+        return self._df_to_dict(df)
+
+    def get_cash_flow(self, stock_code: str, year: int,
+                      report_type: str = "annual") -> Optional[Dict]:
+        df = self._fetch(
+            "cashflow",
+            ts_code=self._ts_code(stock_code),
+            period=self._period(year, report_type),
+            report_type=report_type,
+        )
+        return self._df_to_dict(df)
