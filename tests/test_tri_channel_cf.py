@@ -92,3 +92,29 @@ def test_load_rds_standard_uses_rds_loader():
     income_keys = [k for k in result if "income_statement" in k and "净利润" in k]
     assert len(income_keys) == 1
     assert result[income_keys[0]] == 100.0
+
+
+def test_process_stock_returns_status_dict():
+    """process_stock 返回 status dict 包含 counts 与 status 字段"""
+    with patch.object(tri_channel_cf_download, "TushareProvider") as mock_ts_cls, \
+         patch.object(tri_channel_cf_download, "RdsLoader") as mock_rds_cls:
+        mock_ts = MagicMock()
+        mock_ts.get_balance_sheet.return_value = {"total_assets": 100.0}
+        mock_ts.get_income_statement.return_value = {"total_revenue": 200.0}
+        mock_ts.get_cash_flow.return_value = {}
+        mock_ts_cls.return_value = mock_ts
+
+        mock_rds = MagicMock()
+        mock_rds.load_stock_data_tidy.return_value = [
+            {"item_name": "净利润", "value": 200.0, "report_type": "annual"},
+        ]
+        mock_rds_cls.return_value = mock_rds
+
+        with patch.object(tri_channel_cf_download, "build_merged_csv"), \
+             patch.object(tri_channel_cf_download, "build_report_html"):
+            result = tri_channel_cf_download.process_stock("600519", 2020, token="fake")
+
+    assert result["stock"] == "600519"
+    assert result["year"] == 2020
+    assert result["status"] == "OK"
+    assert "counts" in result

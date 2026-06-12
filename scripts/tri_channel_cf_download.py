@@ -21,6 +21,7 @@ if _PROJECT_ROOT not in sys.path:
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from astock_fundamentals.sources.api import TushareProvider  # noqa: E402
 from astock_fundamentals.sources.rds.rds_loader import RdsLoader  # noqa: E402
+from tri_channel_cf_lib import extract_tushare_year_values, tri_match  # noqa: E402
 
 OUT_DIR = "data/exports_v2/cash_flow_tri_channel"
 RDS_DIR = "D:/Research/Quant/SETL/cninfo/data_backup"
@@ -56,6 +57,42 @@ def load_rds_standard(stock_code: str, year: int) -> Dict[str, float]:
             if name:
                 out[f"[{stmt_type}] {name}"] = float(v)
     return out
+
+
+def process_stock(stock: str, year: int, token: str) -> Dict:
+    """单只股票 × 单年处理：拉 tushare + RDS + 比对 + 输出报告"""
+    try:
+        provider = TushareProvider(token=token)
+    except Exception as e:
+        return {"stock": stock, "year": year, "status": "TOKEN_ERROR", "error": str(e)}
+
+    try:
+        tushare_values = extract_tushare_year_values(provider, stock, year)
+    except Exception as e:
+        return {"stock": stock, "year": year, "status": "EXCEPTION", "error": str(e)}
+
+    if not tushare_values:
+        return {"stock": stock, "year": year, "status": "NO_TUSHARE_DATA"}
+
+    rds_standard = load_rds_standard(stock, year)
+    if not rds_standard:
+        return {"stock": stock, "year": year, "status": "NO_RDS_DATA",
+                "tushare_field_count": len(tushare_values)}
+
+    rows = tri_match(tushare_values, rds_standard)
+
+    merged_csv = os.path.join(OUT_DIR, f"{stock}_{year}_tushare vs_rds.csv")
+    report_html = os.path.join(OUT_DIR, f"{stock}_{year}_tushare vs_rds.html")
+    build_merged_csv(stock, year, rows, merged_csv)
+    build_report_html(stock, year, rows, tushare_values, report_html)
+
+    counts: Dict[str, int] = {}
+    for r in rows:
+        counts[r["class"]] = counts.get(r["class"], 0) + 1
+    return {
+        "stock": stock, "year": year, "status": "OK",
+        "counts": counts, "merged_csv": merged_csv, "report_html": report_html,
+    }
 
 
 def main():
