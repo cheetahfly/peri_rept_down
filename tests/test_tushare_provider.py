@@ -124,3 +124,33 @@ def test_fetch_does_not_retry_on_permission_error(provider):
     with pytest.raises(Exception, match="积分不足"):
         provider._fetch("test_endpoint", x=1)
     assert provider._api.test_endpoint.call_count == 1
+
+
+def test_df_to_dict_basic(provider):
+    """标准 tushare 返回 → {item_name: value}"""
+    df = pd.DataFrame({
+        "ts_code": ["600519.SH"],
+        "end_date": ["20201231"],
+        "total_assets": [1000000.0],
+        "total_liab": [400000.0],
+    })
+    result = provider._df_to_dict(df)
+    # 包含 financial items
+    assert result["total_assets"] == 1000000.0
+    assert result["total_liab"] == 400000.0
+    # metadata 列被排除
+    assert "ts_code" not in result
+    assert "end_date" not in result
+
+
+def test_df_to_dict_empty(provider):
+    """空 DataFrame → 空 dict"""
+    assert provider._df_to_dict(pd.DataFrame()) == {}
+
+
+def test_df_to_dict_nan_excluded(provider):
+    """NaN 值应被排除"""
+    df = pd.DataFrame({"total_assets": [float("nan")], "revenue": [100.0]})
+    result = provider._df_to_dict(df)
+    assert "total_assets" not in result
+    assert result["revenue"] == 100.0

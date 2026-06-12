@@ -80,6 +80,24 @@ class TushareProvider(BaseApiProvider):
                 time.sleep(2 ** attempt)
         return pd.DataFrame()  # 不应到达此处
 
+    # tushare 返回字段中需要排除的元数据列
+    _META_COLUMNS = {
+        "ts_code", "end_date", "ann_date", "f_ann_date", "update_flag",
+    }
+
+    def _df_to_dict(self, df: pd.DataFrame) -> Dict[str, float]:
+        """DataFrame → {item_name: value}，排除元数据列"""
+        if df is None or df.empty:
+            return {}
+        result = {}
+        for col in df.columns:
+            if col in self._META_COLUMNS:
+                continue
+            val = df[col].iloc[0] if len(df) > 0 else None
+            if pd.notna(val) and isinstance(val, (int, float)):
+                result[col] = float(val)
+        return result
+
     @staticmethod
     def _period(year: int, report_type: str) -> str:
         """年份 + 报告期 → tushare 周期字符串（YYYYMMDD）"""
