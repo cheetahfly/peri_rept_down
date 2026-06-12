@@ -24,7 +24,7 @@ from astock_fundamentals.sources.rds.rds_loader import RdsLoader  # noqa: E402
 from tri_channel_cf_lib import extract_tushare_year_values, tri_match  # noqa: E402
 
 OUT_DIR = "data/exports_v2/cash_flow_tri_channel"
-RDS_DIR = "D:/Research/Quant/SETL/cninfo/data_backup"
+RDS_DIR = os.environ.get("RDS_DATA_DIR", "D:/Research/Quant/SETL/cninfo/data_backup")
 os.makedirs(OUT_DIR, exist_ok=True)
 
 
@@ -154,8 +154,8 @@ def process_stock(stock: str, year: int, token: str) -> Dict:
 
     rows = tri_match(tushare_values, rds_standard)
 
-    merged_csv = os.path.join(OUT_DIR, f"{stock}_{year}_tushare vs_rds.csv")
-    report_html = os.path.join(OUT_DIR, f"{stock}_{year}_tushare vs_rds.html")
+    merged_csv = os.path.join(OUT_DIR, f"{stock}_{year}_tushare_vs_rds.csv")
+    report_html = os.path.join(OUT_DIR, f"{stock}_{year}_tushare_vs_rds.html")
     build_merged_csv(stock, year, rows, merged_csv)
     build_report_html(stock, year, rows, tushare_values, report_html)
 
