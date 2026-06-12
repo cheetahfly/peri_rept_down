@@ -60,8 +60,25 @@ class TushareProvider(BaseApiProvider):
         raise ValueError(f"Unknown market for stock code: {stock_code}")
 
     # _fetch / _df_to_dict
-    # 在 Task 2.4 中实现
+    # _fetch 在 Task 2.4 中实现，_df_to_dict 在 Task 2.5 中实现
     # get_*_statement 在 Task 2.5-2.7 中实现
+
+    def _fetch(self, api_name: str, **kwargs) -> pd.DataFrame:
+        """统一调用入口：throttle + 3 次指数退避（不重试权限错误）"""
+        self._connect()
+        self._throttle()
+        for attempt in range(3):
+            try:
+                return getattr(self._api, api_name)(**kwargs)
+            except Exception as e:
+                err_msg = str(e)
+                # 权限/积分错误不重试
+                if "权限" in err_msg or "积分" in err_msg or "token" in err_msg.lower():
+                    raise
+                if attempt == 2:
+                    raise
+                time.sleep(2 ** attempt)
+        return pd.DataFrame()  # 不应到达此处
 
     @staticmethod
     def _period(year: int, report_type: str) -> str:

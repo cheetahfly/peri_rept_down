@@ -90,3 +90,37 @@ def test_period_q1():
 def test_period_q3():
     p = TushareProvider.__new__(TushareProvider)
     assert p._period(2020, "q3") == "20200930"
+
+
+def test_fetch_calls_throttle_and_returns_df(provider):
+    """_fetch 调用前 throttle，调用后返回 DataFrame"""
+    fake_df = pd.DataFrame({"a": [1, 2]})
+    provider._api = MagicMock()
+    provider._api.test_endpoint = MagicMock(return_value=fake_df)
+
+    result = provider._fetch("test_endpoint", x=1)
+    assert result.equals(fake_df)
+    provider._api.test_endpoint.assert_called_once_with(x=1)
+
+
+def test_fetch_retries_on_network_error_then_succeeds(provider):
+    """网络错误指数退避，最终成功"""
+    fake_df = pd.DataFrame({"a": [1]})
+    provider._api = MagicMock()
+    provider._api.test_endpoint = MagicMock(side_effect=[
+        ConnectionError("net"),
+        ConnectionError("net"),
+        fake_df,
+    ])
+    result = provider._fetch("test_endpoint", x=1)
+    assert result.equals(fake_df)
+    assert provider._api.test_endpoint.call_count == 3
+
+
+def test_fetch_does_not_retry_on_permission_error(provider):
+    """权限错误不重试，立即抛"""
+    provider._api = MagicMock()
+    provider._api.test_endpoint = MagicMock(side_effect=Exception("积分不足"))
+    with pytest.raises(Exception, match="积分不足"):
+        provider._fetch("test_endpoint", x=1)
+    assert provider._api.test_endpoint.call_count == 1
