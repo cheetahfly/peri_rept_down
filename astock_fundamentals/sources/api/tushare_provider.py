@@ -85,15 +85,33 @@ class TushareProvider(BaseApiProvider):
         "ts_code", "end_date", "ann_date", "f_ann_date", "update_flag",
     }
 
-    def _df_to_dict(self, df: pd.DataFrame) -> Dict[str, float]:
-        """DataFrame → {item_name: value}，排除元数据列"""
+    # tushare report_type numeric codes (合并/母公司 × 4 期)
+    # 实际: 1=annual, 2=half, 3=q1, 4=q3
+    _REPORT_TYPE_CODE = {
+        "annual": "1",
+        "half": "2",
+        "q1": "3",
+        "q3": "4",
+    }
+
+    def _df_to_dict(self, df: pd.DataFrame, report_type: str = "annual") -> Dict[str, float]:
+        """DataFrame → {item_name: value}，排除元数据列 + 过滤 comp_type='1' (合并)。
+
+        tushare 返回 2 行：comp_type='1' (合并) + comp_type='2' (母公司)。
+        我们要合并报表，所以只取 comp_type='1' 行。
+        """
         if df is None or df.empty:
+            return {}
+        # Filter to 合并 (comp_type='1') if comp_type column exists
+        if "comp_type" in df.columns:
+            df = df[df["comp_type"] == "1"]
+        if df.empty:
             return {}
         result = {}
         for col in df.columns:
-            if col in self._META_COLUMNS:
+            if col in self._META_COLUMNS or col in {"comp_type", "report_type", "end_type"}:
                 continue
-            val = df[col].iloc[0] if len(df) > 0 else None
+            val = df[col].iloc[0]
             if pd.notna(val) and isinstance(val, (int, float)):
                 result[col] = float(val)
         return result
@@ -118,9 +136,9 @@ class TushareProvider(BaseApiProvider):
             "balancesheet",
             ts_code=self._ts_code(stock_code),
             period=self._period(year, report_type),
-            report_type=report_type,
+            report_type=self._REPORT_TYPE_CODE[report_type],
         )
-        return self._df_to_dict(df)
+        return self._df_to_dict(df, report_type=report_type)
 
     def get_income_statement(self, stock_code: str, year: int,
                              report_type: str = "annual") -> Optional[Dict]:
@@ -128,9 +146,9 @@ class TushareProvider(BaseApiProvider):
             "income",
             ts_code=self._ts_code(stock_code),
             period=self._period(year, report_type),
-            report_type=report_type,
+            report_type=self._REPORT_TYPE_CODE[report_type],
         )
-        return self._df_to_dict(df)
+        return self._df_to_dict(df, report_type=report_type)
 
     def get_cash_flow(self, stock_code: str, year: int,
                       report_type: str = "annual") -> Optional[Dict]:
@@ -138,6 +156,6 @@ class TushareProvider(BaseApiProvider):
             "cashflow",
             ts_code=self._ts_code(stock_code),
             period=self._period(year, report_type),
-            report_type=report_type,
+            report_type=self._REPORT_TYPE_CODE[report_type],
         )
-        return self._df_to_dict(df)
+        return self._df_to_dict(df, report_type=report_type)

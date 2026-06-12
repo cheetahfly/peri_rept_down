@@ -166,7 +166,7 @@ def test_get_balance_sheet_calls_balancesheet_endpoint(provider):
     call_kwargs = provider._api.balancesheet.call_args.kwargs
     assert call_kwargs["ts_code"] == "600519.SH"
     assert call_kwargs["period"] == "20201231"
-    assert call_kwargs["report_type"] == "annual"
+    assert call_kwargs["report_type"] == "1"  # tushare numeric code: 1=annual
 
 
 def test_get_income_statement_calls_income_endpoint(provider):
