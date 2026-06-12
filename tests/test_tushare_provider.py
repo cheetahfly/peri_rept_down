@@ -70,3 +70,23 @@ def test_ts_code_unknown_market_raises():
     p = TushareProvider.__new__(TushareProvider)
     with pytest.raises(ValueError, match="Unknown market"):
         p._ts_code("999999")
+
+
+def test_period_annual():
+    p = TushareProvider.__new__(TushareProvider)
+    assert p._period(2020, "annual") == "20201231"
+
+
+def test_period_half():
+    p = TushareProvider.__new__(TushareProvider)
+    assert p._period(2020, "half") == "20200630"
+
+
+def test_period_q1():
+    p = TushareProvider.__new__(TushareProvider)
+    assert p._period(2020, "q1") == "20200331"
+
+
+def test_period_q3():
+    p = TushareProvider.__new__(TushareProvider)
+    assert p._period(2020, "q3") == "20200930"

@@ -59,6 +59,20 @@ class TushareProvider(BaseApiProvider):
             return f"{stock_code}.SZ"
         raise ValueError(f"Unknown market for stock code: {stock_code}")
 
-    # _fetch / _df_to_dict / _period
+    # _fetch / _df_to_dict
     # 在 Task 2.4 中实现
     # get_*_statement 在 Task 2.5-2.7 中实现
+
+    @staticmethod
+    def _period(year: int, report_type: str) -> str:
+        """年份 + 报告期 → tushare 周期字符串（YYYYMMDD）"""
+        period_map = {
+            "annual": "1231",
+            "half": "0630",
+            "q1": "0331",
+            "q3": "0930",
+        }
+        suffix = period_map.get(report_type)
+        if suffix is None:
+            raise ValueError(f"Unknown report_type: {report_type}")
+        return f"{year}{suffix}"
