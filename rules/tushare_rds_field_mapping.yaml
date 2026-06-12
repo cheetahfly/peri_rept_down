@@ -1,0 +1,143 @@
+# Tushare ↔ RDS 字段映射关系
+# 建立日期：2026-06-12
+# 方法：5 只股票 × 2020 年报 × 3 表 (BS/IS/CF)，value-based matching
+# 精确率：94.68% (5/5 普通公司)
+
+# 使用说明：
+#   tushare 英文字段名 → RDS 中文项目名
+#   key = tushare 字段名（来自 pro API）
+#   value = RDS 中文名（来自 cninfo cf_o.rds / b_o.rds / pl_o.rds）
+
+tushare_to_rds:
+
+  # ==================== 现金流量表 (CF) ====================
+  # --- 直接法 ---
+  net_profit: 净利润
+  c_fr_sale_sg: 销售商品、提供劳务收到的现金
+  c_paid_goods_s: 购买商品、接受劳务支付的现金
+  c_paid_to_for_empl: 支付给职工以及为职工支付的现金
+  c_paid_for_taxes: 支付的各项税费
+  oth_cash_pay_oper_act: 支付其他与经营活动有关的现金
+  n_cashflow_act: 经营活动产生的现金流量净额
+  n_cashflow_inv_act: 投资活动产生的现金流量净额
+  n_cash_flows_fnc_act: 筹资活动产生的现金流量净额
+  c_prepay_amt_borr: 偿还债务支付的现金
+  c_recp_borrow: 取得借款收到的现金
+  c_recp_cap_contrib: 吸收投资收到的现金
+  recp_tax_rends: 收到的税费返还
+  eff_fx_flu_cash: 四、汇率变动对现金的影响
+  c_cash_equ_beg_period: 期初现金及现金等价物余额
+  c_cash_equ_end_period: 期末现金及现金等价物余额
+  im_n_incr_cash_equ: 现金及现金等价物净增加额2
+
+  # --- 间接法调节项 ---
+  depr_fa_coga_dpba: 固定资产折旧、油气资产折耗、生产性生物资产折旧
+  amort_intang_assets: 无形资产摊销
+  lt_amort_deferred_exp: 长期待摊费用摊销
+  loss_scr_fa: 固定资产报废损失
+  loss_fv_chg: 公允价值变动损失
+  invest_loss: 投资损失
+  decr_def_inc_tax_assets: 递延所得税资产减少
+  incr_def_inc_tax_liab: 递延所得税负债增加
+  decr_inventories: 存货的减少
+  decr_oper_payable: 经营性应收项目的减少
+  incr_oper_payable: 经营性应付项目的增加
+  prov_depr_assets: 加：资产减值准备
+  credit_impa_loss: 信用减值损失
+  use_right_asset_dep: 使用权资产折旧
+
+  # ==================== 资产负债表 (BS) ====================
+  goodwill: 商誉
+  nca_within_1y: 一年内到期的非流动资产
+  non_cur_liab_due_1y: 一年内到期的非流动负债
+  lt_borr: 长期借款
+  treasury_share: 减：库存股
+  div_payable: 其中：应付股利
+  notes_payable: 其中：应付票据
+  oth_pay_total: 其他应付款
+  contract_assets: 合同资产
+  invest_real_estate: 投资性房地产
+  lt_payable: 长期应付款
+  bond_payable: 应付债券
+  defer_inc_non_cur_liab: 递延收益-非流动负债
+
+  # ==================== 利润表 (IS) ====================
+  finan_exp: 财务费用
+  sell_exp: 销售费用
+  int_income: 利息收入
+  fin_exp_int_exp: 其中：利息费用
+  non_oper_income: 营业外收入
+  assets_impair_loss: 资产减值损失（2019格式）
+
+  # ==================== 特殊/金融类 ====================
+  ifc_cash_incr: 收取利息、手续费及佣金的现金
+  n_depos_incr_fi: 客户存款和同业存放款项净增加额
+  n_incr_clt_loan_adv: 客户贷款及垫款净增加额
+  n_incr_dep_cbob: 存放中央银行和同业款项净增加额
+  pay_handling_chrg: 支付利息、手续费及佣金的现金
+  incl_cash_rec_saims: 其中：子公司吸收少数股东投资收到的现金
+  incl_dvd_profit_paid_sc_ms: 其中：子公司支付给少数股东的股利、利润
+  ass_invest_income: 其中：对联营企业和合营企业的投资收益
+  oth_cash_recp_ral_fnc_act: 收到其他与筹资活动有关的现金
+
+# RDS → tushare 反向映射（由上面自动生成）
+rds_to_tushare:
+  净利润: net_profit
+  销售商品、提供劳务收到的现金: c_fr_sale_sg
+  购买商品、接受劳务支付的现金: c_paid_goods_s
+  支付给职工以及为职工支付的现金: c_paid_to_for_empl
+  支付的各项税费: c_paid_for_taxes
+  支付其他与经营活动有关的现金: oth_cash_pay_oper_act
+  经营活动产生的现金流量净额: n_cashflow_act
+  投资活动产生的现金流量净额: n_cashflow_inv_act
+  筹资活动产生的现金流量净额: n_cash_flows_fnc_act
+  偿还债务支付的现金: c_prepay_amt_borr
+  取得借款收到的现金: c_recp_borrow
+  吸收投资收到的现金: c_recp_cap_contrib
+  收到的税费返还: recp_tax_rends
+  四、汇率变动对现金的影响: eff_fx_flu_cash
+  期初现金及现金等价物余额: c_cash_equ_beg_period
+  期末现金及现金等价物余额: c_cash_equ_end_period
+  现金及现金等价物净增加额2: im_n_incr_cash_equ
+  固定资产折旧、油气资产折耗、生产性生物资产折旧: depr_fa_coga_dpba
+  无形资产摊销: amort_intang_assets
+  长期待摊费用摊销: lt_amort_deferred_exp
+  固定资产报废损失: loss_scr_fa
+  公允价值变动损失: loss_fv_chg
+  投资损失: invest_loss
+  递延所得税资产减少: decr_def_inc_tax_assets
+  递延所得税负债增加: incr_def_inc_tax_liab
+  存货的减少: decr_inventories
+  经营性应收项目的减少: decr_oper_payable
+  经营性应付项目的增加: incr_oper_payable
+  加：资产减值准备: prov_depr_assets
+  信用减值损失: credit_impa_loss
+  使用权资产折旧: use_right_asset_dep
+  商誉: goodwill
+  一年内到期的非流动资产: nca_within_1y
+  一年内到期的非流动负债: non_cur_liab_due_1y
+  长期借款: lt_borr
+  减：库存股: treasury_share
+  其中：应付股利: div_payable
+  其中：应付票据: notes_payable
+  其他应付款: oth_pay_total
+  合同资产: contract_assets
+  投资性房地产: invest_real_estate
+  长期应付款: lt_payable
+  应付债券: bond_payable
+  递延收益-非流动负债: defer_inc_non_cur_liab
+  财务费用: finan_exp
+  销售费用: sell_exp
+  利息收入: int_income
+  其中：利息费用: fin_exp_int_exp
+  营业外收入: non_oper_income
+  资产减值损失（2019格式）: assets_impair_loss
+  收取利息、手续费及佣金的现金: ifc_cash_incr
+  客户存款和同业存放款项净增加额: n_depos_incr_fi
+  客户贷款及垫款净增加额: n_incr_clt_loan_adv
+  存放中央银行和同业款项净增加额: n_incr_dep_cbob
+  支付利息、手续费及佣金的现金: pay_handling_chrg
+  其中：子公司吸收少数股东投资收到的现金: incl_cash_rec_saims
+  其中：子公司支付给少数股东的股利、利润: incl_dvd_profit_paid_sc_ms
+  其中：对联营企业和合营企业的投资收益: ass_invest_income
+  收到其他与筹资活动有关的现金: oth_cash_recp_ral_fnc_act
