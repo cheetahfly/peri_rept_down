@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 """tri_channel_cf_lib 单元测试（mock TushareProvider）"""
+import os
 import sys
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 sys.path.insert(0, "scripts")
 from tri_channel_cf_lib import extract_tushare_year_values, tri_match  # noqa: E402
+import tri_channel_cf_download  # noqa: E402
 
 
 def test_extract_tushare_year_values_combines_three_statements():
@@ -69,3 +71,24 @@ def test_tri_match_handles_no_match():
     rows = tri_match(tushare, rds)
     no_match_rows = [r for r in rows if r["class"] == "no_match"]
     assert len(no_match_rows) >= 1
+
+
+def test_load_rds_standard_uses_rds_loader():
+    """load_rds_standard 调用 RdsLoader.load_stock_data_tidy"""
+    with patch.object(tri_channel_cf_download, "RdsLoader") as mock_cls:
+        mock_loader = MagicMock()
+        mock_loader.load_stock_data_tidy.return_value = [
+            {"item_name": "净利润", "value": 100.0, "report_type": "annual"},
+            {"item_name": "其他项", "value": 50.0, "report_type": "annual"},
+        ]
+        mock_cls.return_value = mock_loader
+
+        result = tri_channel_cf_download.load_rds_standard("600519", 2020)
+
+    assert mock_loader.load_stock_data_tidy.call_count == 3
+    assert any("balance_sheet" in k.lower() for k in result)
+    assert any("income_statement" in k.lower() for k in result)
+    assert any("cash_flow" in k.lower() for k in result)
+    income_keys = [k for k in result if "income_statement" in k and "净利润" in k]
+    assert len(income_keys) == 1
+    assert result[income_keys[0]] == 100.0

@@ -11,6 +11,7 @@ import argparse
 import os
 import sys
 import warnings
+from typing import Dict, List
 
 warnings.filterwarnings("ignore")
 
@@ -36,6 +37,27 @@ def resolve_token(args_token: str = "") -> str:
     sys.exit("ERROR: Tushare token required. Pass --token or set TUSHARE_TOKEN env.")
 
 
+def load_rds_standard(stock_code: str, year: int) -> Dict[str, float]:
+    """用 RdsLoader 加载 3 张报表的 annual 数据，返回带表名前缀的 dict"""
+    loader = RdsLoader(RDS_DIR)
+    out: Dict[str, float] = {}
+    for stmt_type in ["balance_sheet", "income_statement", "cash_flow"]:
+        try:
+            tidy = loader.load_stock_data_tidy(stock_code, year, stmt_type)
+        except Exception:
+            continue
+        for r in tidy:
+            if r.get("report_type") != "annual":
+                continue
+            v = r.get("value")
+            if v is None:
+                continue
+            name = r.get("item_name", "")
+            if name:
+                out[f"[{stmt_type}] {name}"] = float(v)
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--stock", help="single stock code, e.g. 600519")
@@ -47,7 +69,7 @@ def main():
     token = resolve_token(args.token)
     print(f"Token resolved, length: {len(token)}")
 
-    # process_stock / build_merged_csv / build_report_html / load_rds_standard
+    # process_stock / build_merged_csv / build_report_html
     # 在后续 tasks 中添加
 
 
